@@ -67,7 +67,18 @@ export default function App() {
   const [toast, setToast] = useState<string | null>(null);
   const [confirmState, setConfirmState] = useState<{ isOpen: boolean; message: string; onConfirm: () => void } | null>(null);
 
-  const currentAssessment = selectedItem ? (ASSESSMENTS[selectedItem.id] || ASSESSMENTS['1']) : ASSESSMENTS['1'];
+  let activeAssessmentId = '1';
+  if (view === 'results' && selectedHistoryRecord) {
+    if (selectedHistoryRecord.assessmentId) {
+      activeAssessmentId = selectedHistoryRecord.assessmentId;
+    } else {
+      const foundKey = Object.keys(ASSESSMENTS).find(k => ASSESSMENTS[k].title === selectedHistoryRecord.title);
+      if (foundKey) activeAssessmentId = foundKey;
+    }
+  } else if (selectedItem) {
+    activeAssessmentId = selectedItem.id;
+  }
+  const currentAssessment = ASSESSMENTS[activeAssessmentId] || ASSESSMENTS['1'];
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
@@ -140,6 +151,7 @@ export default function App() {
     // Save to history
     const record: HistoryRecord = {
       id: Date.now().toString(),
+      assessmentId: selectedItem?.id || '1',
       title: selectedItem?.title || currentAssessment.title,
       result: newResult,
       date: new Date().toLocaleString('zh-CN'),

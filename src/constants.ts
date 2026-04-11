@@ -159,6 +159,71 @@ export const SAMPLE_ASSESSMENT: Assessment = {
       ],
       correctOptionId: 'd',
       rationale: '应用层是数据封装的起点，聊天软件作为应用程序，会在应用层准备并生成要发送的原始数据消息。'
+    },
+    {
+      id: 'q11',
+      text: '在数据包封装和传输的过程中，如果原始数据太大，会在哪一层被分割成较小的数据段（Segments）？',
+      category: '原理解析',
+      options: [
+        { id: 'a', label: 'A', text: '应用层' },
+        { id: 'b', label: 'B', text: '传输层' },
+        { id: 'c', label: 'C', text: '网络层' },
+        { id: 'd', label: 'D', text: '数据链路层' }
+      ],
+      correctOptionId: 'b',
+      rationale: '传输层（特别是TCP协议）会将应用层传来的大数据块分割成适合传输的较小数据段（Segments），并在接收端重新组装。'
+    },
+    {
+      id: 'q12',
+      text: '接收方设备收到数据包后，逐层剥离头部信息的反向过程称为什么？',
+      category: '核心概念',
+      options: [
+        { id: 'a', label: 'A', text: '分段 (Segmentation)' },
+        { id: 'b', label: 'B', text: '封装 (Encapsulation)' },
+        { id: 'c', label: 'C', text: '路由 (Routing)' },
+        { id: 'd', label: 'D', text: '解封装 (Decapsulation)' }
+      ],
+      correctOptionId: 'd',
+      rationale: '接收方在收到数据后，会从数据链路层开始，向上逐层剥离对应的协议头部信息，这个过程被称为解封装。'
+    },
+    {
+      id: 'q13',
+      text: '如果接收方在解封装的第一步发现数据包中的MAC地址不是发给自己的，它会怎么处理这个数据包？',
+      category: '原理解析',
+      options: [
+        { id: 'a', label: 'A', text: '修改MAC地址后继续向上传递' },
+        { id: 'b', label: 'B', text: '直接丢弃这个数据包而不做进一步处理' },
+        { id: 'c', label: 'C', text: '将其退回给发送方' },
+        { id: 'd', label: 'D', text: '交由应用层来决定是否读取' }
+      ],
+      correctOptionId: 'b',
+      rationale: '网络接口卡（网卡）在数据链路层工作，如果识别到目的MAC地址与自身不符，通常会在硬件层面直接丢弃该数据包，以减轻系统负担。'
+    },
+    {
+      id: 'q14',
+      text: '现实生活中我们传输大文件（如1GB的电影）时，网络并不会把它当成一个巨大的单独数据包发送。这是因为？',
+      category: '综合应用',
+      options: [
+        { id: 'a', label: 'A', text: '网络硬件和协议栈在每一层都规定了最大传输单元（MTU），超大文件必须被切片' },
+        { id: 'b', label: 'B', text: '大文件里包含恶意代码的可能性更大' },
+        { id: 'c', label: 'C', text: '如果打包成一个数据包发送，传输速度会比切片慢很多' },
+        { id: 'd', label: 'D', text: '应用层不支持超过1MB的连续读取操作' }
+      ],
+      correctOptionId: 'a',
+      rationale: '网络每一层都有其最大传输单元限制（例如以太网通常为1500字节），因此网络协议栈必须将大型文件切片为一个个小数据包进行独立传输。'
+    },
+    {
+      id: 'q15',
+      text: '如果把“封装过程”比作俄罗斯套娃，那么最里面的那一层娃娃代表什么？',
+      category: '原理解析',
+      options: [
+        { id: 'a', label: 'A', text: '以太网帧尾的错误校验码' },
+        { id: 'b', label: 'B', text: '发送方计算机的MAC地址' },
+        { id: 'c', label: 'C', text: '应用程序生成的原始有效载荷（即真实的原始数据）' },
+        { id: 'd', label: 'D', text: '在网络中负责寻找路径的路由器' }
+      ],
+      correctOptionId: 'c',
+      rationale: '原始数据在封装过程中被层层包裹，如同位于最内部的俄罗斯套娃，而外部的套娃则是各层叠加的网络协议首部。'
     }
   ]
 };
@@ -301,6 +366,71 @@ export const SAMPLE_ASSESSMENT_2: Assessment = {
       ],
       correctOptionId: 'b',
       rationale: '切换不同艺术字体只会改变字形本身基于预设算法进行点阵或矢量的重新渲染，对应字符最根源的内码永远保持不变。'
+    },
+    {
+      id: 'q11',
+      text: '计算机内部处理和流转文字时，使用的是什么格式的编码？',
+      category: '核心概念',
+      options: [
+        { id: 'a', label: 'A', text: '外码（如拼音、五笔键位码）' },
+        { id: 'b', label: 'B', text: '内码（如Unicode码点）' },
+        { id: 'c', label: 'C', text: '字形码（如点阵矩阵）' },
+        { id: 'd', label: 'D', text: '扫描仪产生的图像编码' }
+      ],
+      correctOptionId: 'b',
+      rationale: '为了保证信息的统一性，计算机在存储及各种内部处理过程中，均使用与字形和输入方式无关的内码（如Unicode）来表示文字。'
+    },
+    {
+      id: 'q12',
+      text: '输入法软件在此场景下的核心本职工作是什么？',
+      category: '原理解析',
+      options: [
+        { id: 'a', label: 'A', text: '负责给文字加上彩色艺术样式' },
+        { id: 'b', label: 'B', text: '将用户的无规则敲击事件记录下来并保存到硬盘' },
+        { id: 'c', label: 'C', text: '作为“翻译官”，将键盘敲入的“外码”（比如拼音序列）对应转换成计算机能懂的“内码”' },
+        { id: 'd', label: 'D', text: '将字形码发送到显卡要求渲染' }
+      ],
+      correctOptionId: 'c',
+      rationale: '输入法的任务就是在字典表里搜索，将拼音、五笔等键盘外码“翻译”并输出成标准的Unicode内码交由系统内核处理。'
+    },
+    {
+      id: 'q13',
+      text: '小明用一部非常旧的老式手机接收到了朋友发来的当年新发布的Emoji表情，结果屏幕上只显示了一个“方块”或“问号”。其本质原因是？',
+      category: '综合应用',
+      options: [
+        { id: 'a', label: 'A', text: '发送方并没有真正的把这几个字节的数据通过网络发出去' },
+        { id: 'b', label: 'B', text: '网络在这个表情的传输过程中出现了高丢包率' },
+        { id: 'c', label: 'C', text: '小明手机虽然成功收到了正确的字符内码，但其本地字库太旧，找不到能用来画出这个新表情的字形' },
+        { id: 'd', label: 'D', text: '这个新Emoji表情的点阵数据过于庞大，超出了老手机的内存' }
+      ],
+      correctOptionId: 'c',
+      rationale: '显示“方块”通常是因为设备成功解码出了Unicode码点，但在本地落后且未更新的字体库文件中查无此字，只能使用代表缺失字符的占位符（Tofu符号）。'
+    },
+    {
+      id: 'q14',
+      text: '相比于传统的“点阵字体”，现代操作系统更倾向于使用“矢量字体”（如TrueType/OpenType），它的最大优势是？',
+      category: '核心概念',
+      options: [
+        { id: 'a', label: 'A', text: '能够保存更丰富的多媒体视频文件' },
+        { id: 'b', label: 'B', text: '任意放大或缩小都不会产生边缘的“马赛克”锯齿现象，并且字库文件体积更易控制' },
+        { id: 'c', label: 'C', text: '它能把同一段文字翻译成地球上的上百种语言' },
+        { id: 'd', label: 'D', text: '不需要依赖任何内码协议就能被读取' }
+      ],
+      correctOptionId: 'b',
+      rationale: '矢量字体使用数学曲线和公式来描述字形的边缘轮廓，因此可以无损地缩放到任意清晰度，解决了点阵字体放大后变糊的顽疾。'
+    },
+    {
+      id: 'q15',
+      text: '对于一台中文电脑和一台日文电脑，如果不使用Unicode，而是各自使用传统的本地编码标准（如GBK与Shift-JIS）互传一个仅包含纯内码的文本文件，通常会导致？',
+      category: '综合应用',
+      options: [
+        { id: 'a', label: 'A', text: '网络协议层自动挂断拦截此文件' },
+        { id: 'b', label: 'B', text: '文字内容变得更加精彩丰富' },
+        { id: 'c', label: 'C', text: '日文电脑强行让显卡改变分辨率来适应中文格式' },
+        { id: 'd', label: 'D', text: '由于编码转换表的错位对应，屏幕上大概率会显示出一堆无意义的“乱码”' }
+      ],
+      correctOptionId: 'd',
+      rationale: '如果没有统一的万国码标准作基础约束，不同语言地区制定的传统内码在相同字节序列下指代的字符大概率是不通用的，用错了解码本就会出现乱码。'
     }
   ]
 };

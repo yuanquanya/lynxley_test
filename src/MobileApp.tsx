@@ -496,6 +496,27 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHis
           <motion.div initial={{ width: 0 }} animate={{ width: `${result.score}%` }} transition={{ duration: 1 }} className="h-full signature-gradient rounded-full" />
         </div>
 
+        <div className="mb-10 bg-surface-container-lowest rounded-3xl p-6 card-shadow border border-outline-variant/10">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-headline text-lg font-bold text-on-surface tracking-tight">成绩分项</h3>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">知识点掌握度</span>
+          </div>
+          <div className="space-y-6">
+            {result.breakdown.map((b) => (
+              <div key={b.category}>
+                <div className="flex justify-between text-xs mb-2 font-bold">
+                  <span className="text-on-surface-variant">{b.category}</span>
+                  <span className={b.score < 80 ? 'text-error' : 'text-on-surface'}>{b.score}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                  <motion.div initial={{ width: 0 }} animate={{ width: `${b.score}%` }} transition={{ duration: 1, delay: 0.3 }}
+                    className={`h-full rounded-full ${b.score < 80 ? 'bg-error' : 'signature-gradient'}`} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-headline text-2xl font-extrabold text-on-surface tracking-tight">详细解析</h3>
           <span className="bg-surface-container-high px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">

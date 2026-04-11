@@ -56,6 +56,7 @@ export interface UserResult {
 
 export interface HistoryRecord {
   id: string;
+  assessmentId?: string;
   title: string;
   result: UserResult;
   date: string;
