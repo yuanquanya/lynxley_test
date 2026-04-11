@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<!-- 本网页由石家庄40中李老师提供 -->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>汉字编码</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background-color: #d9e2ef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background-color: white;
+            border-radius: 28px;
+            box-shadow: 0 12px 28px rgba(0, 15, 30, 0.25);
+            padding: 18px 20px;
+        }
+
+        /* 标题 + 流程图 (保持紧凑) */
+        .flow-header {
+            margin-bottom: 12px;
+        }
+        .flow-header h1 {
+            font-size: 1.9rem;
+            color: #1e3c5c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            border-left: 6px solid #3a7ca5;
+            padding-left: 16px;
+        }
+        .flow-header h1 span {
+            background: #d4e3fd;
+            font-size: 1.5rem;
+            padding: 2px 12px;
+            border-radius: 40px;
+        }
+
+        /* 五个圆圈流程 (缩小版) */
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin: 5px 0 5px;
+            flex-wrap: nowrap;
+            gap: 2px;
+        }
+        .process-steps::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 35px;
+            right: 35px;
+            height: 4px;
+            background: #6c8fd5;
+            z-index: 1;
+            border-radius: 8px;
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 70px;
+            z-index: 2;
+            background-color: white;
+            padding: 0 2px;
+        }
+        .step-icon {
+            width: 54px;
+            height: 54px;
+            background-color: #3a7ca5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            color: white;
+            font-size: 1.8rem;
+            box-shadow: 0 5px 0 #1e4b6e, 0 6px 10px rgba(0,0,0,0.15);
+            border: 2px solid #ffd966;
+        }
+        .step-title {
+            font-weight: 600;
+            color: #1e3c5c;
+            font-size: 0.7rem;
+            background-color: #f0f7ff;
+            padding: 3px 6px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        /* 文字卡片 (朝) — 紧凑 */
+        .character-card {
+            background: #f4f9ff;
+            border-radius: 40px 40px 20px 20px;
+            padding: 10px 15px;
+            margin: 12px 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: nowrap;
+            gap: 8px;
+            border: 2px solid #b3c9e0;
+            box-shadow: inset 0 1px 6px #cbd6e6, 0 6px 10px rgba(58,124,165,0.15);
+        }
+        .card-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            border-radius: 28px;
+            padding: 6px 12px;
+            min-width: 90px;
+            box-shadow: 0 3px 0 #afc5db;
+        }
+        .card-label {
+            font-size: 0.7rem;
+            color: #2b4f73;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            margin-bottom: 3px;
+        }
+        .card-value {
+            font-size: 2.1rem;
+            font-weight: 700;
+            line-height: 1.1;
+            color: #0a3147;
+        }
+        .card-value.small {
+            font-size: 1.3rem;
+            background: #2d3f58;
+            color: white;
+            padding: 0.1rem 1rem;
+            border-radius: 40px;
+        }
+
+        /* 两栏布局：左栏点阵+按钮，右栏详细说明 */
+        .two-column {
+            display: flex;
+            gap: 20px;
+            margin: 10px 0 15px;
+            align-items: flex-start;
+        }
+        .left-col {
+            flex: 0 0 auto;      /* 根据内容自动宽度 */
+            min-width: 450px;     /* 保证点阵区域宽度 */
+        }
+        .right-col {
+            flex: 1;              /* 占据剩余空间 */
+            background: #e3f0fc;
+            border-left: 12px solid #1f6392;
+            border-radius: 25px;
+            padding: 20px 22px;
+            box-shadow: 0 8px 15px #b1c9e0;
+            height: fit-content;
+        }
+
+        /* 点阵标题 (现在在左栏内) */
+        .matrix-header {
+            font-size: 1.3rem;
+            color: #153e5a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #dceafa;
+            padding: 5px 16px;
+            border-radius: 40px;
+            margin-bottom: 12px;
+            width: fit-content;
+        }
+
+        /* 按钮组放在点阵右侧 */
+        .button-matrix-wrapper {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+        .font-buttons-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 100px;
+            margin-top: 0;
+        }
+        .font-btn {
+            background: white;
+            border: 2px solid #2d6a9f;
+            color: #2d6a9f;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 8px 10px;
+            border-radius: 40px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #163a57;
+            transition: 0.05s linear;
+            background: linear-gradient(145deg, #f2f9ff, #ffffff);
+            text-align: center;
+            white-space: nowrap;
+        }
+        .font-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #163a57;
+        }
+        .font-btn.active-font {
+            background: #2d6a9f;
+            color: white;
+            border-color: #ffc107;
+            box-shadow: 0 3px 0 #0e2b3f;
+        }
+
+        /* 24x24 点阵网格 */
+        .matrix-grid {
+            display: inline-grid;
+            grid-template-columns: repeat(24, 16px);
+            gap: 1px;
+            background-color: #334e6e;
+            padding: 6px;
+            border-radius: 16px;
+            border: 4px solid #7f9fc0;
+            box-shadow: 0 8px 0 #1b344b;
+        }
+        .matrix-cell {
+            width: 16px;
+            height: 16px;
+            background-color: #e9edf2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            border-radius: 3px;
+            color: #102331;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+        }
+        .matrix-cell.active-bit {
+            background-color: #1b3b5c;
+            color: white;
+        }
+
+        /* 右侧详细说明区域 */
+        .right-col h3 {
+            font-size: 1.4rem;
+            color: #03223f;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .right-col p {
+            margin: 15px 0;
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+        .right-col ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        .right-col li {
+            margin: 10px 0;
+            font-size: 1.0rem;
+        }
+        .highlight-blue {
+            background: #1e5f8e;
+            color: white;
+            padding: 3px 16px;
+            border-radius: 30px;
+            display: inline-block;
+            font-weight: 600;
+        }
+        .code-example {
+            background: #1b344b;
+            color: #e2efff;
+            font-family: 'Courier New', monospace;
+            padding: 10px 15px;
+            border-radius: 18px;
+            margin: 15px 0;
+        }
+
+        /* 题目区 */
+        .question-section {
+            margin-top: 20px;
+        }
+        .question-section h2 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 3px solid #4b6cb7;
+            display: flex;
+            align-items: center;
+            font-size: 1.4rem;
+        }
+        .question-content {
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            text-align: left;
+            border: 2px dashed #3a7ca5;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 2px solid #bdd3eb;
+            color: #4d6278;
+            font-size: 0.8rem;
+        }
+
+        /* 禁止点击绘制点阵 */
+        .matrix-grid {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- 标题 + 流程图圆圈 -->
+    <div class="flow-header">
+        <h1><span>📟</span> 文字·编码·显示</h1>
+        <div class="process-steps">
+            <div class="step"><div class="step-icon">⌨️</div><div class="step-title">1.键盘输入</div></div>
+            <div class="step"><div class="step-icon">🔤</div><div class="step-title">2.外码转换</div></div>
+            <div class="step"><div class="step-icon">🖥️</div><div class="step-title">3.字符身份证号（Unicode码点）</div></div>
+            <div class="step"><div class="step-icon">🔠</div><div class="step-title">4.字形编码</div></div>
+            <div class="step"><div class="step-icon">🖼️</div><div class="step-title">5.屏幕显示</div></div>
+        </div>
+    </div>
+
+    <!-- 文字卡片：朝 + 拼音 + Unicode -->
+    <div class="character-card">
+        <div class="card-item"><span class="card-label">汉字</span><span class="card-value">朝</span></div>
+        <div class="card-item"><span class="card-label">拼音码</span><span class="card-value" style="font-size:1.5rem;">zhao</span></div>
+        <div class="card-item"><span class="card-label">Unicode码点</span><span class="card-value small">U+671D</span></div>
+    </div>
+
+    <!-- 两栏布局: 左栏=点阵+右侧按钮, 右栏=详细说明 -->
+    <div class="two-column">
+        <!-- 左栏 -->
+        <div class="left-col">
+            <div class="matrix-header">🔲 24x24 点阵字形 (0/1)</div>
+            <!-- 按钮放在点阵右侧 -->
+            <div class="button-matrix-wrapper">
+                <!-- 点阵网格 -->
+                <div id="matrixContainer" class="matrix-grid">
+                    <!-- js生成24x24单元格 -->
+                </div>
+                <!-- 垂直按钮组 (六个字体按钮) -->
+                <div class="font-buttons-vertical" id="fontButtonGroup">
+                    <button class="font-btn active-font" data-font="font1">🅰️ 华文新魏</button>
+                    <button class="font-btn" data-font="font2">🅱️ 华文行楷</button>
+                    <button class="font-btn" data-font="font3">🍂 方正舒体</button>
+                    <button class="font-btn" data-font="font4">✒️ 方正姚体</button>
+                    <button class="font-btn" data-font="font5">🖋️ 仿宋</button>
+                    <button class="font-btn" data-font="font6">📃 隶书</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右栏：详细说明区域（更丰富的解释） -->
+        <div class="right-col">
+            <h3><span class="highlight-blue">📡 网络只传字符身份证号，不传字形编码</span></h3>
+            <p><strong>和朋友聊天发送“朝”字时，电脑只传输它的唯一ID：<code style="background:#1b3f5c; padding:2px 10px; border-radius:30px; color:white;">U+671D</code> 的编码。</strong></p>
+            <p>接收方电脑根据这个ID，再结合当前字体设置，调用本地安装的字体库，绘制出不同形状的“朝”。</p>
+            <ul>
+                <li>✅ <strong>编码传输</strong>——无论你选择仿宋还是隶书，网络上传送的永远是相同的数字编码 <strong>0x671D</strong> (十进制26401)。</li>
+                <li>✅ <strong>字形本地生成</strong>——你的智能电视、手机或电脑里预装了各种字体（黑体、楷体…），收到编码后立刻查找该字体下“朝”的点阵或矢量轮廓。</li>
+                <li>✅ <strong>所见即所得</strong>——这就是为什么同一篇文章换一种字体，文字样子变了，但内容（编码）一字不差。</li>
+            </ul>
+            <div class="code-example">
+                <p>📦 网络传输包 (简化): <code>[ 源IP... 数据: 朝( U+671D ) ]</code> ➔ 不包含任何形状编码。</p>
+                <p>🖨️ 显示器渲染: 收到U+671D → 在对应“字体”库中找到点阵 → 画到屏幕上。</p>
+            </div>
+            <p style="font-weight:600;background:#fffacd; padding:6px 12px; border-radius:50px;">⭐ 点阵数字0/1只是其中一种字形表示（点阵字体）1表示绘制一个点，0表示不绘制点。右侧六种字体按钮对应完全不同风格的点阵。</p>
+        </div>
+    </div>
+
+    <!-- 题目区 (外置) -->
+    <div class="question-section">
+        <h2>📝 题目</h2>
+        <div class="question-content">
+            <p>汉字“朝”在网络传输过程中，真正传输的是______</p>
+        </div>
+    </div>
+    <!-- footer -->
+    <div class="footer">
+        <p>信息科技学业水平考试学习资料</p>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ================== 六套字体24x24点阵数据（直接展开赋值）==================
+        // 为了展示区别，每种字体给出不同的“朝”字简单抽象点阵(示意不同风格)
+        // 华文新魏（默认激活）
+        const font1Data = [
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,
+            0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,0,0,
+            0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,0,0,0,1,1,0,0,
+            0,0,0,0,0,0,1,0,1,1,0,0,0,0,0,1,1,0,0,0,1,1,0,0,
+            0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,1,1,0,1,1,0,0,
+            0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,1,1,1,0,0,1,1,0,0,
+            0,0,0,0,0,1,1,1,1,0,0,1,1,0,0,1,0,0,0,0,1,1,0,0,
+            0,0,0,0,0,1,1,0,0,0,1,1,0,0,1,1,0,1,0,0,1,1,0,0,
+            0,0,0,0,0,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,0,0,
+            0,0,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1,0,0,
+            0,0,0,0,0,0,1,1,1,1,0,1,0,0,1,0,0,0,0,0,1,1,0,0,
+            0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,1,1,0,0,
+            0,0,0,0,1,1,1,1,1,1,1,0,0,1,1,0,0,0,0,0,1,1,0,0,
+            0,0,1,1,1,1,0,0,1,0,0,0,1,1,1,0,0,0,0,0,1,1,0,0,
+            0,0,0,0,0,0,0,0,1,0,0,1,1,1,0,1,0,0,0,0,1,1,0,0,
+            0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,0,
+            0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,1,1,0,0,
+            0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0
+        ];
+
+        // 华文行楷
+        const font2Data = [
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,
+            0,0,0,0,0,1,1,0,1,1,1,1,1,0,0,0,0,0,1,1,1,0,0,0,
+            0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,1,1,1,1,0,1,1,0,0,
+            0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,0,0,0,1,1,0,0,
+            0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,1,0,0,0,0,1,0,0,0,
+            0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,1,0,1,1,0,1,0,0,0,
+            0,0,0,0,1,0,1,1,1,0,0,1,1,1,0,1,1,1,1,0,1,0,0,0,
+            0,0,0,0,1,1,0,0,1,1,0,1,1,0,0,1,1,0,1,0,1,0,0,0,
+            0,0,0,0,0,1,0,1,1,1,0,1,1,0,1,1,0,0,1,0,1,0,0,0,
+            0,0,0,0,0,1,1,0,1,0,0,1,0,0,1,1,0,1,0,0,1,0,0,0,
+            0,0,0,0,0,0,1,1,1,1,1,1,0,1,0,1,0,1,1,0,1,0,0,0,
+            0,0,0,0,0,0,1,1,1,1,0,1,0,0,1,1,0,0,1,0,1,0,0,0,
+            0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,0,0,1,0,1,0,0,0,
+            0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,1,0,1,0,0,1,0,0,0,
+            0,0,0,0,0,1,1,0,1,1,0,0,0,0,0,1,1,0,0,0,1,0,0,0,
+            0,0,1,1,1,0,0,0,1,1,0,0,0,0,0,1,0,1,0,0,1,0,0,0,
+            0,0,0,1,0,0,0,0,1,1,0,0,0,0,1,0,0,1,1,0,1,0,0,0,
+            0,0,0,0,0,0,0,0,1,1,0,0,0,1,0,0,0,0,1,1,1,0,0,0,
+            0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,1,0,0,0,
+            0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0
+        ];
+
+        // 方正舒体
+        const font3Data = [
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,1,0,0,
+            0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,1,1,0,0,
+            0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,1,1,1,0,0,1,1,0,0,
+            0,0,0,0,0,1,1,1,0,0,1,0,0,0,0,1,1,0,0,0,0,1,0,0,
+            0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,1,0,0,0,0,0,1,0,0,
+            0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,
+            0,0,0,0,0,1,1,0,1,1,1,1,1,0,0,1,1,1,1,0,0,1,0,0,
+            0,0,0,0,0,1,0,1,1,1,0,0,1,0,0,1,1,1,1,0,0,1,0,0,
+            0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,1,0,1,0,0,0,1,1,0,
+            0,0,0,0,1,1,0,1,1,1,0,1,0,0,0,1,0,1,1,0,0,0,1,0,
+            0,0,0,0,1,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,0,0,1,0,
+            0,0,0,0,0,1,0,0,0,1,1,0,0,0,0,1,0,0,1,0,0,0,1,0,
+            0,0,0,0,0,0,1,1,1,1,1,0,0,0,1,0,0,0,0,0,0,0,1,0,
+            0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,
+            0,0,0,0,0,0,0,1,1,1,1,1,0,0,1,0,0,0,0,0,0,1,1,0,
+            0,0,0,0,0,1,1,1,1,1,1,1,0,1,0,0,0,0,0,0,0,1,0,0,
+            0,0,0,1,1,1,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,
+            0,0,1,1,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,1,1,0,0,0,
+            0,0,0,0,0,0,0,1,1,0,1,1,1,0,0,0,0,0,0,1,0,0,0,0,
+            0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        ];
+
+        // 方正姚体
+        const font4Data = [
+            0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,
+            0,0,0,1,1,1,1,1,1,1,1,1,1,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,1,1,0,1,0,0,1,1,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,1,1,1,1,1,1,1,1,0,0,1,1,1,0,1,1,1,0,0,0,
+            0,0,0,0,1,1,0,0,0,0,1,1,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,1,1,0,0,0,0,1,1,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,1,1,1,1,1,0,1,1,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,1,1,0,0,0,0,1,1,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,1,1,0,0,0,0,1,1,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,1,1,0,0,0,0,1,1,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,1,1,1,1,1,1,1,1,0,0,1,1,1,0,1,1,1,0,0,0,
+            0,0,0,0,1,1,0,1,1,0,1,1,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,1,1,1,1,1,1,1,1,1,1,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,1,1,1,0,0,0,
+            0,0,0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,1,1,1,0,0,0,
+            0,0,0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,1,1,1,0,0,0,
+            0,0,0,0,0,0,0,1,1,0,0,0,0,1,0,0,0,0,1,1,1,0,0,0
+        ];
+
+        // 仿宋
+        const font5Data = [
+            0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,0,
+            0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,
+            0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,1,0,0,0,0,0,1,0,0,
+            0,0,1,1,1,1,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,
+            0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,
+            0,0,0,0,0,0,0,1,0,0,0,1,1,0,0,1,0,0,0,0,0,1,0,0,
+            0,0,0,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1,0,1,0,0,
+            0,0,0,1,1,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,1,0,0,
+            0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,
+            0,0,0,1,1,1,1,1,1,1,0,1,0,0,0,1,0,0,0,0,0,1,0,0,
+            0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,
+            0,0,0,1,0,0,0,0,0,0,0,1,1,0,1,1,0,1,1,1,0,1,0,0,
+            0,0,0,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,0,1,0,0,
+            0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,
+            0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,
+            0,0,0,0,0,0,0,1,0,1,1,1,1,0,1,0,0,0,0,0,0,1,0,0,
+            0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,
+            0,0,0,0,0,0,0,1,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,
+            0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,
+            0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,
+            0,0,0,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,1,1,0,1,0,0,
+            0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,1,1,0,0
+        ];
+
+        // 隶书
+        const font6Data = [
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,0,0,0,0,1,1,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,
+            0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,0,0,0,1,1,1,
+            0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,0,0,0,0,1,1,1,
+            0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,1,0,0,0,0,1,1,1,
+            0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,
+            0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,1,0,0,0,0,1,1,1,
+            0,0,0,0,1,1,1,0,0,0,0,1,1,0,0,1,1,0,0,0,0,1,1,1,
+            0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,1,1,1,1,1,1,1,1,1,
+            0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,
+            0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,0,0,0,0,1,1,1,
+            1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,
+            1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,
+            0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,0,0,1,1,1,
+            0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,0,0,1,1,1,
+            0,0,0,0,0,0,0,1,1,1,0,1,1,0,0,0,0,0,0,0,0,1,1,1,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        ];
+
+        // 将六套数据放入对象
+        const fontMatrixData = {
+            font1: font1Data,
+            font2: font2Data,
+            font3: font3Data,
+            font4: font4Data,
+            font5: font5Data,
+            font6: font6Data,
+        };
+
+        let currentFont = 'font1';
+
+        const matrixContainer = document.getElementById('matrixContainer');
+        const fontButtons = document.querySelectorAll('.font-btn');
+
+        // 渲染点阵
+        function renderMatrix() {
+            const matrixData = fontMatrixData[currentFont] || fontMatrixData.font1;
+            matrixContainer.innerHTML = '';
+
+            for (let i = 0; i < 24 * 24; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'matrix-cell';
+                const bit = matrixData[i] === 1 ? 1 : 0;
+                cell.textContent = bit;
+                if (bit === 1) {
+                    cell.classList.add('active-bit');
+                }
+                matrixContainer.appendChild(cell);
+            }
+        }
+
+        // 切换按钮高亮
+        function setActiveFontButton(fontId) {
+            fontButtons.forEach(btn => {
+                const f = btn.getAttribute('data-font');
+                btn.classList.toggle('active-font', f === fontId);
+            });
+        }
+
+        // 字体按钮点击
+        fontButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const fontId = this.getAttribute('data-font');
+                if (!fontId) return;
+                currentFont = fontId;
+                setActiveFontButton(fontId);
+                renderMatrix();
+            });
+        });
+
+        // 初始化 (默认字体1)
+        renderMatrix();
+        setActiveFontButton('font1');
+
+        // 将数据挂载到window，方便老师微调
+        window.fontMatrixData = fontMatrixData;
+        window.rerenderMatrix = function(fontId) {
+            if (fontId) currentFont = fontId;
+            renderMatrix();
+        };
+    })();
+</script>
+</body>
+</html>
