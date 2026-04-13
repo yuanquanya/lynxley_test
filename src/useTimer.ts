@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-const TOTAL_SECONDS = 20 * 60; // 20 minutes
+const TOTAL_SECONDS = 10 * 60; // 10 minutes
 
 export function useTimer(isActive: boolean, onTimeUp: () => void) {
   const [remaining, setRemaining] = useState(TOTAL_SECONDS);

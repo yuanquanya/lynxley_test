@@ -18,6 +18,15 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
     duration: '15 分钟',
     description: '深入了解字符背后的秘密，探究从键盘输入到屏幕显示的全过程。',
     status: 'Start'
+  },
+  {
+    id: '3',
+    title: '密码里的数学魔法',
+    category: 'Logic',
+    difficulty: 'Beginner',
+    duration: '10 分钟',
+    description: '通过数学组合数了解密码破解的原理与防御策略。',
+    status: 'Start'
   }
 ];
 
@@ -123,7 +132,7 @@ export const SAMPLE_ASSESSMENT: Assessment = {
     },
     {
       id: 'q8',
-      text: '在数据包封装中，“端口号”的作用通常被比作什么？',
+      text: '在数据包封装中，"端口号"的作用通常被比作什么？',
       category: '原理解析',
       options: [
         { id: 'a', label: 'A', text: '邮政编码' },
@@ -136,7 +145,7 @@ export const SAMPLE_ASSESSMENT: Assessment = {
     },
     {
       id: 'q9',
-      text: '网络层添加的“IP地址”的作用可以比喻为？',
+      text: '网络层添加的"IP地址"的作用可以比喻为？',
       category: '原理解析',
       options: [
         { id: 'a', label: 'A', text: '邮政编码' },
@@ -162,68 +171,68 @@ export const SAMPLE_ASSESSMENT: Assessment = {
     },
     {
       id: 'q11',
-      text: '在数据包封装和传输的过程中，如果原始数据太大，会在哪一层被分割成较小的数据段（Segments）？',
-      category: '原理解析',
+      text: '在数据包封装的过程中，随着经过的步骤增加，数据包的总大小会发生什么变化？',
+      category: '综合应用',
+      options: [
+        { id: 'a', label: 'A', text: '逐渐变大（因为每一层都添加了新的“头部”信息）' },
+        { id: 'b', label: 'B', text: '逐渐变小（因为数据被压缩了）' },
+        { id: 'c', label: 'C', text: '保持不变' },
+        { id: 'd', label: 'D', text: '随机变化' }
+      ],
+      correctOptionId: 'a',
+      rationale: '每一层封装都会添加该层的协议头部信息，因此数据包的总长度会随着封装过程不断增加。'
+    },
+    {
+      id: 'q12',
+      text: '在可视化演示的第一步中，应用程序准备好的原始数据会被转换成什么格式以便计算机理解？',
+      category: '核心概念',
+      options: [
+        { id: 'a', label: 'A', text: '图片格式' },
+        { id: 'b', label: 'B', text: '纸质文档' },
+        { id: 'c', label: 'C', text: '二进制格式' },
+        { id: 'd', label: 'D', text: '声音信号' }
+      ],
+      correctOptionId: 'c',
+      rationale: '学习资料提到，应用程序准备好数据后，数据会被转换成计算机能理解的二进制格式。'
+    },
+    {
+      id: 'q13',
+      text: '在可视化演示界面的表头中，使用“🌐”图标代表的是哪一层？',
+      category: '核心概念',
       options: [
         { id: 'a', label: 'A', text: '应用层' },
         { id: 'b', label: 'B', text: '传输层' },
         { id: 'c', label: 'C', text: '网络层' },
         { id: 'd', label: 'D', text: '数据链路层' }
       ],
-      correctOptionId: 'b',
-      rationale: '传输层（特别是TCP协议）会将应用层传来的大数据块分割成适合传输的较小数据段（Segments），并在接收端重新组装。'
-    },
-    {
-      id: 'q12',
-      text: '接收方设备收到数据包后，逐层剥离头部信息的反向过程称为什么？',
-      category: '核心概念',
-      options: [
-        { id: 'a', label: 'A', text: '分段 (Segmentation)' },
-        { id: 'b', label: 'B', text: '封装 (Encapsulation)' },
-        { id: 'c', label: 'C', text: '路由 (Routing)' },
-        { id: 'd', label: 'D', text: '解封装 (Decapsulation)' }
-      ],
-      correctOptionId: 'd',
-      rationale: '接收方在收到数据后，会从数据链路层开始，向上逐层剥离对应的协议头部信息，这个过程被称为解封装。'
-    },
-    {
-      id: 'q13',
-      text: '如果接收方在解封装的第一步发现数据包中的MAC地址不是发给自己的，它会怎么处理这个数据包？',
-      category: '原理解析',
-      options: [
-        { id: 'a', label: 'A', text: '修改MAC地址后继续向上传递' },
-        { id: 'b', label: 'B', text: '直接丢弃这个数据包而不做进一步处理' },
-        { id: 'c', label: 'C', text: '将其退回给发送方' },
-        { id: 'd', label: 'D', text: '交由应用层来决定是否读取' }
-      ],
-      correctOptionId: 'b',
-      rationale: '网络接口卡（网卡）在数据链路层工作，如果识别到目的MAC地址与自身不符，通常会在硬件层面直接丢弃该数据包，以减轻系统负担。'
+      correctOptionId: 'c',
+      rationale: '在演示界面中，🌐 图标专门用于标识网络层。'
     },
     {
       id: 'q14',
-      text: '现实生活中我们传输大文件（如1GB的电影）时，网络并不会把它当成一个巨大的单独数据包发送。这是因为？',
-      category: '综合应用',
+      text: '在可视化演示界面的四步封装过程中，最后一步是哪一层？',
+      category: '核心概念',
       options: [
-        { id: 'a', label: 'A', text: '网络硬件和协议栈在每一层都规定了最大传输单元（MTU），超大文件必须被切片' },
-        { id: 'b', label: 'B', text: '大文件里包含恶意代码的可能性更大' },
-        { id: 'c', label: 'C', text: '如果打包成一个数据包发送，传输速度会比切片慢很多' },
-        { id: 'd', label: 'D', text: '应用层不支持超过1MB的连续读取操作' }
+        { id: 'a', label: 'A', text: '应用层' },
+        { id: 'b', label: 'B', text: '传输层' },
+        { id: 'c', label: 'C', text: '网络层' },
+        { id: 'd', label: 'D', text: '数据链路层' }
       ],
-      correctOptionId: 'a',
-      rationale: '网络每一层都有其最大传输单元限制（例如以太网通常为1500字节），因此网络协议栈必须将大型文件切片为一个个小数据包进行独立传输。'
+      correctOptionId: 'd',
+      rationale: '封装过程是从上到下的，数据链路层是四步中的最后一步，负责添加物理地址（MAC地址）。'
     },
     {
       id: 'q15',
-      text: '如果把“封装过程”比作俄罗斯套娃，那么最里面的那一层娃娃代表什么？',
-      category: '原理解析',
+      text: '假设在演示中输入的消息经UTF-8编码后为42字节，根据可视化中显示的各层头部大小（传输层20字节、网络层20字节、数据链路层14字节），完成全部封装后的数据包总大小应该是多少字节？',
+      category: '综合应用',
       options: [
-        { id: 'a', label: 'A', text: '以太网帧尾的错误校验码' },
-        { id: 'b', label: 'B', text: '发送方计算机的MAC地址' },
-        { id: 'c', label: 'C', text: '应用程序生成的原始有效载荷（即真实的原始数据）' },
-        { id: 'd', label: 'D', text: '在网络中负责寻找路径的路由器' }
+        { id: 'a', label: 'A', text: '42 字节' },
+        { id: 'b', label: 'B', text: '76 字节' },
+        { id: 'c', label: 'C', text: '96 字节' },
+        { id: 'd', label: 'D', text: '128 字节' }
       ],
       correctOptionId: 'c',
-      rationale: '原始数据在封装过程中被层层包裹，如同位于最内部的俄罗斯套娃，而外部的套娃则是各层叠加的网络协议首部。'
+      rationale: '数据包的总大小 = 应用层数据(42字节) + 传输层TCP头部(20字节) + 网络层IP头部(20字节) + 数据链路层以太网头部(14字节) = 96字节。这些数值可以直接从演示界面中各层显示的字节数计算得出。'
     }
   ]
 };
@@ -239,7 +248,7 @@ export const SAMPLE_ASSESSMENT_2: Assessment = {
   questions: [
     {
       id: 'q1',
-      text: '在网络中发送汉字“朝”时，实际上在网络中传输的是什么？',
+      text: '在网络中发送汉字"朝"时，实际上在网络中传输的是什么？',
       category: '核心概念',
       options: [
         { id: 'a', label: 'A', text: '汉字的拼音（如zhao）' },
@@ -291,7 +300,7 @@ export const SAMPLE_ASSESSMENT_2: Assessment = {
     },
     {
       id: 'q5',
-      text: '在16x16或24x24的黑白点阵字体中，数字“1”和“0”通常分别代表什么？',
+      text: '在16x16或24x24的黑白点阵字体中，数字"1"和"0"通常分别代表什么？',
       category: '原理解析',
       options: [
         { id: 'a', label: 'A', text: '1代表背景颜色，0代表文字颜色' },
@@ -304,13 +313,13 @@ export const SAMPLE_ASSESSMENT_2: Assessment = {
     },
     {
       id: 'q6',
-      text: '下列哪一项属于汉字被输入到电脑时的“外码”（或称输入码）？',
+      text: '下列哪一项属于汉字被输入到电脑时的"外码"（或称输入码）？',
       category: '核心概念',
       options: [
         { id: 'a', label: 'A', text: 'U+671D' },
         { id: 'b', label: 'B', text: 'zhao（拼音）' },
         { id: 'c', label: 'C', text: '24x24点阵' },
-        { id: 'd', label: 'D', text: '“朝”的具体屏幕字形' }
+        { id: 'd', label: 'D', text: '"朝"的具体屏幕字形' }
       ],
       correctOptionId: 'b',
       rationale: '对于人类而言，我们通过键盘打出的拼音（如zhao）、五笔等都属于计算机接收外部输入的对应码，即外码。'
@@ -330,7 +339,7 @@ export const SAMPLE_ASSESSMENT_2: Assessment = {
     },
     {
       id: 'q8',
-      text: '发送方设备和接收方设备必须共同遵循什么准则才能保证“发送的内容和接收的内容基本一致”？',
+      text: '发送方设备和接收方设备必须共同遵循什么准则才能保证"发送的内容和接收的内容基本一致"？',
       category: '核心概念',
       options: [
         { id: 'a', label: 'A', text: '必须使用同一款聊天软件应用' },
@@ -347,7 +356,7 @@ export const SAMPLE_ASSESSMENT_2: Assessment = {
       category: '综合应用',
       options: [
         { id: 'a', label: 'A', text: '传输包内部包含了复杂的字形变形算法' },
-        { id: 'b', label: 'B', text: '网络传输实质上仅包含字符代码，不包含任何用于屏幕显示的字形的“长相”数据' },
+        { id: 'b', label: 'B', text: '网络传输实质上仅包含字符代码，不包含任何用于屏幕显示的字形的"长相"数据' },
         { id: 'c', label: 'C', text: '数据中自带了宋体或者楷体这样的文字排版设计' },
         { id: 'd', label: 'D', text: 'U+671D直接发音代表了这个汉字的现代汉语读音' }
       ],
@@ -356,7 +365,7 @@ export const SAMPLE_ASSESSMENT_2: Assessment = {
     },
     {
       id: 'q10',
-      text: '一名同学在互动页面上点击“隶书”按钮后，屏幕上的“朝”字变成了厚重的隶书风格，以下哪项内容并没有发生改变？',
+      text: '一名同学在互动页面上点击"隶书"按钮后，屏幕上的"朝"字变成了厚重的隶书风格，以下哪项内容并没有发生改变？',
       category: '综合应用',
       options: [
         { id: 'a', label: 'A', text: '屏幕上呈现出的点阵矩阵排列' },
@@ -387,15 +396,15 @@ export const SAMPLE_ASSESSMENT_2: Assessment = {
       options: [
         { id: 'a', label: 'A', text: '负责给文字加上彩色艺术样式' },
         { id: 'b', label: 'B', text: '将用户的无规则敲击事件记录下来并保存到硬盘' },
-        { id: 'c', label: 'C', text: '作为“翻译官”，将键盘敲入的“外码”（比如拼音序列）对应转换成计算机能懂的“内码”' },
+        { id: 'c', label: 'C', text: '作为"翻译官"，将键盘敲入的"外码"（比如拼音序列）对应转换成计算机能懂的"内码"' },
         { id: 'd', label: 'D', text: '将字形码发送到显卡要求渲染' }
       ],
       correctOptionId: 'c',
-      rationale: '输入法的任务就是在字典表里搜索，将拼音、五笔等键盘外码“翻译”并输出成标准的Unicode内码交由系统内核处理。'
+      rationale: '输入法的任务就是在字典表里搜索，将拼音、五笔等键盘外码"翻译"并输出成标准的Unicode内码交由系统内核处理。'
     },
     {
       id: 'q13',
-      text: '小明用一部非常旧的老式手机接收到了朋友发来的当年新发布的Emoji表情，结果屏幕上只显示了一个“方块”或“问号”。其本质原因是？',
+      text: '小明用一部非常旧的老式手机接收到了朋友发来的当年新发布的Emoji表情，结果屏幕上只显示了一个"方块"或"问号"。其本质原因是？',
       category: '综合应用',
       options: [
         { id: 'a', label: 'A', text: '发送方并没有真正的把这几个字节的数据通过网络发出去' },
@@ -404,15 +413,15 @@ export const SAMPLE_ASSESSMENT_2: Assessment = {
         { id: 'd', label: 'D', text: '这个新Emoji表情的点阵数据过于庞大，超出了老手机的内存' }
       ],
       correctOptionId: 'c',
-      rationale: '显示“方块”通常是因为设备成功解码出了Unicode码点，但在本地落后且未更新的字体库文件中查无此字，只能使用代表缺失字符的占位符（Tofu符号）。'
+      rationale: '显示"方块"通常是因为设备成功解码出了Unicode码点，但在本地落后且未更新的字体库文件中查无此字，只能使用代表缺失字符的占位符（Tofu符号）。'
     },
     {
       id: 'q14',
-      text: '相比于传统的“点阵字体”，现代操作系统更倾向于使用“矢量字体”（如TrueType/OpenType），它的最大优势是？',
+      text: '相比于传统的"点阵字体"，现代操作系统更倾向于使用"矢量字体"（如TrueType/OpenType），它的最大优势是？',
       category: '核心概念',
       options: [
         { id: 'a', label: 'A', text: '能够保存更丰富的多媒体视频文件' },
-        { id: 'b', label: 'B', text: '任意放大或缩小都不会产生边缘的“马赛克”锯齿现象，并且字库文件体积更易控制' },
+        { id: 'b', label: 'B', text: '任意放大或缩小都不会产生边缘的"马赛克"锯齿现象，并且字库文件体积更易控制' },
         { id: 'c', label: 'C', text: '它能把同一段文字翻译成地球上的上百种语言' },
         { id: 'd', label: 'D', text: '不需要依赖任何内码协议就能被读取' }
       ],
@@ -427,7 +436,7 @@ export const SAMPLE_ASSESSMENT_2: Assessment = {
         { id: 'a', label: 'A', text: '网络协议层自动挂断拦截此文件' },
         { id: 'b', label: 'B', text: '文字内容变得更加精彩丰富' },
         { id: 'c', label: 'C', text: '日文电脑强行让显卡改变分辨率来适应中文格式' },
-        { id: 'd', label: 'D', text: '由于编码转换表的错位对应，屏幕上大概率会显示出一堆无意义的“乱码”' }
+        { id: 'd', label: 'D', text: '由于编码转换表的错位对应，屏幕上大概率会显示出一堆无意义的"乱码"' }
       ],
       correctOptionId: 'd',
       rationale: '如果没有统一的万国码标准作基础约束，不同语言地区制定的传统内码在相同字节序列下指代的字符大概率是不通用的，用错了解码本就会出现乱码。'
@@ -435,7 +444,150 @@ export const SAMPLE_ASSESSMENT_2: Assessment = {
   ]
 };
 
+export const SAMPLE_ASSESSMENT_3: Assessment = {
+  id: 'arch-3',
+  title: '密码里的数学魔法',
+  volume: '第三套题',
+  readingMaterial: {
+    title: '密码里的数学魔法',
+    iframeUrl: '/material3.html',
+  },
+  questions: [
+    {
+      id: 'q1',
+      text: '警察破译保险柜通常需要一个个试密码，网络世界里黑客是怎么暴力破解密码的？',
+      category: '安全基础',
+      options: [
+        { id: 'a', label: 'A', text: '找人问出密码' },
+        { id: 'b', label: 'B', text: '运用社交工程学骗取' },
+        { id: 'c', label: 'C', text: '让电脑飞快地"猜"所有的密码组合' },
+        { id: 'd', label: 'D', text: '利用系统的超级后门直接绕过' }
+      ],
+      correctOptionId: 'c',
+      rationale: '文章中提到，黑客在网络世界中一样是通过让电脑飞快地枚举、"猜"出密码来暴力破解密码的。'
+    },
+    {
+      id: 'q2',
+      text: '假设你的密码只有数字（0-9），且位数为4位，那么这种情况下总共有多少种可能的密码组合？',
+      category: '问题测算',
+      options: [
+        { id: 'a', label: 'A', text: '100 种' },
+        { id: 'b', label: 'B', text: '1000 种' },
+        { id: 'c', label: 'C', text: '10,000 种' },
+        { id: 'd', label: 'D', text: '100,000 种' }
+      ],
+      correctOptionId: 'c',
+      rationale: '每位只有10种可能，4位数就是10×10×10×10=10,000种。'
+    },
+    {
+      id: 'q3',
+      text: '根据资料假设，如果黑客的电脑一秒钟能尝试1000个密码组合，那么破解一个4位数的纯数字密码最多需要多长时间？',
+      category: '问题测算',
+      options: [
+        { id: 'a', label: 'A', text: '1 秒' },
+        { id: 'b', label: 'B', text: '10 秒' },
+        { id: 'c', label: 'C', text: '100 秒' },
+        { id: 'd', label: 'D', text: '28 小时' }
+      ],
+      correctOptionId: 'b',
+      rationale: '总组合数为10,000种，每秒跑1000次的话，最多只需10秒就能把所有的可能穷举一遍。'
+    },
+    {
+      id: 'q4',
+      text: '如果把密码长度从4位数字增加到8位纯数字密码，此时密码的可能的组合总数是？',
+      category: '问题测算',
+      options: [
+        { id: 'a', label: 'A', text: '1 万种' },
+        { id: 'b', label: 'B', text: '10 万种' },
+        { id: 'c', label: 'C', text: '100 万种' },
+        { id: 'd', label: 'D', text: '1 亿种' }
+      ],
+      correctOptionId: 'd',
+      rationale: '8位纯数字密码的组合数是10的8次方，即足足1亿种组合。'
+    },
+    {
+      id: 'q5',
+      text: '根据资料假设（每秒尝试1000次），由于升级到了8位纯数字密码，破解它大约需要消耗多长时间？',
+      category: '逻辑推理',
+      options: [
+        { id: 'a', label: 'A', text: '10 秒' },
+        { id: 'b', label: 'B', text: '1 小时' },
+        { id: 'c', label: 'C', text: '大约 28 小时' },
+        { id: 'd', label: 'D', text: '大约 7 万年' }
+      ],
+      correctOptionId: 'c',
+      rationale: '1亿种组合除以每秒1000次，等于10万秒，换算出来大约是28小时。'
+    },
+    {
+      id: 'q6',
+      text: '如果我们在密码中混合使用大写字母（26个）、小写字母（26个）和数字（10个），密码的每一位会有多少个不同的备选字符？',
+      category: '安全基础',
+      options: [
+        { id: 'a', label: 'A', text: '10 个' },
+        { id: 'b', label: 'B', text: '26 个' },
+        { id: 'c', label: 'C', text: '52 个' },
+        { id: 'd', label: 'D', text: '62 个' }
+      ],
+      correctOptionId: 'd',
+      rationale: '大写字母26个 + 小写字母26个 + 数字10个 = 总计 62 个备选字符。'
+    },
+    {
+      id: 'q7',
+      text: '当使用由"大写字母+小写字母+数字"组成的复杂8位混合密码时（产生218万亿种可能），按每秒1000次的电脑速度破解它大约需要消耗多长时间？',
+      category: '问题测算',
+      options: [
+        { id: 'a', label: 'A', text: '大约 28 小时' },
+        { id: 'b', label: 'B', text: '1 个月' },
+        { id: 'c', label: 'C', text: '大约 7 万年' },
+        { id: 'd', label: 'D', text: '百万年' }
+      ],
+      correctOptionId: 'c',
+      rationale: '包含62种字符的8位密码产生218万亿组合，按照上述速度计算破解大约需要7万年。'
+    },
+    {
+      id: 'q8',
+      text: '为什么各大系统的安全策略强烈建议你使用不但长，而且包含大小写、数字和特殊符号(@/#)组成的密码？',
+      category: '安全基础',
+      options: [
+        { id: 'a', label: 'A', text: '因为长密码在输入时比较有节奏感' },
+        { id: 'b', label: 'B', text: '因为这样做相当于给黑客的破解程序出了一道几乎解不开的数学难题' },
+        { id: 'c', label: 'C', text: '只有长密码才能兼容新的网卡驱动' },
+        { id: 'd', label: 'D', text: '这会增加本地电脑网页的浏览速度' }
+      ],
+      correctOptionId: 'b',
+      rationale: '增加字符种类和长度能呈指数级膨胀组合数量，从而把破解时间拉长到百万年甚至更长，保护网络安全。'
+    },
+    {
+      id: 'q9',
+      text: '从本文阅读中可以总结，"暴力破解密码"能否成功拦截，其在数学上考验的主要因素是？',
+      category: '逻辑推理',
+      options: [
+        { id: 'a', label: 'A', text: '加法与减法的快速运用' },
+        { id: 'b', label: 'B', text: '空间几何图形的解析' },
+        { id: 'c', label: 'C', text: '不同字符池与密码长度带来的排列组合的巨大基数' },
+        { id: 'd', label: 'D', text: '高级微积分运算的复杂度' }
+      ],
+      correctOptionId: 'c',
+      rationale: '破解时间取决于密码备选元素的广度及长度，即高中数学中的排列及乘法原理带来的庞大组合数。'
+    },
+    {
+      id: 'q10',
+      text: '【案例探究】如果张三的身份证信息被不慎泄露，且他习惯只使用"纯数字+姓名字母"来设置密码。那么针对张三这种特定的人，黑客极大概率会用什么信息做成字典，让那几万年的破解时间缩短到几分钟？',
+      category: '案例分析',
+      options: [
+        { id: 'a', label: 'A', text: '他在游戏中获取的高级装备名称' },
+        { id: 'b', label: 'B', text: '毫无逻辑且不重复的完全随机乱码' },
+        { id: 'c', label: 'C', text: '张三的出生年月日、手机号码末位以及他名字的拼音首字母缩写' },
+        { id: 'd', label: 'D', text: '世界著名密码学家的生平事迹' }
+      ],
+      correctOptionId: 'c',
+      rationale: '黑客对于信息泄露者会进行定向社工爆破，常将其生日、姓名拼音等直接信息优先纳入字典进行测算尝试，使得破解防线迅速瓦解。'
+    }
+  ]
+};
+
 export const ASSESSMENTS: Record<string, Assessment> = {
   '1': SAMPLE_ASSESSMENT,
-  '2': SAMPLE_ASSESSMENT_2
+  '2': SAMPLE_ASSESSMENT_2,
+  '3': SAMPLE_ASSESSMENT_3
 };

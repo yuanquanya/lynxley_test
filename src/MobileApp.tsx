@@ -2,7 +2,7 @@
  * Mobile App - 手机端 UI
  */
 
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, JSXElementConstructor, Key, ReactElement, ReactPortal } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowLeft,
@@ -21,6 +21,9 @@ import {
   Calendar,
   ChevronRight,
   Trash2,
+  Play,
+  Video,
+  Lock,
 } from 'lucide-react';
 import { LIBRARY_ITEMS } from './constants';
 import { Category, HistoryRecord, UserResult } from './types';
@@ -45,7 +48,7 @@ export default function MobileApp(props: SharedAppProps) {
     <div className="min-h-screen bg-surface selection:bg-primary-fixed selection:text-primary max-w-screen-md mx-auto relative">
       <AnimatePresence mode="wait">
         {view === 'library' && (
-          <LibraryView key="library" onStart={onStartAssessment} onGoReports={() => setView('reports')} showToast={showToast} />
+          <LibraryView key="library" onStart={onStartAssessment} onGoReports={() => setView('reports')} onGoLearning={() => setView('learning')} showToast={showToast} />
         )}
         {view === 'assessment' && (
           <AssessmentView
@@ -72,6 +75,7 @@ export default function MobileApp(props: SharedAppProps) {
             currentAssessment={currentAssessment}
             onBack={onGoLibrary}
             onGoReports={() => setView('reports')}
+            onGoLearning={() => setView('learning')}
             isFromHistory={!!selectedHistoryRecord}
             showToast={showToast}
           />
@@ -84,6 +88,15 @@ export default function MobileApp(props: SharedAppProps) {
             onViewRecord={onViewHistoryRecord}
             onDelete={onDeleteRecord}
             showConfirm={showConfirm}
+            onGoLearning={() => setView('learning')}
+          />
+        )}
+        {view === 'learning' && (
+          <LearningView
+            key="learning"
+            onGoLibrary={onGoLibrary}
+            onGoReports={() => setView('reports')}
+            showToast={showToast}
           />
         )}
       </AnimatePresence>
@@ -93,28 +106,36 @@ export default function MobileApp(props: SharedAppProps) {
 
 /* ───────────────────────── Bottom Tab Bar ───────────────────────── */
 
-function BottomTabBar({ active, onTabChange }: { active: 'library' | 'reports'; onTabChange?: (tab: 'library' | 'reports') => void }) {
+function BottomTabBar({ active, onTabChange }: { active: 'library' | 'learning' | 'reports'; onTabChange?: (tab: 'library' | 'learning' | 'reports') => void }) {
   return (
     <nav className="fixed bottom-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md rounded-t-3xl" style={{ boxShadow: '0 -10px 30px rgba(13,28,46,0.04)' }}>
       <div className="flex justify-around items-center px-4 pt-3 pb-8 safe-bottom max-w-screen-md mx-auto">
         <button
           onClick={() => onTabChange?.('library')}
-          className={`flex flex-col items-center justify-center rounded-2xl px-5 py-2 transition-all active:scale-95 ${
-            active === 'library'
-              ? 'bg-blue-100 text-blue-800'
-              : 'text-on-surface-variant hover:bg-surface-container-high'
-          }`}
+          className={`flex flex-col items-center justify-center rounded-2xl px-5 py-2 transition-all active:scale-95 ${active === 'library'
+            ? 'bg-blue-100 text-blue-800'
+            : 'text-on-surface-variant hover:bg-surface-container-high'
+            }`}
         >
           <BookOpen size={22} />
           <span className="text-[11px] font-medium tracking-wide uppercase mt-1">题库</span>
         </button>
         <button
+          onClick={() => onTabChange?.('learning')}
+          className={`flex flex-col items-center justify-center rounded-2xl px-5 py-2 transition-all active:scale-95 ${active === 'learning'
+            ? 'bg-blue-100 text-blue-800'
+            : 'text-on-surface-variant hover:bg-surface-container-high'
+            }`}
+        >
+          <Video size={22} />
+          <span className="text-[11px] font-medium tracking-wide uppercase mt-1">学习</span>
+        </button>
+        <button
           onClick={() => onTabChange?.('reports')}
-          className={`flex flex-col items-center justify-center rounded-2xl px-5 py-2 transition-all active:scale-95 ${
-            active === 'reports'
-              ? 'bg-blue-100 text-blue-800'
-              : 'text-on-surface-variant hover:bg-surface-container-high'
-          }`}
+          className={`flex flex-col items-center justify-center rounded-2xl px-5 py-2 transition-all active:scale-95 ${active === 'reports'
+            ? 'bg-blue-100 text-blue-800'
+            : 'text-on-surface-variant hover:bg-surface-container-high'
+            }`}
         >
           <TrendingUp size={22} />
           <span className="text-[11px] font-medium tracking-wide uppercase mt-1">报告</span>
@@ -159,7 +180,7 @@ function TopAppBar({
 
 /* ───────────────────────── Library View ───────────────────────── */
 
-function LibraryView({ onStart, onGoReports, showToast }: { onStart: (item: any) => void; onGoReports: () => void; showToast: (msg: string) => void }) {
+function LibraryView({ onStart, onGoReports, onGoLearning, showToast }: { onStart: (item: any) => void; onGoReports: () => void; onGoLearning: () => void; showToast: (msg: string) => void }) {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
@@ -217,7 +238,7 @@ function LibraryView({ onStart, onGoReports, showToast }: { onStart: (item: any)
         </div>
       </main>
 
-      <BottomTabBar active="library" onTabChange={(tab) => { if (tab === 'reports') onGoReports(); }} />
+      <BottomTabBar active="library" onTabChange={(tab) => { if (tab === 'reports') onGoReports(); if (tab === 'learning') onGoLearning(); }} />
     </motion.div>
   );
 }
@@ -237,6 +258,7 @@ function AssessmentView({
   setMarkedQuestions,
   currentAssessment,
   showToast,
+  showConfirm,
 }: {
   onFinish: () => void;
   onGoLibrary: () => void;
@@ -299,17 +321,15 @@ function AssessmentView({
         <div className="flex px-5 gap-2 pb-3">
           <button
             onClick={() => setActiveTab('reading')}
-            className={`flex-1 py-2.5 rounded-2xl text-sm font-bold transition-all ${
-              activeTab === 'reading' ? 'bg-primary-fixed text-primary' : 'bg-surface-container-high/50 text-on-surface-variant'
-            }`}
+            className={`flex-1 py-2.5 rounded-2xl text-sm font-bold transition-all ${activeTab === 'reading' ? 'bg-primary-fixed text-primary' : 'bg-surface-container-high/50 text-on-surface-variant'
+              }`}
           >
             阅读材料
           </button>
           <button
             onClick={() => setActiveTab('questions')}
-            className={`flex-1 py-2.5 rounded-2xl text-sm font-bold transition-all ${
-              activeTab === 'questions' ? 'bg-primary-fixed text-primary' : 'bg-surface-container-high/50 text-on-surface-variant'
-            }`}
+            className={`flex-1 py-2.5 rounded-2xl text-sm font-bold transition-all ${activeTab === 'questions' ? 'bg-primary-fixed text-primary' : 'bg-surface-container-high/50 text-on-surface-variant'
+              }`}
           >
             题目
           </button>
@@ -334,7 +354,9 @@ function AssessmentView({
                     </figcaption>
                   </figure>
                   <article className="space-y-6 text-on-surface leading-relaxed text-base font-normal">
-                    {currentAssessment.readingMaterial.content?.map((p, i) => <p key={i}>{p}</p>)}
+                    {currentAssessment.readingMaterial.content?.map((p: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined, i: Key | null | undefined) => {
+                      return <p key={i}>{p}</p>;
+                    })}
                     {currentAssessment.readingMaterial.quote && (
                       <div className="p-6 bg-surface-container-low rounded-3xl italic text-on-surface border-l-4 border-primary">
                         "{currentAssessment.readingMaterial.quote}"
@@ -353,24 +375,22 @@ function AssessmentView({
                 {question.text}
               </h3>
               <div className="space-y-3">
-                {question.options.map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => setAnswers({ ...answers, [question.id]: option.id })}
-                    className={`w-full p-5 rounded-2xl transition-all text-left flex items-center gap-4 active:scale-[0.98] ${
-                      answers[question.id] === option.id
+                {question.options.map(function (option: { id: Key | null | undefined; label: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; text: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }) {
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => setAnswers({ ...answers, [question.id]: option.id })}
+                      className={`w-full p-5 rounded-2xl transition-all text-left flex items-center gap-4 active:scale-[0.98] ${answers[question.id] === option.id
                         ? 'bg-primary-fixed border-2 border-primary shadow-sm'
-                        : 'bg-surface-container-low border-2 border-transparent'
-                    }`}
-                  >
-                    <span className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold text-base shrink-0 ${
-                      answers[question.id] === option.id ? 'bg-primary text-white' : 'bg-surface-container-high text-primary'
-                    }`}>{option.label}</span>
-                    <span className={`text-base font-medium ${answers[question.id] === option.id ? 'text-on-surface' : 'text-on-surface-variant'}`}>
-                      {option.text}
-                    </span>
-                  </button>
-                ))}
+                        : 'bg-surface-container-low border-2 border-transparent'}`}
+                    >
+                      <span className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold text-base shrink-0 ${answers[question.id] === option.id ? 'bg-primary text-white' : 'bg-surface-container-high text-primary'}`}>{option.label}</span>
+                      <span className={`text-base font-medium ${answers[question.id] === option.id ? 'text-on-surface' : 'text-on-surface-variant'}`}>
+                        {option.text}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
               <div className="flex items-center justify-between pt-8">
                 <button
@@ -410,13 +430,12 @@ function AssessmentView({
                   <button
                     key={q.id}
                     onClick={() => { setCurrentQuestionIndex(idx); setActiveTab('questions'); setShowQuestionMap(false); }}
-                    className={`w-10 h-10 flex flex-col items-center justify-center rounded-xl font-bold text-xs transition-all relative overflow-hidden ${
-                      idx === currentQuestionIndex
-                        ? 'bg-primary text-white ring-3 ring-primary-fixed shadow-md'
-                        : markedQuestions[q.id] ? 'bg-secondary-container/20 text-secondary border border-secondary'
+                    className={`w-10 h-10 flex flex-col items-center justify-center rounded-xl font-bold text-xs transition-all relative overflow-hidden ${idx === currentQuestionIndex
+                      ? 'bg-primary text-white ring-3 ring-primary-fixed shadow-md'
+                      : markedQuestions[q.id] ? 'bg-secondary-container/20 text-secondary border border-secondary'
                         : answers[q.id] ? 'bg-surface-container-high text-on-surface-variant'
-                        : 'bg-surface-container-low text-on-surface-variant'
-                    }`}
+                          : 'bg-surface-container-low text-on-surface-variant'
+                      }`}
                   >
                     <span>{idx + 1}</span>
                     {markedQuestions[q.id] && idx !== currentQuestionIndex && <div className="absolute top-0 right-0 w-2 h-2 bg-secondary rounded-bl-sm"></div>}
@@ -456,7 +475,7 @@ function AssessmentView({
 
 /* ───────────────────────── Results View ───────────────────────── */
 
-function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHistory, showToast }: { result: UserResult; currentAssessment: any; onBack: () => void; onGoReports: () => void; isFromHistory: boolean; showToast: (msg: string) => void }) {
+function ResultsView({ result, currentAssessment, onBack, onGoReports, onGoLearning, isFromHistory, showToast }: { result: UserResult; currentAssessment: any; onBack: () => void; onGoReports: () => void; onGoLearning?: () => void; isFromHistory: boolean; showToast: (msg: string) => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
       <TopAppBar title="测验结果" onBack={isFromHistory ? onGoReports : undefined} />
@@ -571,14 +590,14 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHis
         </div>
       </main>
 
-      <BottomTabBar active="reports" onTabChange={(tab) => { if (tab === 'library') onBack(); if (tab === 'reports') onGoReports(); }} />
+      <BottomTabBar active="reports" onTabChange={(tab) => { if (tab === 'library') onBack(); if (tab === 'learning') onGoLearning?.(); }} />
     </motion.div>
   );
 }
 
 /* ───────────────────────── Reports View ───────────────────────── */
 
-function ReportsView({ history, onBack, onViewRecord, onDelete, showConfirm }: { history: HistoryRecord[]; onBack: () => void; onViewRecord: (r: HistoryRecord) => void; onDelete: (id: string) => void; showConfirm: (msg: string, cb: () => void) => void }) {
+function ReportsView({ history, onBack, onViewRecord, onDelete, showConfirm, onGoLearning }: { history: HistoryRecord[]; onBack: () => void; onViewRecord: (r: HistoryRecord) => void; onDelete: (id: string) => void; showConfirm: (msg: string, cb: () => void) => void; onGoLearning?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
       <TopAppBar title="Lynxley_test" />
@@ -651,7 +670,94 @@ function ReportsView({ history, onBack, onViewRecord, onDelete, showConfirm }: {
         )}
       </main>
 
-      <BottomTabBar active="reports" onTabChange={(tab) => { if (tab === 'library') onBack(); }} />
+      <BottomTabBar active="reports" onTabChange={(tab) => { if (tab === 'library') onBack(); if (tab === 'learning') onGoLearning?.(); }} />
     </motion.div>
   );
+}
+
+/* ───────────────────────── Learning View ───────────────────────── */
+
+const VIDEO_PLACEHOLDERS = [
+  { id: 1, title: '第一个操作题演示', subtitle: '操作题 01', duration: '12:30', gradient: 'from-blue-500 to-indigo-600' },
+  { id: 2, title: '第二个操作题演示', subtitle: '操作题 02', duration: '18:45', gradient: 'from-violet-500 to-purple-600' },
+  { id: 3, title: '第三个操作题演示', subtitle: '操作题 03', duration: '15:20', gradient: 'from-cyan-500 to-blue-600' },
+  { id: 4, title: '第四个操作题演示', subtitle: '操作题 04', duration: '22:10', gradient: 'from-emerald-500 to-teal-600' },
+  { id: 5, title: '第五个操作题演示', subtitle: '操作题 05', duration: '19:55', gradient: 'from-amber-500 to-orange-600' },
+  { id: 6, title: '第六个操作题演示', subtitle: '操作题 06', duration: '25:00', gradient: 'from-rose-500 to-pink-600' },
+  { id: 7, title: '第七个操作题演示', subtitle: '操作题 07', duration: '20:35', gradient: 'from-fuchsia-500 to-violet-600' },
+  { id: 8, title: '第八个操作题演示', subtitle: '操作题 08', duration: '28:15', gradient: 'from-sky-500 to-cyan-600' },
+];
+
+function LearningView({ onGoLibrary, onGoReports, showToast }: { onGoLibrary: () => void; onGoReports: () => void; showToast: (msg: string) => void }) {
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
+      <TopAppBar title="Lynxley_test" />
+
+      <main className="pt-16 pb-28 px-5">
+        <div className="mb-8">
+          <span className="text-[11px] font-medium tracking-[0.1em] uppercase text-on-surface-variant/60">视频课程</span>
+          <h2 className="font-headline text-4xl font-extrabold text-on-surface mt-2 tracking-tight">学习中心</h2>
+          <p className="text-on-surface-variant text-sm mt-2 leading-relaxed">精选教学视频，助你系统掌握核心知识点</p>
+        </div>
+
+        <div className="space-y-4">
+          {VIDEO_PLACEHOLDERS.map((video, idx) => (
+            <motion.div
+              key={video.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.06 }}
+              className="bg-surface-container-lowest rounded-3xl overflow-hidden card-shadow border border-outline-variant/10 transition-all duration-300"
+            >
+              <button
+                onClick={() => showToast('视频功能即将上线，敬请期待！')}
+                className="w-full text-left active:scale-[0.98] transition-transform"
+              >
+                {/* Video Thumbnail */}
+                <div className={`relative w-full h-40 bg-gradient-to-br ${video.gradient} flex items-center justify-center`}>
+                  <div className="absolute inset-0 bg-black/10" />
+                  {/* Play button */}
+                  <div className="relative z-10 w-14 h-14 bg-white/25 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-white/40 shadow-lg">
+                    <Play size={24} className="text-white ml-1" fill="white" />
+                  </div>
+                  {/* Duration badge */}
+                  <span className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">
+                    {video.duration}
+                  </span>
+                  {/* Coming soon badge for locked videos */}
+                  {video.id > 2 && (
+                    <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                      <Lock size={10} />
+                      即将上线
+                    </div>
+                  )}
+                </div>
+                {/* Video Info */}
+                <div className="p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[10px] font-bold tracking-widest uppercase text-primary bg-primary-fixed px-2.5 py-0.5 rounded-md">
+                      {video.subtitle}
+                    </span>
+                  </div>
+                  <h3 className="font-headline text-lg font-bold text-on-surface leading-snug">
+                    {video.title}
+                  </h3>
+                </div>
+              </button>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="text-center pt-8 pb-4">
+          <p className="text-on-surface-variant/40 text-sm italic">更多课程正在制作中…</p>
+        </div>
+      </main>
+
+      <BottomTabBar active="learning" onTabChange={(tab) => { if (tab === 'library') onGoLibrary(); if (tab === 'reports') onGoReports(); }} />
+    </motion.div>
+  );
+}
+
+function showConfirm(arg0: string, arg1: () => void) {
+  throw new Error('Function not implemented.');
 }

@@ -6,7 +6,6 @@ import { useState, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Library,
-  FileText,
   BarChart3,
   Search,
   Bell,
@@ -28,6 +27,9 @@ import {
   Calendar,
   ChevronRight,
   Trash2,
+  Play,
+  Video,
+  Lock,
 } from 'lucide-react';
 import { LIBRARY_ITEMS } from './constants';
 import { Category, HistoryRecord, UserResult } from './types';
@@ -50,7 +52,7 @@ export default function DesktopApp(props: SharedAppProps) {
     <div className="min-h-screen bg-surface selection:bg-primary-fixed selection:text-primary">
       <AnimatePresence mode="wait">
         {view === 'library' && (
-          <LibraryView key="library" onStart={onStartAssessment} onGoReports={() => setView('reports')} showToast={showToast} />
+          <LibraryView key="library" onStart={onStartAssessment} onGoReports={() => setView('reports')} onGoLearning={() => setView('learning')} showToast={showToast} />
         )}
         {view === 'assessment' && (
           <AssessmentView
@@ -67,6 +69,7 @@ export default function DesktopApp(props: SharedAppProps) {
             markedQuestions={markedQuestions}
             setMarkedQuestions={setMarkedQuestions}
             showToast={showToast}
+            showConfirm={showConfirm}
           />
         )}
         {view === 'results' && (
@@ -88,6 +91,16 @@ export default function DesktopApp(props: SharedAppProps) {
             onViewRecord={onViewHistoryRecord}
             onDelete={onDeleteRecord}
             showConfirm={showConfirm}
+            showToast={showToast}
+            onGoLearning={() => setView('learning')}
+          />
+        )}
+        {view === 'learning' && (
+          <LearningView
+            key="learning"
+            onGoLibrary={onGoLibrary}
+            onGoReports={() => setView('reports')}
+            showToast={showToast}
           />
         )}
       </AnimatePresence>
@@ -97,7 +110,7 @@ export default function DesktopApp(props: SharedAppProps) {
 
 /* ───────────────── Header ───────────────── */
 
-function AppHeader({ activeNav, onGoLibrary, onGoReports, showToast }: { activeNav: string; onGoLibrary?: () => void; onGoReports?: () => void; showToast?: (msg: string) => void }) {
+function AppHeader({ activeNav, onGoLibrary, onGoReports, onGoLearning, showToast }: { activeNav: string; onGoLibrary?: () => void; onGoReports?: () => void; onGoLearning?: () => void; showToast?: (msg: string) => void }) {
   return (
     <header className="glass-header border-b border-outline-variant/10">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -105,8 +118,8 @@ function AppHeader({ activeNav, onGoLibrary, onGoReports, showToast }: { activeN
           Lynxley_test
         </div>
         <nav className="hidden md:flex items-center space-x-10">
-          <NavLink icon={<FileText size={18} />} label="我的测验" onClick={() => showToast?.('你知道吗，点击 我的测验 这个按钮可以浪费你整整1秒钟。。')} />
           <NavLink icon={<Library size={18} />} label="题库" active={activeNav === 'library'} onClick={onGoLibrary} />
+          <NavLink icon={<Video size={18} />} label="学习" active={activeNav === 'learning'} onClick={onGoLearning} />
           <NavLink icon={<BarChart3 size={18} />} label="报告" active={activeNav === 'reports'} onClick={onGoReports} />
         </nav>
         <div className="flex items-center space-x-4">
@@ -123,11 +136,11 @@ function AppHeader({ activeNav, onGoLibrary, onGoReports, showToast }: { activeN
 
 /* ───────────────── Library View ───────────────── */
 
-function LibraryView({ onStart, onGoReports, showToast }: { onStart: (item: any) => void; onGoReports: () => void; showToast?: (msg: string) => void }) {
+function LibraryView({ onStart, onGoReports, onGoLearning, showToast }: { onStart: (item: any) => void; onGoReports: () => void; onGoLearning: () => void; showToast?: (msg: string) => void }) {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
-      <AppHeader activeNav="library" onGoReports={onGoReports} showToast={showToast} />
+      <AppHeader activeNav="library" onGoReports={onGoReports} onGoLearning={onGoLearning} showToast={showToast} />
 
       <main className="flex-grow max-w-7xl mx-auto px-6 py-16 w-full">
         <section className="mb-16">
@@ -185,7 +198,7 @@ function AssessmentView({
   currentQuestionIndex, setCurrentQuestionIndex,
   answers, setAnswers,
   timerDisplay, timerIsLow,
-  markedQuestions, setMarkedQuestions, showToast,
+  markedQuestions, setMarkedQuestions, showToast, showConfirm,
 }: {
   currentAssessment: any;
   onFinish: () => void;
@@ -199,6 +212,7 @@ function AssessmentView({
   markedQuestions: Record<string, boolean>;
   setMarkedQuestions: (mq: Record<string, boolean>) => void;
   showToast: (msg: string) => void;
+  showConfirm: (msg: string, cb: () => void) => void;
 }) {
   const question = currentAssessment.questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / currentAssessment.questions.length) * 100;
@@ -209,11 +223,18 @@ function AssessmentView({
       [question.id]: !markedQuestions[question.id]
     });
   };
+  
+  const handleBack = () => {
+    showConfirm('确认退出测验吗？目前的进度将会丢失。', () => onGoLibrary());
+  };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col h-screen overflow-hidden">
       <nav className="glass-header border-b border-outline-variant/10 flex justify-between items-center px-8 h-20 shrink-0">
         <div className="flex items-center gap-6">
+          <button onClick={handleBack} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-high transition-colors text-primary mr-2">
+            <ArrowLeft size={24} />
+          </button>
           <span className="text-xl font-black text-on-surface font-headline tracking-tighter">专业评估</span>
           <div className="h-8 w-px bg-outline-variant/30"></div>
           <span className="text-on-surface-variant font-bold tracking-tight">{currentAssessment.title}</span>
@@ -478,10 +499,10 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHis
 
 /* ───────────────── Reports View ───────────────── */
 
-function ReportsView({ history, onBack, onViewRecord, onDelete, showConfirm }: { history: HistoryRecord[]; onBack: () => void; onViewRecord: (r: HistoryRecord) => void; onDelete: (id: string) => void; showConfirm: (msg: string, cb: () => void) => void }) {
+function ReportsView({ history, onBack, onViewRecord, onDelete, showConfirm, showToast, onGoLearning }: { history: HistoryRecord[]; onBack: () => void; onViewRecord: (r: HistoryRecord) => void; onDelete: (id: string) => void; showConfirm: (msg: string, cb: () => void) => void; showToast?: (msg: string) => void; onGoLearning?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
-      <AppHeader activeNav="reports" onGoLibrary={onBack} />
+      <AppHeader activeNav="reports" onGoLibrary={onBack} onGoLearning={onGoLearning} showToast={showToast} />
 
       <main className="max-w-5xl mx-auto px-6 py-16 w-full">
         <section className="mb-16">
@@ -570,5 +591,87 @@ function IconButton({ icon, onClick }: { icon: ReactNode; onClick?: () => void }
     <button onClick={onClick} className="p-2.5 hover:bg-surface-container-low rounded-full text-on-surface-variant hover:text-primary transition-all active:scale-95">
       {icon}
     </button>
+  );
+}
+
+/* ───────────────── Learning View ───────────────── */
+
+const VIDEO_PLACEHOLDERS = [
+  { id: 1, title: '第一个操作题演示', subtitle: '操作题 01', duration: '12:30', gradient: 'from-blue-500 to-indigo-600' },
+  { id: 2, title: '第二个操作题演示', subtitle: '操作题 02', duration: '18:45', gradient: 'from-violet-500 to-purple-600' },
+  { id: 3, title: '第三个操作题演示', subtitle: '操作题 03', duration: '15:20', gradient: 'from-cyan-500 to-blue-600' },
+  { id: 4, title: '第四个操作题演示', subtitle: '操作题 04', duration: '22:10', gradient: 'from-emerald-500 to-teal-600' },
+  { id: 5, title: '第五个操作题演示', subtitle: '操作题 05', duration: '19:55', gradient: 'from-amber-500 to-orange-600' },
+  { id: 6, title: '第六个操作题演示', subtitle: '操作题 06', duration: '25:00', gradient: 'from-rose-500 to-pink-600' },
+  { id: 7, title: '第七个操作题演示', subtitle: '操作题 07', duration: '20:35', gradient: 'from-fuchsia-500 to-violet-600' },
+  { id: 8, title: '第八个操作题演示', subtitle: '操作题 08', duration: '28:15', gradient: 'from-sky-500 to-cyan-600' },
+];
+
+function LearningView({ onGoLibrary, onGoReports, showToast }: { onGoLibrary: () => void; onGoReports: () => void; showToast?: (msg: string) => void }) {
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
+      <AppHeader activeNav="learning" onGoLibrary={onGoLibrary} onGoReports={onGoReports} onGoLearning={() => {}} showToast={showToast} />
+
+      <main className="flex-grow max-w-7xl mx-auto px-6 py-16 w-full">
+        <section className="mb-16">
+          <h1 className="text-6xl font-extrabold font-headline text-on-surface mb-6 tracking-tighter">学习中心</h1>
+          <p className="text-on-surface-variant text-xl max-w-2xl leading-relaxed font-medium">
+            精选教学视频课程，帮助你系统掌握核心知识点，为测验做好充分准备。
+          </p>
+        </section>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {VIDEO_PLACEHOLDERS.map((video, idx) => (
+            <motion.div
+              key={video.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.08 }}
+              className="bg-surface-container-lowest rounded-3xl overflow-hidden ambient-shadow border border-outline-variant/5 hover:-translate-y-2 transition-transform duration-300 group cursor-pointer"
+              onClick={() => showToast?.('视频功能即将上线，敬请期待！')}
+            >
+              {/* Video Thumbnail */}
+              <div className={`relative w-full h-48 bg-gradient-to-br ${video.gradient} flex items-center justify-center overflow-hidden`}>
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors" />
+                {/* Play button */}
+                <div className="relative z-10 w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-white/30 shadow-xl group-hover:scale-110 transition-transform">
+                  <Play size={28} className="text-white ml-1" fill="white" />
+                </div>
+                {/* Duration badge */}
+                <span className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-xl">
+                  {video.duration}
+                </span>
+                {/* Coming soon badge */}
+                {video.id > 2 && (
+                  <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+                    <Lock size={12} />
+                    即将上线
+                  </div>
+                )}
+              </div>
+              {/* Video Info */}
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-[10px] font-black tracking-widest uppercase text-primary bg-primary-fixed px-3 py-1 rounded-lg">
+                    {video.subtitle}
+                  </span>
+                </div>
+                <h3 className="font-headline text-xl font-bold text-on-surface leading-snug group-hover:text-primary transition-colors">
+                  {video.title}
+                </h3>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-20 flex justify-center">
+          <p className="text-on-surface-variant/40 text-sm italic">更多课程正在制作中…</p>
+        </div>
+      </main>
+
+      <footer className="py-12 border-t border-outline-variant/10 text-center bg-white/50">
+        <p className="text-xs font-bold text-on-surface-variant tracking-widest uppercase">© 2024 Lynxley_test 版权所有</p>
+      </footer>
+    </motion.div>
   );
 }

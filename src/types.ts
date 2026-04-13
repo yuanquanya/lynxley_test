@@ -62,4 +62,4 @@ export interface HistoryRecord {
   date: string;
 }
 
-export type ViewType = 'library' | 'assessment' | 'results' | 'reports';
+export type ViewType = 'library' | 'assessment' | 'results' | 'reports' | 'learning';
