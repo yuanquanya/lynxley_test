@@ -20,6 +20,7 @@ export interface AuthUser {
   id: number;
   username: string;
   displayName: string;
+  avatar?: string;
   isGuest?: boolean;
 }
 
@@ -54,7 +55,7 @@ export async function login(
     try {
       const { data, error } = await supabase
         .from('users')
-        .select('id, username, display_name')
+        .select('id, username, display_name, avatar')
         .eq('username', username)
         .eq('password', password)
         .single();
@@ -67,6 +68,7 @@ export async function login(
         id: data.id,
         username: data.username,
         displayName: data.display_name || data.username,
+        avatar: data.avatar || undefined,
       };
       saveUser(user);
       return { success: true, user };
@@ -104,6 +106,46 @@ export function logout() {
 /** 检查登录状态 */
 export async function checkAuth(): Promise<AuthUser | null> {
   return getSavedUser();
+}
+
+/** 更新用户资料 */
+export async function updateUserProfile(userId: number, updates: { displayName?: string; password?: string; avatar?: string }): Promise<{ success: boolean; error?: string }> {
+  if (!isSupabaseConfigured) {
+    // 仅本地模式下的更新（修改本地存储）
+    const user = getSavedUser();
+    if (user && user.id === userId) {
+      if (updates.displayName) user.displayName = updates.displayName;
+      if (updates.avatar) user.avatar = updates.avatar;
+      saveUser(user);
+      return { success: true };
+    }
+    return { success: false, error: '未找到用户信息' };
+  }
+
+  try {
+    const dbUpdates: any = {};
+    if (updates.displayName !== undefined) dbUpdates.display_name = updates.displayName;
+    if (updates.password !== undefined && updates.password.trim() !== '') dbUpdates.password = updates.password;
+    if (updates.avatar !== undefined) dbUpdates.avatar = updates.avatar;
+
+    const { error } = await supabase
+      .from('users')
+      .update(dbUpdates)
+      .eq('id', userId);
+
+    if (error) throw error;
+
+    // 同步更新本地缓存
+    const user = getSavedUser();
+    if (user && user.id === userId) {
+      if (updates.displayName) user.displayName = updates.displayName;
+      if (updates.avatar !== undefined) user.avatar = updates.avatar;
+      saveUser(user);
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || '更新失败' };
+  }
 }
 
 // ── localStorage 历史记录 ──────────────────────────────────

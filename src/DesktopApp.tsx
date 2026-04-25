@@ -47,14 +47,14 @@ export default function DesktopApp(props: SharedAppProps) {
     onStartAssessment, onFinishAssessment,
     onViewHistoryRecord, onDeleteRecord, onGoLibrary,
     markedQuestions, setMarkedQuestions, showToast, showConfirm,
-    currentUser, onLogout,
+    currentUser, onLogout, onOpenProfile,
   } = props;
 
   return (
     <div className="min-h-screen bg-surface selection:bg-primary-fixed selection:text-primary">
       <AnimatePresence mode="wait">
         {view === 'library' && (
-          <LibraryView key="library" onStart={onStartAssessment} onGoReports={() => setView('reports')} onGoLearning={() => setView('learning')} showToast={showToast} currentUser={currentUser} onLogout={onLogout} />
+          <LibraryView key="library" onStart={onStartAssessment} onGoReports={() => setView('reports')} onGoLearning={() => setView('learning')} showToast={showToast} currentUser={currentUser} onLogout={onLogout} onOpenProfile={onOpenProfile} />
         )}
         {view === 'assessment' && (
           <AssessmentView
@@ -99,6 +99,7 @@ export default function DesktopApp(props: SharedAppProps) {
             onGoLearning={() => setView('learning')}
             currentUser={currentUser}
             onLogout={onLogout}
+            onOpenProfile={onOpenProfile}
           />
         )}
         {view === 'learning' && (
@@ -109,6 +110,7 @@ export default function DesktopApp(props: SharedAppProps) {
             showToast={showToast}
             currentUser={currentUser}
             onLogout={onLogout}
+            onOpenProfile={onOpenProfile}
           />
         )}
       </AnimatePresence>
@@ -118,7 +120,7 @@ export default function DesktopApp(props: SharedAppProps) {
 
 /* ───────────────── Header ───────────────── */
 
-function AppHeader({ activeNav, onGoLibrary, onGoReports, onGoLearning, showToast, currentUser, onLogout }: { activeNav: string; onGoLibrary?: () => void; onGoReports?: () => void; onGoLearning?: () => void; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
+function AppHeader({ activeNav, onGoLibrary, onGoReports, onGoLearning, showToast, currentUser, onLogout, onOpenProfile }: { activeNav: string; onGoLibrary?: () => void; onGoReports?: () => void; onGoLearning?: () => void; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
   return (
     <header className="glass-header border-b border-outline-variant/10">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -136,8 +138,12 @@ function AppHeader({ activeNav, onGoLibrary, onGoReports, onGoLearning, showToas
           {currentUser ? (
             <div className="relative group">
               <button className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-surface-container-highest border border-outline-variant/20 hover:bg-surface-variant transition-colors">
-                <div className="w-7 h-7 rounded-full signature-gradient flex items-center justify-center">
-                  <span className="text-white text-xs font-black">{currentUser.displayName.charAt(0).toUpperCase()}</span>
+                <div className="w-7 h-7 rounded-full signature-gradient flex items-center justify-center overflow-hidden border border-outline-variant/20">
+                  {currentUser.avatar ? (
+                    <img src={currentUser.avatar} alt="Avatar" className="w-full h-full object-cover bg-white" />
+                  ) : (
+                    <span className="text-white text-xs font-black">{currentUser.displayName.charAt(0).toUpperCase()}</span>
+                  )}
                 </div>
                 <span className="text-sm font-bold text-on-surface hidden lg:block max-w-[100px] truncate">{currentUser.displayName}</span>
               </button>
@@ -146,6 +152,10 @@ function AppHeader({ activeNav, onGoLibrary, onGoReports, onGoLearning, showToas
                   <p className="text-xs font-bold text-on-surface truncate">{currentUser.displayName}</p>
                   <p className="text-[10px] text-on-surface-variant truncate">@{currentUser.username}</p>
                 </div>
+                <button onClick={onOpenProfile} className="w-full px-4 py-3 text-left text-sm font-bold text-on-surface hover:bg-surface-container-highest transition-colors flex items-center gap-3">
+                  <User size={14} />
+                  编辑资料
+                </button>
                 <button onClick={onLogout} className="w-full px-4 py-3 text-left text-sm font-bold text-error hover:bg-error/5 transition-colors flex items-center gap-3">
                   <Settings size={14} />
                   退出登录
@@ -165,11 +175,11 @@ function AppHeader({ activeNav, onGoLibrary, onGoReports, onGoLearning, showToas
 
 /* ───────────────── Library View ───────────────── */
 
-function LibraryView({ onStart, onGoReports, onGoLearning, showToast, currentUser, onLogout }: { onStart: (item: any) => void; onGoReports: () => void; onGoLearning: () => void; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
+function LibraryView({ onStart, onGoReports, onGoLearning, showToast, currentUser, onLogout, onOpenProfile }: { onStart: (item: any) => void; onGoReports: () => void; onGoLearning: () => void; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
-      <AppHeader activeNav="library" onGoReports={onGoReports} onGoLearning={onGoLearning} showToast={showToast} currentUser={currentUser} onLogout={onLogout} />
+      <AppHeader activeNav="library" onGoReports={onGoReports} onGoLearning={onGoLearning} showToast={showToast} currentUser={currentUser} onLogout={onLogout} onOpenProfile={onOpenProfile} />
 
       <main className="flex-grow max-w-7xl mx-auto px-6 py-16 w-full">
         <section className="mb-16">
@@ -407,10 +417,10 @@ function AssessmentView({
 
 /* ───────────────── Results View ───────────────── */
 
-function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHistory, showToast, currentUser, onLogout }: { result: UserResult; currentAssessment: any; onBack: () => void; onGoReports: () => void; isFromHistory: boolean; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
+function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHistory, showToast, currentUser, onLogout, onOpenProfile }: { result: UserResult; currentAssessment: any; onBack: () => void; onGoReports: () => void; isFromHistory: boolean; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
-      <AppHeader activeNav="reports" onGoLibrary={onBack} onGoReports={onGoReports} showToast={showToast} currentUser={currentUser} onLogout={onLogout} />
+      <AppHeader activeNav="reports" onGoLibrary={onBack} onGoReports={onGoReports} showToast={showToast} currentUser={currentUser} onLogout={onLogout} onOpenProfile={onOpenProfile} />
 
       <main className="max-w-6xl mx-auto px-6 py-16 w-full">
         <div className="mb-20">
@@ -564,10 +574,10 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHis
 
 /* ───────────────── Reports View ───────────────── */
 
-function ReportsView({ history, onBack, onViewRecord, onDelete, showConfirm, showToast, onGoLearning, currentUser, onLogout }: { history: HistoryRecord[]; onBack: () => void; onViewRecord: (r: HistoryRecord) => void; onDelete: (id: string) => void; showConfirm: (msg: string, cb: () => void) => void; showToast?: (msg: string) => void; onGoLearning?: () => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
+function ReportsView({ history, onBack, onViewRecord, onDelete, showConfirm, showToast, onGoLearning, currentUser, onLogout, onOpenProfile }: { history: HistoryRecord[]; onBack: () => void; onViewRecord: (r: HistoryRecord) => void; onDelete: (id: string) => void; showConfirm: (msg: string, cb: () => void) => void; showToast?: (msg: string) => void; onGoLearning?: () => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
-      <AppHeader activeNav="reports" onGoLibrary={onBack} onGoLearning={onGoLearning} showToast={showToast} currentUser={currentUser} onLogout={onLogout} />
+      <AppHeader activeNav="reports" onGoLibrary={onBack} onGoLearning={onGoLearning} showToast={showToast} currentUser={currentUser} onLogout={onLogout} onOpenProfile={onOpenProfile} />
 
       <main className="max-w-5xl mx-auto px-6 py-16 w-full">
         <section className="mb-16">
@@ -672,10 +682,10 @@ const VIDEO_PLACEHOLDERS = [
   { id: 8, title: '第八个操作题演示', subtitle: '操作题 08', duration: '28:15', gradient: 'from-sky-500 to-cyan-600' },
 ];
 
-function LearningView({ onGoLibrary, onGoReports, showToast, currentUser, onLogout }: { onGoLibrary: () => void; onGoReports: () => void; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
+function LearningView({ onGoLibrary, onGoReports, showToast, currentUser, onLogout, onOpenProfile }: { onGoLibrary: () => void; onGoReports: () => void; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
-      <AppHeader activeNav="learning" onGoLibrary={onGoLibrary} onGoReports={onGoReports} onGoLearning={() => {}} showToast={showToast} currentUser={currentUser} onLogout={onLogout} />
+      <AppHeader activeNav="learning" onGoLibrary={onGoLibrary} onGoReports={onGoReports} onGoLearning={() => {}} showToast={showToast} currentUser={currentUser} onLogout={onLogout} onOpenProfile={onOpenProfile} />
 
       <main className="flex-grow max-w-7xl mx-auto px-6 py-16 w-full">
         <section className="mb-16">

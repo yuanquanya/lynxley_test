@@ -12,6 +12,7 @@ import { Assessment, AssessmentItem, UserResult, HistoryRecord, ViewType } from 
 import { useTimer } from './useTimer';
 import { fetchHistory, saveHistoryRecord, deleteHistoryRecord, checkAuth, logout as apiLogout, AuthUser } from './api';
 import { AnimatePresence, motion } from 'motion/react';
+import ProfileModal from './ProfileModal';
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -54,6 +55,7 @@ export interface SharedAppProps {
   showConfirm: (msg: string, onConfirm: () => void) => void;
   currentUser: AuthUser | null;
   onLogout: () => void;
+  onOpenProfile: () => void;
 }
 
 export default function App() {
@@ -73,6 +75,7 @@ export default function App() {
   const [markedQuestions, setMarkedQuestions] = useState<Record<string, boolean>>({});
   const [toast, setToast] = useState<string | null>(null);
   const [confirmState, setConfirmState] = useState<{ isOpen: boolean; message: string; onConfirm: () => void } | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   let activeAssessmentId = '1';
   if (view === 'results' && selectedHistoryRecord) {
@@ -251,6 +254,7 @@ export default function App() {
     showConfirm,
     currentUser,
     onLogout: handleLogout,
+    onOpenProfile: () => setIsProfileModalOpen(true),
   };
 
   // 加载中状态
@@ -325,6 +329,14 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        currentUser={currentUser}
+        onProfileUpdate={(user) => setCurrentUser(user)}
+        showToast={showToast}
+      />
     </>
   );
 }
