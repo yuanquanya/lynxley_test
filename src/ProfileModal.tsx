@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Save, Image as ImageIcon, Link2, KeyRound, User } from 'lucide-react';
+import { X, Save, Image as ImageIcon, Link2, KeyRound, User, Upload } from 'lucide-react';
 import type { AuthUser } from './api';
 import { updateUserProfile } from './api';
 
 const DEFAULT_AVATARS = [
-  'https://api.dicebear.com/7.x/adventurer/svg?seed=Felix',
-  'https://api.dicebear.com/7.x/adventurer/svg?seed=Aneka',
-  'https://api.dicebear.com/7.x/adventurer/svg?seed=Mimi',
-  'https://api.dicebear.com/7.x/adventurer/svg?seed=Loki',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=Bot1',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=Bot2',
+  'https://picsum.photos/seed/forest/200/200',
+  'https://picsum.photos/seed/ocean/200/200',
+  'https://picsum.photos/seed/mountain/200/200',
+  'https://picsum.photos/seed/sky/200/200',
+  'https://picsum.photos/seed/river/200/200',
+  'https://picsum.photos/seed/city/200/200',
 ];
 
 interface ProfileModalProps {
@@ -42,6 +42,46 @@ export default function ProfileModal({ isOpen, onClose, currentUser, onProfileUp
       }
     }
   }, [isOpen, currentUser]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 256;
+        const MAX_HEIGHT = 256;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          setCustomAvatarUrl(dataUrl);
+          setActiveTab('custom');
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSave = async () => {
     if (!currentUser) return;
@@ -141,7 +181,7 @@ export default function ProfileModal({ isOpen, onClose, currentUser, onProfileUp
                       onClick={() => setActiveTab('custom')}
                       className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activeTab === 'custom' ? 'bg-white shadow-sm text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}
                     >
-                      自定义链接
+                      本地上传/链接
                     </button>
                   </div>
                   
@@ -160,15 +200,39 @@ export default function ProfileModal({ isOpen, onClose, currentUser, onProfileUp
                   )}
 
                   {activeTab === 'custom' && (
-                    <div className="relative">
-                      <Link2 size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50" />
-                      <input
-                        type="url"
-                        value={customAvatarUrl}
-                        onChange={(e) => setCustomAvatarUrl(e.target.value)}
-                        placeholder="输入图片 URL"
-                        className="w-full pl-9 pr-4 py-3 rounded-xl bg-surface-container-high border border-transparent focus:border-primary focus:bg-white outline-none text-sm font-bold text-on-surface transition-all placeholder:font-medium placeholder:text-on-surface-variant/40"
-                      />
+                    <div className="flex flex-col gap-3">
+                      <div className="relative">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          id="avatar-upload"
+                          className="hidden"
+                          onChange={handleImageUpload}
+                        />
+                        <label
+                          htmlFor="avatar-upload"
+                          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-white text-sm font-bold cursor-pointer hover:bg-primary-fixed hover:text-primary transition-colors shadow-md active:scale-95"
+                        >
+                          <Upload size={16} /> 选择本地图片
+                        </label>
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <div className="h-px bg-outline-variant/20 flex-1"></div>
+                        <span className="text-[10px] text-on-surface-variant/50 font-bold uppercase tracking-widest">或者</span>
+                        <div className="h-px bg-outline-variant/20 flex-1"></div>
+                      </div>
+
+                      <div className="relative">
+                        <Link2 size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50" />
+                        <input
+                          type="url"
+                          value={customAvatarUrl}
+                          onChange={(e) => setCustomAvatarUrl(e.target.value)}
+                          placeholder="输入网络图片 URL"
+                          className="w-full pl-9 pr-4 py-3 rounded-xl bg-surface-container-high border border-transparent focus:border-primary focus:bg-white outline-none text-sm font-bold text-on-surface transition-all placeholder:font-medium placeholder:text-on-surface-variant/40"
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
