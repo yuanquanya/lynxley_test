@@ -83,6 +83,8 @@ export default function DesktopApp(props: SharedAppProps) {
             onGoReports={() => setView('reports')}
             isFromHistory={!!selectedHistoryRecord}
             showToast={showToast}
+            currentUser={currentUser}
+            onLogout={onLogout}
           />
         )}
         {view === 'reports' && (
@@ -95,6 +97,8 @@ export default function DesktopApp(props: SharedAppProps) {
             showConfirm={showConfirm}
             showToast={showToast}
             onGoLearning={() => setView('learning')}
+            currentUser={currentUser}
+            onLogout={onLogout}
           />
         )}
         {view === 'learning' && (
@@ -103,6 +107,8 @@ export default function DesktopApp(props: SharedAppProps) {
             onGoLibrary={onGoLibrary}
             onGoReports={() => setView('reports')}
             showToast={showToast}
+            currentUser={currentUser}
+            onLogout={onLogout}
           />
         )}
       </AnimatePresence>
@@ -381,10 +387,10 @@ function AssessmentView({
 
 /* ───────────────── Results View ───────────────── */
 
-function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHistory, showToast }: { result: UserResult; currentAssessment: any; onBack: () => void; onGoReports: () => void; isFromHistory: boolean; showToast?: (msg: string) => void }) {
+function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHistory, showToast, currentUser, onLogout }: { result: UserResult; currentAssessment: any; onBack: () => void; onGoReports: () => void; isFromHistory: boolean; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
-      <AppHeader activeNav="reports" onGoLibrary={onBack} onGoReports={onGoReports} showToast={showToast} />
+      <AppHeader activeNav="reports" onGoLibrary={onBack} onGoReports={onGoReports} showToast={showToast} currentUser={currentUser} onLogout={onLogout} />
 
       <main className="max-w-6xl mx-auto px-6 py-16 w-full">
         <div className="mb-20">
@@ -522,10 +528,10 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHis
 
 /* ───────────────── Reports View ───────────────── */
 
-function ReportsView({ history, onBack, onViewRecord, onDelete, showConfirm, showToast, onGoLearning }: { history: HistoryRecord[]; onBack: () => void; onViewRecord: (r: HistoryRecord) => void; onDelete: (id: string) => void; showConfirm: (msg: string, cb: () => void) => void; showToast?: (msg: string) => void; onGoLearning?: () => void }) {
+function ReportsView({ history, onBack, onViewRecord, onDelete, showConfirm, showToast, onGoLearning, currentUser, onLogout }: { history: HistoryRecord[]; onBack: () => void; onViewRecord: (r: HistoryRecord) => void; onDelete: (id: string) => void; showConfirm: (msg: string, cb: () => void) => void; showToast?: (msg: string) => void; onGoLearning?: () => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
-      <AppHeader activeNav="reports" onGoLibrary={onBack} onGoLearning={onGoLearning} showToast={showToast} />
+      <AppHeader activeNav="reports" onGoLibrary={onBack} onGoLearning={onGoLearning} showToast={showToast} currentUser={currentUser} onLogout={onLogout} />
 
       <main className="max-w-5xl mx-auto px-6 py-16 w-full">
         <section className="mb-16">
@@ -630,10 +636,10 @@ const VIDEO_PLACEHOLDERS = [
   { id: 8, title: '第八个操作题演示', subtitle: '操作题 08', duration: '28:15', gradient: 'from-sky-500 to-cyan-600' },
 ];
 
-function LearningView({ onGoLibrary, onGoReports, showToast }: { onGoLibrary: () => void; onGoReports: () => void; showToast?: (msg: string) => void }) {
+function LearningView({ onGoLibrary, onGoReports, showToast, currentUser, onLogout }: { onGoLibrary: () => void; onGoReports: () => void; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
-      <AppHeader activeNav="learning" onGoLibrary={onGoLibrary} onGoReports={onGoReports} onGoLearning={() => {}} showToast={showToast} />
+      <AppHeader activeNav="learning" onGoLibrary={onGoLibrary} onGoReports={onGoReports} onGoLearning={() => {}} showToast={showToast} currentUser={currentUser} onLogout={onLogout} />
 
       <main className="flex-grow max-w-7xl mx-auto px-6 py-16 w-full">
         <section className="mb-16">

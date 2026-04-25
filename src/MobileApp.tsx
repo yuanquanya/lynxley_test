@@ -80,6 +80,8 @@ export default function MobileApp(props: SharedAppProps) {
             onGoLearning={() => setView('learning')}
             isFromHistory={!!selectedHistoryRecord}
             showToast={showToast}
+            currentUser={currentUser}
+            onLogout={onLogout}
           />
         )}
         {view === 'reports' && (
@@ -91,6 +93,9 @@ export default function MobileApp(props: SharedAppProps) {
             onDelete={onDeleteRecord}
             showConfirm={showConfirm}
             onGoLearning={() => setView('learning')}
+            showToast={showToast}
+            currentUser={currentUser}
+            onLogout={onLogout}
           />
         )}
         {view === 'learning' && (
@@ -99,6 +104,8 @@ export default function MobileApp(props: SharedAppProps) {
             onGoLibrary={onGoLibrary}
             onGoReports={() => setView('reports')}
             showToast={showToast}
+            currentUser={currentUser}
+            onLogout={onLogout}
           />
         )}
       </AnimatePresence>
@@ -180,49 +187,55 @@ function TopAppBar({
   );
 }
 
+/* ───────────────────────── Mobile Right Action ───────────────────────── */
+
+function MobileRightAction({ currentUser, onLogout, showToast }: { currentUser?: AuthUser | null; onLogout?: () => void; showToast: (msg: string) => void }) {
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
+  return (
+    <div className="flex items-center gap-1">
+      <button onClick={() => showToast('你知道吗，点击 搜索 这个按钮可以浪费你整整1秒钟。。')} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high/50 transition-colors">
+        <Search size={20} className="text-on-surface-variant" />
+      </button>
+      {currentUser && (
+        <div className="relative">
+          <button
+            onClick={() => setShowUserMenu(!showUserMenu)}
+            className="w-9 h-9 rounded-full signature-gradient flex items-center justify-center"
+          >
+            <span className="text-white text-xs font-black">{currentUser.displayName.charAt(0).toUpperCase()}</span>
+          </button>
+          {showUserMenu && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
+              <div className="absolute right-0 top-full mt-2 w-44 bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/10 py-2 z-50">
+                <div className="px-4 py-3 border-b border-outline-variant/10">
+                  <p className="text-xs font-bold text-on-surface truncate">{currentUser.displayName}</p>
+                  <p className="text-[10px] text-on-surface-variant truncate">@{currentUser.username}</p>
+                </div>
+                <button
+                  onClick={() => { setShowUserMenu(false); onLogout?.(); }}
+                  className="w-full px-4 py-3 text-left text-sm font-bold text-error hover:bg-error/5 transition-colors"
+                >
+                  退出登录
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ───────────────────────── Library View ───────────────────────── */
 
 function LibraryView({ onStart, onGoReports, onGoLearning, showToast, currentUser, onLogout }: { onStart: (item: any) => void; onGoReports: () => void; onGoLearning: () => void; showToast: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
-  const [showUserMenu, setShowUserMenu] = useState(false);
-
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
       <TopAppBar
         title="Lynxley_test"
-        rightAction={
-          <div className="flex items-center gap-1">
-            <button onClick={() => showToast('你知道吗，点击 搜索 这个按钮可以浪费你整整1秒钟。。')} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high/50 transition-colors">
-              <Search size={20} className="text-on-surface-variant" />
-            </button>
-            {currentUser && (
-              <div className="relative">
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="w-9 h-9 rounded-full signature-gradient flex items-center justify-center"
-                >
-                  <span className="text-white text-xs font-black">{currentUser.displayName.charAt(0).toUpperCase()}</span>
-                </button>
-                {showUserMenu && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
-                    <div className="absolute right-0 top-full mt-2 w-44 bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/10 py-2 z-50">
-                      <div className="px-4 py-3 border-b border-outline-variant/10">
-                        <p className="text-xs font-bold text-on-surface truncate">{currentUser.displayName}</p>
-                        <p className="text-[10px] text-on-surface-variant truncate">@{currentUser.username}</p>
-                      </div>
-                      <button
-                        onClick={() => { setShowUserMenu(false); onLogout?.(); }}
-                        className="w-full px-4 py-3 text-left text-sm font-bold text-error hover:bg-error/5 transition-colors"
-                      >
-                        退出登录
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-        }
+        rightAction={<MobileRightAction currentUser={currentUser} onLogout={onLogout} showToast={showToast} />}
       />
 
       <main className="pt-16 pb-28 px-5">
@@ -507,10 +520,10 @@ function AssessmentView({
 
 /* ───────────────────────── Results View ───────────────────────── */
 
-function ResultsView({ result, currentAssessment, onBack, onGoReports, onGoLearning, isFromHistory, showToast }: { result: UserResult; currentAssessment: any; onBack: () => void; onGoReports: () => void; onGoLearning?: () => void; isFromHistory: boolean; showToast: (msg: string) => void }) {
+function ResultsView({ result, currentAssessment, onBack, onGoReports, onGoLearning, isFromHistory, showToast, currentUser, onLogout }: { result: UserResult; currentAssessment: any; onBack: () => void; onGoReports: () => void; onGoLearning?: () => void; isFromHistory: boolean; showToast: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
-      <TopAppBar title="测验结果" onBack={isFromHistory ? onGoReports : undefined} />
+      <TopAppBar title="测验结果" onBack={isFromHistory ? onGoReports : undefined} rightAction={<MobileRightAction currentUser={currentUser} onLogout={onLogout} showToast={showToast} />} />
 
       <main className="pt-16 pb-28 px-5">
         <div className="text-center py-8">
@@ -629,10 +642,10 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, onGoLearn
 
 /* ───────────────────────── Reports View ───────────────────────── */
 
-function ReportsView({ history, onBack, onViewRecord, onDelete, showConfirm, onGoLearning }: { history: HistoryRecord[]; onBack: () => void; onViewRecord: (r: HistoryRecord) => void; onDelete: (id: string) => void; showConfirm: (msg: string, cb: () => void) => void; onGoLearning?: () => void }) {
+function ReportsView({ history, onBack, onViewRecord, onDelete, showConfirm, showToast, onGoLearning, currentUser, onLogout }: { history: HistoryRecord[]; onBack: () => void; onViewRecord: (r: HistoryRecord) => void; onDelete: (id: string) => void; showConfirm: (msg: string, cb: () => void) => void; showToast: (msg: string) => void; onGoLearning?: () => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
-      <TopAppBar title="Lynxley_test" />
+      <TopAppBar title="Lynxley_test" rightAction={<MobileRightAction currentUser={currentUser} onLogout={onLogout} showToast={showToast} />} />
 
       <main className="pt-16 pb-28 px-5">
         <div className="mb-8">
@@ -720,10 +733,10 @@ const VIDEO_PLACEHOLDERS = [
   { id: 8, title: '第八个操作题演示', subtitle: '操作题 08', duration: '28:15', gradient: 'from-sky-500 to-cyan-600' },
 ];
 
-function LearningView({ onGoLibrary, onGoReports, showToast }: { onGoLibrary: () => void; onGoReports: () => void; showToast: (msg: string) => void }) {
+function LearningView({ onGoLibrary, onGoReports, showToast, currentUser, onLogout }: { onGoLibrary: () => void; onGoReports: () => void; showToast: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
-      <TopAppBar title="Lynxley_test" />
+      <TopAppBar title="Lynxley_test" rightAction={<MobileRightAction currentUser={currentUser} onLogout={onLogout} showToast={showToast} />} />
 
       <main className="pt-16 pb-28 px-5">
         <div className="mb-8">
