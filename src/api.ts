@@ -1,9 +1,13 @@
 /**
- * 纯本地认证 + 历史记录存储
- * 无需任何后端服务，所有数据存储在 localStorage
+ * API 层 - Supabase 云端 + localStorage 本地降级
+ *
+ * 登录用户：数据存储在 Supabase 云端（支持跨设备同步）
+ * 访客用户：数据存储在 localStorage（仅本地）
+ * Supabase 未配置时：所有用户降级到 localStorage
  */
 
 import { HistoryRecord } from './types';
+import { supabase, isSupabaseConfigured } from './supabase';
 
 // ── 本地存储 Key ──────────────────────────────────────────────
 
@@ -19,13 +23,7 @@ export interface AuthUser {
   isGuest?: boolean;
 }
 
-// ── 预设账号（硬编码） ──────────────────────────────────────────
-
-const PRESET_ACCOUNTS: { username: string; password: string; displayName: string }[] = [
-  { username: '20242013', password: '20', displayName: '20242013' },
-];
-
-// ── 用户管理 ──────────────────────────────────────────────
+// ── 用户本地缓存 ──────────────────────────────────────────
 
 function getSavedUser(): AuthUser | null {
   try {
@@ -47,29 +45,46 @@ function clearUser() {
 
 // ── 认证 API ──────────────────────────────────────────────
 
-/** 登录 - 本地验证预设账号 */
+/** 登录 - 通过 Supabase 验证，降级到本地预设账号 */
 export async function login(
   username: string,
   password: string
 ): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
-  const account = PRESET_ACCOUNTS.find(
-    (a) => a.username === username && a.password === password
-  );
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, username, display_name')
+        .eq('username', username)
+        .eq('password', password)
+        .single();
 
-  if (!account) {
-    return { success: false, error: '用户名或密码错误' };
+      if (error || !data) {
+        return { success: false, error: '用户名或密码错误' };
+      }
+
+      const user: AuthUser = {
+        id: data.id,
+        username: data.username,
+        displayName: data.display_name || data.username,
+      };
+      saveUser(user);
+      return { success: true, user };
+    } catch {
+      return { success: false, error: '网络连接失败' };
+    }
   }
 
-  const user: AuthUser = {
-    id: 1,
-    username: account.username,
-    displayName: account.displayName,
-  };
-  saveUser(user);
-  return { success: true, user };
+  // Supabase 未配置时 - 本地预设账号
+  if (username === '20242013' && password === '20') {
+    const user: AuthUser = { id: 1, username: '20242013', displayName: '20242013' };
+    saveUser(user);
+    return { success: true, user };
+  }
+  return { success: false, error: '用户名或密码错误' };
 }
 
-/** 访客登录 - 纯本地模式 */
+/** 访客登录 */
 export function guestLogin(): AuthUser {
   const guest: AuthUser = {
     id: -1,
@@ -91,10 +106,10 @@ export async function checkAuth(): Promise<AuthUser | null> {
   return getSavedUser();
 }
 
-// ── 历史记录（localStorage）──────────────────────────────────
+// ── localStorage 历史记录 ──────────────────────────────────
 
-function getStorageKey(user?: AuthUser | null): string {
-  const u = user || getSavedUser();
+function getLocalKey(): string {
+  const u = getSavedUser();
   if (!u) return HISTORY_KEY;
   if (u.isGuest) return `${HISTORY_KEY}_guest`;
   return `${HISTORY_KEY}_${u.username}`;
@@ -102,7 +117,7 @@ function getStorageKey(user?: AuthUser | null): string {
 
 function loadLocalHistory(): HistoryRecord[] {
   try {
-    const raw = localStorage.getItem(getStorageKey());
+    const raw = localStorage.getItem(getLocalKey());
     if (!raw) return [];
     return JSON.parse(raw) as HistoryRecord[];
   } catch {
@@ -112,27 +127,99 @@ function loadLocalHistory(): HistoryRecord[] {
 
 function saveLocalHistory(records: HistoryRecord[]) {
   try {
-    localStorage.setItem(getStorageKey(), JSON.stringify(records));
+    localStorage.setItem(getLocalKey(), JSON.stringify(records));
   } catch (e) {
-    console.warn('历史记录保存失败:', e);
+    console.warn('本地历史保存失败:', e);
   }
 }
 
-/** 获取当前用户的历史记录 */
+// ── 云端历史记录 (Supabase) ──────────────────────────────────
+
+/** 判断当前用户是否使用云端存储 */
+function useCloud(): boolean {
+  const user = getSavedUser();
+  return isSupabaseConfigured && !!user && !user.isGuest;
+}
+
+/** 获取历史记录 */
 export async function fetchHistory(): Promise<HistoryRecord[]> {
-  return loadLocalHistory();
+  if (!useCloud()) return loadLocalHistory();
+
+  const user = getSavedUser()!;
+  try {
+    const { data, error } = await supabase
+      .from('history')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return (data || []).map((row) => ({
+      id: row.id,
+      assessmentId: row.assessment_id,
+      title: row.title,
+      result: {
+        score: row.score,
+        correctCount: row.correct_count,
+        totalCount: row.total_count,
+        timeTaken: row.time_taken,
+        breakdown: row.breakdown,
+        answers: row.answers,
+      },
+      date: row.date,
+    }));
+  } catch (err) {
+    console.warn('云端获取失败，降级到本地:', err);
+    return loadLocalHistory();
+  }
 }
 
 /** 保存一条历史记录 */
 export async function saveHistoryRecord(record: HistoryRecord): Promise<boolean> {
-  const existing = loadLocalHistory();
-  saveLocalHistory([record, ...existing]);
-  return true;
+  // 始终保存一份本地副本
+  const local = loadLocalHistory();
+  saveLocalHistory([record, ...local]);
+
+  if (!useCloud()) return true;
+
+  const user = getSavedUser()!;
+  try {
+    const { error } = await supabase.from('history').insert({
+      id: record.id,
+      user_id: user.id,
+      assessment_id: record.assessmentId || null,
+      title: record.title,
+      score: record.result.score,
+      correct_count: record.result.correctCount,
+      total_count: record.result.totalCount,
+      time_taken: record.result.timeTaken,
+      breakdown: record.result.breakdown,
+      answers: record.result.answers,
+      date: record.date,
+    });
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    console.warn('云端保存失败，已保存到本地:', err);
+    return false;
+  }
 }
 
 /** 删除一条历史记录 */
 export async function deleteHistoryRecord(id: string): Promise<boolean> {
-  const existing = loadLocalHistory();
-  saveLocalHistory(existing.filter((r) => r.id !== id));
-  return true;
+  // 本地也删除
+  const local = loadLocalHistory();
+  saveLocalHistory(local.filter((r) => r.id !== id));
+
+  if (!useCloud()) return true;
+
+  try {
+    const { error } = await supabase.from('history').delete().eq('id', id);
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    console.warn('云端删除失败:', err);
+    return false;
+  }
 }
