@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<!-- 本网页由石家庄40中李老师提供 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 乱码侦探社</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background: #eef2f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 30px 50px -20px #1e2f4470;
+            padding: 32px 30px;
+        }
+
+        /* 标题区 */
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1f2f4a;
+            letter-spacing: -0.5px;
+        }
+        .title-section span {
+            background: #e9effa;
+            padding: 6px 18px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            color: #2f4a8a;
+            margin-left: 15px;
+            font-weight: 450;
+        }
+
+        /* 故事气泡 */
+        .story-bubble {
+            background: #f0f5fd;
+            border-radius: 28px 28px 28px 10px;
+            padding: 20px 26px;
+            margin-bottom: 30px;
+            border: 1px solid #dbe3f2;
+            box-shadow: 0 5px 0 #cfd9ec;
+        }
+        .story-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            color: #1e3052;
+        }
+        .story-emoji {
+            font-size: 2rem;
+            background: white;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 0 #b7c7e3;
+        }
+        .story-text strong {
+            color: #1f3f7a;
+        }
+        .garbled-preview {
+            background: #1e293b;
+            color: #ffecce;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border-radius: 40px;
+            margin-top: 16px;
+            margin-left: 40px;
+            display: inline-block;
+            border: 1px solid #7e94bc;
+        }
+        .shrug {
+            margin-top: 12px;
+            margin-left: 40px;
+            color: #4a6185;
+            border-left: 3px solid #a7bade;
+            padding-left: 18px;
+        }
+
+        /* 三栏核心布局 */
+        .three-columns {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0 25px;
+            align-items: stretch;
+        }
+        .col {
+            flex: 1;
+            background: #f9fbfe;
+            border-radius: 26px;
+            padding: 22px 18px;
+            border: 1px solid #dfe7f3;
+            box-shadow: 0 8px 0 #d0daea;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 左栏：输入区 */
+        .input-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 550;
+            color: #2b4170;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        .input-header i {
+            font-size: 1.6rem;
+            font-style: normal;
+        }
+        textarea {
+            width: 100%;
+            padding: 18px 16px;
+            font-size: 1.2rem;
+            border: 2px solid #c8d5ec;
+            border-radius: 30px;
+            background: white;
+            resize: none;
+            font-family: 'Courier New', monospace;
+            line-height: 1.5;
+            box-shadow: inset 0 3px 8px #ecf0f8;
+            margin-bottom: 12px;
+        }
+        textarea:focus {
+            border-color: #5f7bbf;
+            outline: none;
+            box-shadow: inset 0 3px 8px #ecf0f8, 0 0 0 3px #dbe3f8;
+        }
+        .counter {
+            text-align: right;
+            font-size: 0.95rem;
+            color: #4b658b;
+            margin-top: 5px;
+            padding-right: 8px;
+        }
+
+        /* 中栏：十六进制卡片 */
+        .hex-box, .garbled-box {
+            background: white;
+            border-radius: 22px;
+            padding: 18px 16px;
+            border: 1px solid #d9e2f2;
+            box-shadow: 0 4px 0 #cbd5e8;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .box-title {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #3b5580;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            margin-bottom: 12px;
+        }
+        .box-title i {
+            font-size: 1.25rem;
+        }
+        .hex-content {
+            background: #1d293f;
+            color: #c7dbff;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            padding: 18px 14px;
+            border-radius: 18px;
+            word-break: break-all;
+            border: 1px solid #6b7fa8;
+            flex: 1;
+        }
+        .garbled-content {
+            background: #fef1e3;
+            color: #663f1f;
+            font-family: 'Courier New', monospace;
+            font-size: 1.25rem;
+            padding: 18px 14px;
+            border-radius: 18px;
+            word-break: break-all;
+            border: 1px solid #cd9f77;
+            flex: 1;
+        }
+        .hint-note {
+            font-size: 0.85rem;
+            color: #50668b;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 按钮行 — 并排显示在三栏下方 */
+        .button-row {
+            display: flex;
+            gap: 18px;
+            margin: 10px 0 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: #ffffff;
+            border: 1.8px solid #b7c9e5;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 550;
+            color: #1a3155;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 0 #a1b4d1, 0 8px 14px rgba(0,0,0,0.02);
+            transition: all 0.06s linear;
+            cursor: pointer;
+            background: #f6faff;
+        }
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #a1b4d1, 0 8px 14px rgba(0,0,0,0.02);
+        }
+        .btn i {
+            font-size: 1.35rem;
+            font-style: normal;
+        }
+
+        /* 题目区 */
+        .question-section {
+            margin: 20px 0 20px;
+        }
+        .question-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4b6cb7;
+            display: flex;
+            align-items: center;
+        }
+        .question-content {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            text-align: left;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #dfe7f2;
+            color: #627a9c;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 标题 -->
+    <div class="title-section">
+        🔍 乱码侦探社
+    </div>
+
+    <!-- 小明故事 -->
+    <div class="story-bubble">
+        <div class="story-line">
+            <div class="story-emoji">👋</div>
+            <div class="story-text">
+                <strong>小明今天遇到了怪事：</strong>他用妈妈的电脑新建文本，写下“你好，世界！”保存后，拷贝到新电视上打开变成了……
+            </div>
+        </div>
+        <div class="garbled-preview" id="storyGarbled">ä½ å¥½ï¼ä¸çï¼</div>
+        <div class="shrug">
+            🤷 小明挠头：“我明明写的汉字呀！难道电视中病毒了？”
+        </div>
+    </div>
+
+    <!-- 三栏核心区 (左:输入 中:十六进制 右:乱码) -->
+    <div class="three-columns">
+        <!-- 左栏：输入（限10字） -->
+        <div class="col">
+            <div class="input-header">
+                <i>✏️</i> 你的话 (≤10字)
+            </div>
+            <textarea id="messageInput" rows="3" maxlength="10" placeholder="例如：电视没病毒">你好，世界！</textarea>
+            <div class="counter"><span id="charCount">5</span> / 10 字</div>
+        </div>
+
+        <!-- 中栏：① 真实储存的十六进制 -->
+        <div class="col">
+            <div class="hex-box">
+                <div class="box-title">
+                    <i>📋</i> ① 真实储存的十六进制
+                </div>
+                <div id="hexDisplay" class="hex-content">
+                    4F 60 59 7D 20 4E 16 75 4C 0C FF 01
+                </div>
+                <div class="hint-note">
+                    <i>ℹ️</i> 硬盘只存这些数字
+                </div>
+            </div>
+        </div>
+
+        <!-- 右栏：② 错误解码后的乱码 -->
+        <div class="col">
+            <div class="garbled-box">
+                <div class="box-title">
+                    <i>💥</i> ② 错误解码后的乱码
+                </div>
+                <div id="garbledDisplay" class="garbled-content">
+                    浣犲ソ锛屼笘鐣岋紒
+                </div>
+                <div class="hint-note">
+                    <i>🧪</i> 点击下方按钮查看乱码
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 按钮行 — 并排显示在三栏下方 -->
+    <div class="button-row">
+        <button class="btn" id="encodeBtn"><i>⬇️</i> ① 转成十六进制 (UTF-8)</button>
+        <button class="btn" id="garbledGbBtn"><i>❗</i> ② 用电视(GB2312)解码</button>
+        <button class="btn" id="garbledIsoBtn"><i>❗</i> ③ 欧洲电脑(ISO)解码</button>
+    </div>
+
+    <!-- 题目区 -->
+    <div class="question-section">
+        <h2>📝题目</h2>
+        <div class="question-content">
+            <p>在网页的实验中，小明写的“你好，世界！”在电视上变成了“ä½ å¥½ï¼ä¸çï¼”，最可能的原因是______</p>
+            <!-- 教师可自行修改 -->
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>信息科技学业水平考试学习资料</p>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // UTF-8 编码函数
+        function stringToUtf8Bytes(str) {
+            const bytes = [];
+            for (let i = 0; i < str.length; i++) {
+                let code = str.charCodeAt(i);
+                if (code < 0x80) {
+                    bytes.push(code);
+                } else if (code < 0x800) {
+                    bytes.push(0xc0 | (code >> 6));
+                    bytes.push(0x80 | (code & 0x3f));
+                } else if (code < 0xd800 || code >= 0xe000) {
+                    bytes.push(0xe0 | (code >> 12));
+                    bytes.push(0x80 | ((code >> 6) & 0x3f));
+                    bytes.push(0x80 | (code & 0x3f));
+                } else {
+                    i++; // 跳过代理对
+                }
+            }
+            return bytes;
+        }
+
+        function bytesToHex(bytes) {
+            return bytes.map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+        }
+
+        // GB风格乱码 (每个字节直接转字符)
+        function garbledLikeGB(bytes) {
+            let out = '';
+            for (let b of bytes) {
+                out += String.fromCharCode(b);
+            }
+            return out;
+        }
+
+        // ISO风格乱码 (轻微偏移，制造视觉差异)
+        function garbledLikeIso(bytes) {
+            let out = '';
+            for (let b of bytes) {
+                if (b >= 32 && b <= 126) {
+                    out += String.fromCharCode(b);
+                } else if (b >= 128 && b <= 191) {
+                    out += String.fromCharCode(b + 48);
+                } else if (b >= 192) {
+                    out += String.fromCharCode(b - 48);
+                } else {
+                    out += String.fromCharCode(b);
+                }
+            }
+            return out;
+        }
+
+        // DOM
+        const textarea = document.getElementById('messageInput');
+        const charSpan = document.getElementById('charCount');
+        const hexDiv = document.getElementById('hexDisplay');
+        const garbledDiv = document.getElementById('garbledDisplay');
+
+        // 更新字数
+        function updateCount() {
+            const len = textarea.value.length;
+            charSpan.textContent = len;
+        }
+        textarea.addEventListener('input', updateCount);
+        updateCount();
+
+        // 从输入刷新hex并返回字节
+        function refreshHexFromInput() {
+            const text = textarea.value;
+            const bytes = stringToUtf8Bytes(text);
+            hexDiv.textContent = bytesToHex(bytes) || '(空白)';
+            return bytes;
+        }
+
+        // 初始化
+        function initDefault() {
+            if (textarea.value === '你好，世界！' || textarea.value === '') {
+                textarea.value = '你好，世界！';
+                updateCount();
+            }
+            const bytes = stringToUtf8Bytes(textarea.value);
+            hexDiv.textContent = bytesToHex(bytes);
+            garbledDiv.textContent = garbledLikeGB(bytes); // 默认展示GB风格
+        }
+        initDefault();
+
+        // 按钮①: 只更新hex，不清除乱码（但可提示轻互动）
+        document.getElementById('encodeBtn').addEventListener('click', function() {
+            refreshHexFromInput();
+            // 保留乱码区已有内容，不自动清除，让学生主动按②或③
+            // 但为了更友好，可以保留原乱码不变，或者给个提示（这里选择保留，不自动更改）
+        });
+
+        // 按钮②: GB乱码
+        document.getElementById('garbledGbBtn').addEventListener('click', function() {
+            const bytes = refreshHexFromInput();  // 同时更新hex
+            garbledDiv.textContent = garbledLikeGB(bytes) || '(空白)';
+        });
+
+        // 按钮③: ISO乱码
+        document.getElementById('garbledIsoBtn').addEventListener('click', function() {
+            const bytes = refreshHexFromInput();
+            garbledDiv.textContent = garbledLikeIso(bytes) || '(空白)';
+        });
+
+        // 故事区乱码保留静态
+    })();
+</script>
+</body>
+</html>

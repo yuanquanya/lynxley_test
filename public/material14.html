@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<!-- 本网页由石家庄40中李老师提供 -->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片编码教学</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e6ef;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .left-panel, .right-panel {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .panel-title {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+        
+        .color-picker {
+            background-color: white;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .color-container {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 12px;
+        }
+        
+        .color-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .color-option {
+            width: 45px;
+            height: 45px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        /* 为白色颜色块添加黑色轮廓线 */
+        .color-option.white-color {
+            border: 2px solid #000000;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .color-option.selected {
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+        
+        .color-label {
+            font-size: 0.75rem;
+            color: #555;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .pixel-canvas, .code-table {
+            background-color: white;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            grid-template-rows: repeat(16, 1fr);
+            gap: 1px;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            background-color: #eee;
+            border: 2px solid #bdc3c7;
+        }
+        
+        .pixel {
+            background-color: white;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+        
+        .pixel:hover {
+            opacity: 0.9;
+        }
+        
+        .code-container {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            grid-template-rows: repeat(16, 1fr);
+            gap: 1px;
+            background-color: #eee;
+            border: 2px solid #bdc3c7;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+        }
+        
+        .code-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            background-color: white;
+        }
+        
+        .instructions {
+            background-color: #fff8e1;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        
+        .instructions h3 {
+            color: #e65100;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button.clear {
+            background-color: #e74c3c;
+        }
+        
+        button.clear:hover {
+            background-color: #c0392b;
+        }
+        
+      
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .footer p {
+            margin-bottom: 5px;
+        }
+
+        .current-color-info {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .current-color-display {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            vertical-align: middle;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+        }
+        
+        @media (max-width: 1100px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .grid-container, .code-container {
+                width: 350px;
+                height: 350px;
+            }
+        }
+        
+        @media (max-width: 850px) {
+            .color-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .grid-container, .code-container {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .color-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        .question-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4b6cb7;
+            display: flex;
+            align-items: center;
+        }
+        
+        .question-content {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>图片编码教学 - 16色点阵图编码器</h1>
+    </div>
+    
+    <div class="color-picker">
+        <h2 class="panel-title">颜色选择（点击选择颜色）</h2>
+        <div class="color-container" id="colorPicker">
+            <!-- 颜色选项将通过JavaScript生成 -->
+        </div>
+        
+        <div class="current-color-info">
+            当前选中颜色：<span id="currentColorName">黑色</span>
+            <span class="current-color-display" id="currentColorDisplay" style="background-color: #000000;"></span>
+            编码：<span id="currentColorCode">1</span>
+        </div>
+        
+        <div class="controls">
+            <button id="clearBtn">清除画板</button>
+            <button id="randomBtn">随机图案</button>
+            <button id="exampleBtn">教学示例</button>
+            <button id="exportBtn">导出编码</button>
+        </div>
+    </div>
+    
+    <div class="content">
+        <div class="left-panel">
+            <h2 class="panel-title">16×16点阵画板</h2>
+            <div class="pixel-canvas">
+                <div class="grid-container" id="pixelGrid">
+                    <!-- 像素点将通过JavaScript生成 -->
+                </div>
+                <p style="text-align: center; margin-top: 15px; color: #7f8c8d;">
+                    点击上方颜色选择颜色，然后在画板上点击或拖拽绘制
+                </p>
+            </div>
+        </div>
+        
+        <div class="right-panel">
+            <h2 class="panel-title">十进制编码表（显示颜色与编码）</h2>
+            <div class="code-table">
+                <div class="code-container" id="codeTable">
+                    <!-- 编码单元格将通过JavaScript生成 -->
+                </div>
+                <p style="text-align: center; margin-top: 15px; color: #7f8c8d;">
+                    每个单元格显示该位置的颜色编码（0-15），背景为对应颜色
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="color-picker">
+       <div class="question-section">
+            <h2>📝题目</h2>
+            <div class="question-content">
+                <p>按照本网页的编码规则，存储“随机图案”需要______个数</p>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <p>信息科技学业水平考试学习资料</p>
+    </div>
+
+    <script>
+        // 定义16种颜色及其编码
+        const colors = [
+            { name: "白色", code: 0, hex: "#FFFFFF" },
+            { name: "黑色", code: 1, hex: "#000000" },
+            { name: "红色", code: 2, hex: "#FF0000" },
+            { name: "绿色", code: 3, hex: "#00FF00" },
+            { name: "蓝色", code: 4, hex: "#0000FF" },
+            { name: "黄色", code: 5, hex: "#FFFF00" },
+            { name: "青色", code: 6, hex: "#00FFFF" },
+            { name: "品红", code: 7, hex: "#FF00FF" },
+            { name: "橙色", code: 8, hex: "#FFA500" },
+            { name: "紫色", code: 9, hex: "#800080" },
+            { name: "棕色", code: 10, hex: "#A52A2A" },
+            { name: "粉色", code: 11, hex: "#FFC0CB" },
+            { name: "灰色", code: 12, hex: "#808080" },
+            { name: "深绿", code: 13, hex: "#006400" },
+            { name: "深蓝", code: 14, hex: "#000080" },
+            { name: "米色", code: 15, hex: "#F5F5DC" }
+        ];
+        
+        // 当前选中的颜色
+        let selectedColor = colors[1]; // 默认选中黑色
+        
+        // 初始化16x16像素数组，默认全部为白色(编码0)
+        let pixelData = Array(16).fill().map(() => Array(16).fill(0));
+        
+        // 是否正在拖拽绘制
+        let isDrawing = false;
+        
+        // DOM元素
+        const colorPicker = document.getElementById('colorPicker');
+        const pixelGrid = document.getElementById('pixelGrid');
+        const codeTable = document.getElementById('codeTable');
+        const clearBtn = document.getElementById('clearBtn');
+        const randomBtn = document.getElementById('randomBtn');
+        const exampleBtn = document.getElementById('exampleBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const currentColorName = document.getElementById('currentColorName');
+        const currentColorCode = document.getElementById('currentColorCode');
+        const currentColorDisplay = document.getElementById('currentColorDisplay');
+        
+        // 初始化颜色选择器
+        function initColorPicker() {
+            colors.forEach(color => {
+                const colorItem = document.createElement('div');
+                colorItem.className = 'color-item';
+                
+                const colorOption = document.createElement('div');
+                colorOption.className = 'color-option';
+                colorOption.style.backgroundColor = color.hex;
+                colorOption.dataset.code = color.code;
+                colorOption.title = `${color.name} (编码: ${color.code})`;
+                
+                // 为白色颜色块添加特殊类名，以便添加黑色轮廓线
+                if (color.code === 0) {
+                    colorOption.classList.add('white-color');
+                }
+                
+                // 根据颜色亮度设置文字颜色
+                const brightness = getColorBrightness(color.hex);
+                colorOption.style.color = brightness > 128 ? '#000000' : '#FFFFFF';
+                colorOption.textContent = color.code;
+                
+                // 选中颜色
+                colorOption.addEventListener('click', () => {
+                    document.querySelectorAll('.color-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    colorOption.classList.add('selected');
+                    selectedColor = color;
+                    
+                    // 更新当前颜色信息
+                    updateCurrentColorInfo();
+                });
+                
+                const colorLabel = document.createElement('div');
+                colorLabel.className = 'color-label';
+                colorLabel.textContent = color.name;
+                
+                colorItem.appendChild(colorOption);
+                colorItem.appendChild(colorLabel);
+                colorPicker.appendChild(colorItem);
+            });
+            
+            // 默认选中黑色
+            document.querySelector(`.color-option[data-code="1"]`).classList.add('selected');
+            updateCurrentColorInfo();
+        }
+        
+        // 计算颜色亮度
+        function getColorBrightness(hexColor) {
+            // 移除#号
+            const hex = hexColor.replace('#', '');
+            
+            // 解析RGB值
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            
+            // 计算亮度（使用加权平均）
+            return (r * 0.299 + g * 0.587 + b * 0.114);
+        }
+        
+        // 更新当前颜色信息
+        function updateCurrentColorInfo() {
+            currentColorName.textContent = selectedColor.name;
+            currentColorCode.textContent = selectedColor.code;
+            currentColorDisplay.style.backgroundColor = selectedColor.hex;
+        }
+        
+        // 初始化像素画板
+        function initPixelGrid() {
+            pixelGrid.innerHTML = '';
+            
+            for (let row = 0; row < 16; row++) {
+                for (let col = 0; col < 16; col++) {
+                    const pixel = document.createElement('div');
+                    pixel.className = 'pixel';
+                    pixel.dataset.row = row;
+                    pixel.dataset.col = col;
+                    
+                    // 设置初始颜色
+                    pixel.style.backgroundColor = getColorByCode(pixelData[row][col]);
+                    
+                    // 点击绘制
+                    pixel.addEventListener('click', () => {
+                        updatePixel(row, col);
+                    });
+                    
+                    // 拖拽绘制
+                    pixel.addEventListener('mousedown', () => {
+                        isDrawing = true;
+                        updatePixel(row, col);
+                    });
+                    
+                    pixel.addEventListener('mouseenter', () => {
+                        if (isDrawing) {
+                            updatePixel(row, col);
+                        }
+                    });
+                    
+                    pixelGrid.appendChild(pixel);
+                }
+            }
+            
+            // 停止绘制
+            document.addEventListener('mouseup', () => {
+                isDrawing = false;
+            });
+        }
+        
+        // 初始化编码表
+        function initCodeTable() {
+            codeTable.innerHTML = '';
+            
+            for (let row = 0; row < 16; row++) {
+                for (let col = 0; col < 16; col++) {
+                    const codeCell = document.createElement('div');
+                    codeCell.className = 'code-cell';
+                    codeCell.textContent = pixelData[row][col];
+                    codeCell.style.backgroundColor = getColorByCode(pixelData[row][col]);
+                    
+                    // 根据背景色亮度设置文字颜色
+                    const brightness = getColorBrightness(getColorByCode(pixelData[row][col]));
+                    codeCell.style.color = brightness > 128 ? '#000000' : '#FFFFFF';
+                    
+                    codeTable.appendChild(codeCell);
+                }
+            }
+        }
+        
+        // 更新像素
+        function updatePixel(row, col) {
+            // 更新数据
+            pixelData[row][col] = selectedColor.code;
+            
+            // 更新画板显示
+            const pixel = document.querySelector(`.pixel[data-row="${row}"][data-col="${col}"]`);
+            pixel.style.backgroundColor = selectedColor.hex;
+            
+            // 更新编码表
+            updateCodeTable();
+        }
+        
+        // 更新编码表
+        function updateCodeTable() {
+            const codeCells = document.querySelectorAll('.code-cell');
+            
+            for (let row = 0; row < 16; row++) {
+                for (let col = 0; col < 16; col++) {
+                    const index = row * 16 + col;
+                    const codeCell = codeCells[index];
+                    
+                    codeCell.textContent = pixelData[row][col];
+                    codeCell.style.backgroundColor = getColorByCode(pixelData[row][col]);
+                    
+                    // 根据背景色亮度设置文字颜色
+                    const brightness = getColorBrightness(getColorByCode(pixelData[row][col]));
+                    codeCell.style.color = brightness > 128 ? '#000000' : '#FFFFFF';
+                }
+            }
+        }
+        
+        // 根据编码获取颜色
+        function getColorByCode(code) {
+            const color = colors.find(c => c.code === code);
+            return color ? color.hex : '#FFFFFF';
+        }
+        
+        // 清除画板
+        function clearCanvas() {
+            pixelData = Array(16).fill().map(() => Array(16).fill(0));
+            initPixelGrid();
+            initCodeTable();
+        }
+        
+        // 生成随机图案
+        function generateRandomPattern() {
+            for (let row = 0; row < 16; row++) {
+                for (let col = 0; col < 16; col++) {
+                    pixelData[row][col] = Math.floor(Math.random() * 16);
+                }
+            }
+            initPixelGrid();
+            updateCodeTable();
+        }
+        
+        // 生成教学示例图案（简单笑脸）
+        function generateExamplePattern() {
+            clearCanvas();
+            
+            // 绘制笑脸
+            const smiley = [
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0],
+                [0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0],
+                [0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                [0,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0],
+                [0,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0],
+                [0,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0],
+                [0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                [0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0],
+                [0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            ];
+            
+            // 添加一些彩色元素
+            for (let row = 0; row < 16; row++) {
+                for (let col = 0; col < 16; col++) {
+                    if (smiley[row][col] === 1) {
+                        pixelData[row][col] = 5; // 黄色笑脸
+                    } else if (row > 11 && col > 11) {
+                        pixelData[row][col] = 2; // 右下角红色区域
+                    } else if (row > 11 && col < 4) {
+                        pixelData[row][col] = 4; // 左下角蓝色区域
+                    } else if (row < 4 && col > 11) {
+                        pixelData[row][col] = 3; // 右上角绿色区域
+                    } else if (row < 4 && col < 4) {
+                        pixelData[row][col] = 8; // 左上角橙色区域
+                    }
+                }
+            }
+            
+            initPixelGrid();
+            updateCodeTable();
+        }
+        
+        // 导出编码
+        function exportEncoding() {
+            let encodingText = "16×16点阵图编码（十进制）:\n\n";
+            
+            // 添加表头
+            encodingText += "行/列 ";
+            for (let col = 0; col < 16; col++) {
+                encodingText += col.toString().padStart(3, ' ');
+            }
+            encodingText += "\n";
+            
+            // 添加分隔线
+            encodingText += "----";
+            for (let col = 0; col < 16; col++) {
+                encodingText += "---";
+            }
+            encodingText += "\n";
+            
+            // 添加数据行
+            for (let row = 0; row < 16; row++) {
+                encodingText += row.toString().padStart(2, ' ') + " | ";
+                for (let col = 0; col < 16; col++) {
+                    encodingText += pixelData[row][col].toString().padStart(2, ' ') + " ";
+                }
+                encodingText += "\n";
+            }
+            
+            // 创建下载链接
+            const blob = new Blob([encodingText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '16x16-pixel-encoding.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert("编码已导出为文本文件！");
+        }
+        
+        // 初始化页面
+        function initPage() {
+            initColorPicker();
+            initPixelGrid();
+            initCodeTable();
+            
+            // 添加事件监听器
+            clearBtn.addEventListener('click', clearCanvas);
+            randomBtn.addEventListener('click', generateRandomPattern);
+            exampleBtn.addEventListener('click', generateExamplePattern);
+            exportBtn.addEventListener('click', exportEncoding);
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>

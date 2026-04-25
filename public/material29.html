@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<!-- 本网页由石家庄40中李老师提供 -->
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索引擎小课堂 </title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        body {
+            background: #c9dff2;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
+        }
+        .main-panel {
+            max-width: 1300px;
+            width: 100%;
+            background: #f5f9ff;
+            border-radius: 32px 32px 24px 24px;
+            box-shadow: 0 10px 0 #8ba6c9, 0 15px 20px rgba(0, 30, 60, 0.4);
+            padding: 14px 14px 18px 14px;
+            border: 3px solid #d4e3ff;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0 0 6px 0;
+            background: #e6f0ff;
+            padding: 6px 16px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e4b7a;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-wrap: wrap;
+            border: 3px solid white;
+        }
+        h1 .principle {
+            font-size: 1rem;
+            font-weight: normal;
+            color: #1e4b7a;
+            margin-left: 4px;
+            white-space: nowrap;
+        }
+        .top-search-row {
+            background: #d4e6ff;
+            border-radius: 40px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid #b9d2f0;
+        }
+        .search-input-group {
+            flex: 3 1 200px;
+            background: white;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            padding: 2px 14px;
+            border: 2px solid #8ba6c9;
+        }
+        .search-input-group span {
+            font-size: 1.2rem;
+            margin-right: 4px;
+            color: #1e4b7a;
+        }
+        .search-input-group input {
+            border: none;
+            font-size: 0.95rem;
+            padding: 6px 0;
+            width: 100%;
+            outline: none;
+            background: transparent;
+            color: #1e3a5f;
+        }
+        .button-cluster {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .btn {
+            background: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e4b7a;
+            box-shadow: 0 3px 0 #8ba6c9, 0 2px 5px rgba(0,0,0,0.05);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border: 2px solid white;
+            transition: opacity 0.2s;
+        }
+        .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #8ba6c9; }
+        .btn.orange { 
+            background: #ffb74d; 
+            color: #2d4b5c; 
+            box-shadow: 0 3px 0 #b2661a;
+            border: 2px solid white;
+        }
+        .btn.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: not-allowed;
+            box-shadow: 0 1px 0 #8ba6c9;
+            transform: translateY(2px);
+        }
+
+        .rec-words {
+            background: #e6f0ff;
+            border-radius: 24px;
+            padding: 4px 14px;
+            font-size: 0.85rem;
+            color: #1e4b7a;
+            border: 2px solid white;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .row:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-area-top {
+            flex: 2 1 400px;
+            background: #e6f0ff;
+            border-radius: 24px;
+            padding: 8px 14px;
+            border: 3px solid white;
+            height: fit-content;
+        }
+        .result-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e4b7a;
+            margin-bottom: 4px;
+        }
+        .result-flex {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .result-item {
+            background: white;
+            border-radius: 30px;
+            padding: 5px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            border: 2px solid #b9d2f0;
+            color: #1e3a5f;
+        }
+        .rank-badge {
+            background: #4a7db5;
+            color: white;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 600;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        .link-tag {
+            background: #d4e6ff;
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin-left: auto;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            color: #1e4b7a;
+            border: 1px solid #8ba6c9;
+        }
+        .exp-bar {
+            background: #d4e6ff;
+            padding: 3px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 4px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 5px;
+            color: #1e4b7a;
+            border: 2px solid white;
+        }
+        .extra-tip {
+            color: #1e4b7a;
+            font-style: italic;
+            margin-left: auto;
+        }
+
+        .raw-db-card {
+            flex: 1 1 300px;
+            background: #4a7db5;
+            border-radius: 20px;
+            padding: 8px 10px;
+            box-shadow: 0 5px 0 #23548c;
+            color: white;
+            height: fit-content;
+            border: 2px solid white;
+        }
+        .raw-db-card h3 {
+            margin: 0 0 4px 0;
+            font-size: 1rem;
+            border-left: 6px solid #ffb74d;
+            padding-left: 8px;
+            color: white;
+        }
+
+        .web-section {
+            flex: 2 1 400px;
+            background: #d4e6ff;
+            border-radius: 24px;
+            padding: 10px 12px;
+            border: 3px solid white;
+            height: fit-content;
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1e4b7a;
+        }
+        .web-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .web-card {
+            width: 95px;
+            background: #fefce0;
+            border-radius: 16px 4px 16px 4px;
+            border: 2px solid #4a7db5;
+            padding: 4px 3px;
+            box-shadow: 2px 2px 0 #23548c;
+            text-align: center;
+            position: relative;
+        }
+        .spider-on {
+            position: absolute;
+            top: -16px;
+            left: -8px;
+            font-size: 1.5rem;
+            line-height: 1;
+            filter: drop-shadow(0 0 0 transparent);
+            text-shadow: none;
+            background: transparent;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .web-icon {
+            font-size: 1.8rem;
+        }
+        .web-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: #e6f0ff;
+            border-radius: 10px;
+            padding: 2px 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #1e4b7a;
+        }
+        .link-line {
+            background: #ffddb0;
+            font-size: 0.55rem;
+            border-radius: 8px;
+            padding: 2px;
+            margin-top: 2px;
+            border: 1px solid #b2661a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #2d4b5c;
+        }
+        .keyword-mini {
+            font-size: 0.55rem;
+            background: #4a7db5;
+            color: white;
+            border-radius: 8px;
+            padding: 1px 4px;
+            display: inline-block;
+            margin: 1px;
+        }
+        .links-count {
+            font-size: 0.6rem;
+            color: #1e4b7a;
+        }
+
+        .index-card {
+            flex: 1 1 300px;
+            background: #4a7db5;
+            border-radius: 20px;
+            padding: 8px 10px;
+            box-shadow: 0 5px 0 #23548c;
+            color: white;
+            height: fit-content;
+            border: 2px solid white;
+        }
+        .index-card h3 {
+            margin: 0 0 4px 0;
+            font-size: 1rem;
+            border-left: 6px solid #ffb74d;
+            padding-left: 8px;
+            color: white;
+        }
+        .raw-db-card .db-list,
+        .index-card .db-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 160px;
+            overflow-y: auto;
+        }
+        .index-card .db-list {
+            max-height: 400px;
+        }
+        .db-list li {
+            background: #5c8fc7;
+            border-radius: 20px;
+            margin: 3px 0;
+            padding: 3px 8px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #b9d2f0;
+            color: white;
+        }
+        .index-li {
+            background: #5c8fc7;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+        }
+        .keyword-badge {
+            background: #ffb74d;
+            color: #1e4b7a;
+            border-radius: 20px;
+            padding: 1px 10px;
+            font-weight: 600;
+        }
+        .empty-db {
+            background: #5c8fc7;
+            border-radius: 18px;
+            padding: 8px;
+            text-align: center;
+            color: white;
+            font-size: 0.8rem;
+            border: 2px dashed #ffb74d;
+        }
+
+        /* 题目模块 */
+        .question-section {
+            margin-top: 24px;
+            background: #e6f0ff;
+            border-radius: 28px;
+            padding: 14px 20px;
+            border: 3px solid white;
+            box-shadow: 0 5px 0 #8ba6c9;
+        }
+        .question-section h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
+            color: #1e4b7a;
+            border-left: 8px solid #ffb74d;
+            padding-left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .question-section h2 i {
+            color: #ffb74d;
+        }
+        .question-content {
+            background: white;
+            border-radius: 24px;
+            padding: 16px 20px;
+            font-size: 1rem;
+            color: #1e4b7a;
+            border: 2px solid #b9d2f0;
+            min-height: 80px;
+        }
+        .question-content p {
+            margin: 0;
+        }
+        
+        .footer {
+            margin-top: 16px;
+            text-align: center;
+            color: #1e4b7a;
+            font-size: 0.9rem;
+            border-top: 2px solid #b9d2f0;
+            padding-top: 12px;
+        }
+        .footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="main-panel">
+    <h1>
+        <span>🕷️搜索引擎原理：</span><span class="principle">爬虫自动抓取网页内容 → 建立索引记录关键词搜索时直接提取 → 排序算法对搜索结果进行排序（如：根据被链接数量降序排列）</span>
+    </h1>
+
+    <div class="top-search-row">
+        <div class="search-input-group">
+            <span>🔎</span>
+            <input type="text" id="searchInput" placeholder="水果 草莓 香蕉 动物 熊猫 运动 足球 游戏" value="水果">
+        </div>
+        <div class="button-cluster">
+            <button class="btn" id="pauseBtn">⏸️ 暂停</button>
+            <button class="btn orange" id="searchBtn">🔍 搜索</button>
+            <button class="btn" id="resetBtn">🔄 重置</button>
+        </div>
+        <div class="rec-words">✨ 推荐搜索: 水果 草莓 香蕉 动物</div>
+    </div>
+
+    <div class="row">
+        <div class="result-area-top" id="topResultArea">
+            <div class="result-header">📋 搜索结果（按被链接数排序，被链接数越高，排名越靠前）</div>
+            <div id="resultList" class="result-flex">
+                <div class="result-item"><span class="rank-badge">1</span>等待爬虫抓取完成...</div>
+            </div>
+            <div id="sortHint" class="exp-bar">💡 爬虫正在抓取网页内容，首次抓取完成前搜索按钮不可用</div>
+        </div>
+
+        <div class="raw-db-card">
+            <h3>🗂️ 原始网页库</h3>
+            <div id="rawDbContent" class="empty-db">📭 等待爬虫抓取...</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="web-section">
+            <div class="section-title">🌐 互联网网页 · 蜘蛛自动爬取中</div>
+            <div class="web-grid" id="webGrid"></div>
+        </div>
+
+        <div class="index-card">
+            <h3>📑 索引 (自动建立)</h3>
+            <div id="indexContent" class="empty-db">⏳ 抓取后自动更新</div>
+        </div>
+    </div>
+
+    <!-- 题目模块 -->
+    <div class="question-section">
+        <h2>📝 题目</h2>
+        <div class="question-content">
+            <p>我们利用搜索引擎查找资料，搜索引擎会直接在______提取搜索结果。</p>
+        </div>
+    </div>
+
+    <!-- 底部说明 -->
+    <div class="footer">
+        <p>信息科技学业水平考试学习资料</p>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // 基础网页16个（编程猫和新品草莓初始隐藏）
+        const baseSites = [
+            { id: '草莓农场', title: '🍓 草莓农场', theme: '水果', keywords: ['水果','草莓'], links: 9, icon: '🍓', linkEx: '→香蕉部落、葡萄庄园' },
+            { id: '香蕉部落', title: '🍌 香蕉部落', theme: '水果', keywords: ['水果','香蕉'], links: 5, icon: '🍌', linkEx: '→草莓农场、橙橘小屋' },
+            { id: '橙橘小屋', title: '🍊 橙橘小屋', theme: '水果', keywords: ['水果','橘子'], links: 6, icon: '🍊', linkEx: '→草莓农场、香蕉部落' },
+            { id: '葡萄庄园', title: '🍇 葡萄庄园', theme: '水果', keywords: ['水果','葡萄'], links: 4, icon: '🍇', linkEx: '→草莓农场' },
+            { id: '苹果乐园', title: '🍎 苹果乐园', theme: '水果', keywords: ['水果','苹果'], links: 7, icon: '🍎', linkEx: '→草莓农场、橙橘小屋' },
+            { id: '草莓甜点', title: '🍰 草莓甜点', theme: '美食', keywords: ['草莓','甜点'], links: 3, icon: '🍰', linkEx: '→草莓农场' },
+            { id: '香蕉奶昔', title: '🥤 香蕉奶昔', theme: '饮品', keywords: ['香蕉','奶昔'], links: 4, icon: '🥤', linkEx: '→香蕉部落' },
+            { id: '熊猫竹园', title: '🐼 熊猫竹园', theme: '动物', keywords: ['动物','熊猫'], links: 8, icon: '🐼', linkEx: '→企鹅冰宫、猎豹草原' },
+            { id: '企鹅冰宫', title: '🐧 企鹅冰宫', theme: '动物', keywords: ['动物','企鹅'], links: 3, icon: '🐧', linkEx: '→熊猫竹园' },
+            { id: '猎豹草原', title: '🐆 猎豹草原', theme: '动物', keywords: ['动物','猎豹'], links: 4, icon: '🐆', linkEx: '→熊猫竹园' },
+            { id: '熊猫绘本', title: '📘 熊猫绘本', theme: '图书', keywords: ['熊猫','图书'], links: 5, icon: '📘', linkEx: '→熊猫竹园' },
+            { id: '足球小子', title: '⚽ 足球小子', theme: '运动', keywords: ['运动','足球'], links: 9, icon: '⚽', linkEx: '→篮球部落、网球俱乐部' },
+            { id: '篮球部落', title: '🏀 篮球部落', theme: '运动', keywords: ['运动','篮球'], links: 6, icon: '🏀', linkEx: '→足球小子' },
+            { id: '网球俱乐部', title: '🎾 网球俱乐部', theme: '运动', keywords: ['运动','网球'], links: 4, icon: '🎾', linkEx: '→足球小子' },
+            { id: '足球装备', title: '🧤 足球装备', theme: '购物', keywords: ['足球','装备'], links: 5, icon: '🧤', linkEx: '→足球小子' },
+            { id: '游戏设计', title: '🎮 游戏设计', theme: '游戏', keywords: ['游戏','设计'], links: 7, icon: '🎮', linkEx: '→编程猫' }
+        ];
+
+        // 隐藏的两个新网页：编程猫 和 新品草莓
+        const hiddenSites = [
+            { id: '编程猫', title: '💻 编程猫', theme: '编程', keywords: ['编程','游戏'], links: 6, icon: '💻', linkEx: '→游戏设计' },
+            { id: '新品草莓', title: '🍓✨ 新品草莓', theme: '水果', keywords: ['水果','草莓'], links: 12, icon: '🍓✨', linkEx: '→草莓农场、草莓甜点' }
+        ];
+
+        // 当前所有网页（初始为基础网页）
+        let allSites = [...baseSites];
+
+        // 爬取状态
+        let crawledPages = [];
+        let crawledIds = new Set();
+        let nextCrawlIndex = 0;
+        let currentSpiderId = null;
+        let indexMap = new Map();
+
+        let crawlInterval = null;
+        let isPaused = false;
+
+        // 标记是否已经添加过隐藏网页
+        let extraPagesAdded = false;
+        // 标记是否全部爬完
+        let allCrawledFlag = false;
+        // 标记首次爬取是否完成（基础16个网页都爬完）
+        let initialCrawlComplete = false;
+        
+        // 保存上一次搜索的关键词和结果
+        let lastSearchKeyword = '';
+        let lastSearchResults = null;
+
+        // DOM 元素
+        const webGrid = document.getElementById('webGrid');
+        const rawDbDiv = document.getElementById('rawDbContent');
+        const indexDiv = document.getElementById('indexContent');
+        const resultListDiv = document.getElementById('resultList');
+        const sortHint = document.getElementById('sortHint');
+        const searchInput = document.getElementById('searchInput');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const searchBtn = document.getElementById('searchBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // 更新搜索按钮状态
+        function updateSearchButtonState() {
+            if (initialCrawlComplete) {
+                searchBtn.classList.remove('disabled');
+                searchBtn.disabled = false;
+            } else {
+                searchBtn.classList.add('disabled');
+                searchBtn.disabled = true;
+            }
+        }
+
+        // 渲染网页卡片
+        function renderWebCards() {
+            webGrid.innerHTML = '';
+            allSites.forEach(site => {
+                const card = document.createElement('div');
+                card.className = 'web-card';
+                
+                if (site.id === currentSpiderId) {
+                    card.innerHTML = `<div class="spider-on" style="filter:none; text-shadow:none;">🕷️</div>`;
+                } else {
+                    card.innerHTML = `<div class="spider-on" style="display:none;"></div>`;
+                }
+                
+                card.innerHTML += `
+                    <div class="web-icon">${site.icon}</div>
+                    <div class="web-title">${site.title}</div>
+                    <div class="link-line">🔗 ${site.linkEx}</div>
+                    <div>
+                        <span class="keyword-mini">${site.keywords[0]}</span>
+                        ${site.keywords[1] ? '<span class="keyword-mini">'+site.keywords[1]+'</span>' : ''}
+                    </div>
+                    <div class="links-count">⭐被链接 ${site.links}</div>
+                `;
+                webGrid.appendChild(card);
+            });
+        }
+
+        // 渲染原始网页库
+        function renderRawDb() {
+            if (crawledPages.length === 0) {
+                rawDbDiv.innerHTML = '📭 等待爬虫抓取...';
+                rawDbDiv.className = 'empty-db';
+                return;
+            }
+            rawDbDiv.className = '';
+            let html = '<ul class="db-list">';
+            crawledPages.forEach(p => {
+                html += `<li><span>${p.icon}</span> ${p.id}  🔗${p.links}</li>`;
+            });
+            html += '</ul>';
+            rawDbDiv.innerHTML = html;
+        }
+
+        // 建立索引
+        function buildIndex() {
+            indexMap.clear();
+            crawledPages.forEach(page => {
+                page.keywords.forEach(kw => {
+                    if (!indexMap.has(kw)) indexMap.set(kw, []);
+                    if (!indexMap.get(kw).find(p => p.id === page.id)) {
+                        indexMap.get(kw).push(page);
+                    }
+                });
+            });
+            for (let [kw, arr] of indexMap.entries()) {
+                arr.sort((a,b) => b.links - a.links);
+            }
+        }
+
+        // 渲染索引
+        function renderIndex() {
+            if (indexMap.size === 0 || crawledPages.length === 0) {
+                indexDiv.innerHTML = '⏳ 抓取后自动更新';
+                indexDiv.className = 'empty-db';
+                return;
+            }
+            indexDiv.className = '';
+            let html = '<ul class="db-list">';
+            for (let [kw, pages] of indexMap.entries()) {
+                let names = pages.slice(0,2).map(p => p.id).join(', ');
+                if (pages.length > 2) names += '…';
+                html += `<li class="index-li"><span class="keyword-badge">${kw}</span> <span>${pages.length}条搜索结果: ${names}</span></li>`;
+            }
+            html += '</ul>';
+            indexDiv.innerHTML = html;
+        }
+
+        // 显示搜索结果（显示所有结果，通过滚动条查看）
+        function displaySearchResults(keyword, matchedPages) {
+            if (!matchedPages || matchedPages.length === 0) {
+                resultListDiv.innerHTML = `<div class="result-item"><span class="rank-badge">😕</span>没有“${keyword}”</div>`;
+                sortHint.innerHTML = `试试其他关键词`;
+                return;
+            }
+
+            const sorted = [...matchedPages].sort((a,b) => b.links - a.links);
+            
+            // 保存最后一次搜索结果
+            lastSearchKeyword = keyword;
+            lastSearchResults = sorted;
+
+            // 显示所有结果（通过滚动条查看）
+            let htmlStr = '';
+            sorted.forEach((p, idx) => {
+                htmlStr += `<div class="result-item"><span class="rank-badge">${idx+1}</span> ${p.icon} ${p.id}  <span class="link-tag">🔗${p.links}</span></div>`;
+            });
+            resultListDiv.innerHTML = htmlStr;
+            
+            sortHint.innerHTML = `✨ 按被链接数排序 (关键词:“${keyword}” 共${matchedPages.length}个搜索结果) 被链接数: ${sorted.map(p=>p.links).join(' > ')}`;
+        }
+
+        // 检查首次爬取是否完成（基础16个网页）
+        function checkInitialCrawlComplete() {
+            if (!initialCrawlComplete) {
+                // 检查是否所有基础网页都已爬取
+                const baseIds = baseSites.map(site => site.id);
+                const allBaseCrawled = baseIds.every(id => crawledIds.has(id));
+                
+                if (allBaseCrawled) {
+                    initialCrawlComplete = true;
+                    updateSearchButtonState();
+                    sortHint.innerHTML = '💡 首次爬取完成！现在可以搜索，点击搜索按钮会触发新网页出现';
+                    
+                    // 如果之前没有搜索过，显示提示
+                    if (!lastSearchResults) {
+                        resultListDiv.innerHTML = '<div class="result-item"><span class="rank-badge">✓</span>首次爬取完成，点击搜索查看结果</div>';
+                    }
+                }
+            }
+        }
+
+        // 爬取一个网页
+        function autoCrawl() {
+            if (isPaused) return;
+
+            // 如果全部爬完，停止定时器
+            if (crawledIds.size >= allSites.length) {
+                if (!allCrawledFlag) {
+                    allCrawledFlag = true;
+                    sortHint.innerHTML = '💡 所有网页爬取结束，索引已自动更新';
+                }
+                if (crawlInterval) {
+                    clearInterval(crawlInterval);
+                    crawlInterval = null;
+                }
+                return;
+            }
+
+            // 顺序查找下一个未爬取的网页
+            for (let attempt = 0; attempt < allSites.length; attempt++) {
+                const candidate = allSites[nextCrawlIndex];
+                if (!crawledIds.has(candidate.id)) {
+                    // 抓取这个网页
+                    const newPage = { ...candidate };
+                    crawledPages.push(newPage);
+                    crawledIds.add(newPage.id);
+                    currentSpiderId = newPage.id;
+
+                    // 移动指针
+                    nextCrawlIndex = (nextCrawlIndex + 1) % allSites.length;
+
+                    // 更新索引
+                    buildIndex();
+
+                    // 重新渲染所有相关区域
+                    renderWebCards();
+                    renderRawDb();
+                    renderIndex();
+
+                    // 检查首次爬取是否完成
+                    checkInitialCrawlComplete();
+
+                    // 如果有上一次的搜索结果，且首次爬取已完成（确保索引准确），更新显示
+                    if (initialCrawlComplete && lastSearchResults && lastSearchResults.length > 0) {
+                        const keyword = lastSearchKeyword;
+                        let matched = indexMap.get(keyword) || [];
+                        if (matched.length === 0) {
+                            matched = crawledPages.filter(p => 
+                                p.title.includes(keyword) || p.theme.includes(keyword));
+                        }
+                        if (matched.length > 0) {
+                            displaySearchResults(keyword, matched);
+                        }
+                    } else if (!initialCrawlComplete) {
+                        // 首次爬取完成前，显示等待提示
+                        resultListDiv.innerHTML = '<div class="result-item"><span class="rank-badge">⏳</span>正在抓取基础网页，请等待完成...</div>';
+                    }
+                    
+                    return;
+                } else {
+                    nextCrawlIndex = (nextCrawlIndex + 1) % allSites.length;
+                }
+            }
+        }
+
+        // 启动爬虫
+        function startCrawler() {
+            if (crawlInterval) clearInterval(crawlInterval);
+            crawlInterval = setInterval(autoCrawl, 1000);
+        }
+
+        // 暂停/继续
+        function togglePause() {
+            isPaused = !isPaused;
+            pauseBtn.innerHTML = isPaused ? '▶️ 继续' : '⏸️ 暂停';
+        }
+
+        // 添加隐藏网页
+        function addExtraSites() {
+            if (extraPagesAdded) return;
+
+            const oldCount = allSites.length;
+            
+            // 将隐藏网页添加到 allSites
+            allSites = [...allSites, ...hiddenSites];
+            
+            // 将 nextCrawlIndex 设置为 oldCount，指向第一个新网页
+            nextCrawlIndex = oldCount;
+            
+            extraPagesAdded = true;
+
+            // 重新渲染网页卡片
+            renderWebCards();
+
+            // 如果爬虫已经停止，重新启动它
+            if (!crawlInterval && crawledIds.size < allSites.length) {
+                startCrawler();
+            }
+
+            // 提示用户新网页出现
+            if (lastSearchResults) {
+                sortHint.innerHTML = '🌐 检测到新网页“编程猫”和“新品草莓”上线，爬虫继续抓取，搜索结果会自动更新';
+            } else {
+                sortHint.innerHTML = '🌐 检测到新网页“编程猫”和“新品草莓”上线，爬虫继续抓取...';
+            }
+        }
+
+        // 执行搜索
+        function doSearch() {
+            // 确保首次爬取已完成
+            if (!initialCrawlComplete) {
+                alert('请等待首次爬取完成（基础16个网页抓取完毕）后再搜索');
+                return;
+            }
+
+            // 第一次点击搜索时添加新网页
+            if (!extraPagesAdded) {
+                addExtraSites();
+            }
+
+            if (crawledPages.length === 0) {
+                alert('还没有抓取任何网页');
+                return;
+            }
+
+            const keyword = searchInput.value.trim();
+            if (keyword === '') {
+                alert('输入关键词');
+                return;
+            }
+
+            let matched = indexMap.get(keyword) || [];
+            
+            // 如果索引中没有，尝试在标题/主题中匹配
+            if (matched.length === 0) {
+                matched = crawledPages.filter(p => 
+                    p.title.includes(keyword) || p.theme.includes(keyword));
+            }
+
+            displaySearchResults(keyword, matched);
+        }
+
+        // 重置所有
+        function resetAll() {
+            allSites = [...baseSites];
+            extraPagesAdded = false;
+
+            crawledPages = [];
+            crawledIds.clear();
+            nextCrawlIndex = 0;
+            currentSpiderId = null;
+            indexMap.clear();
+            isPaused = false;
+            allCrawledFlag = false;
+            initialCrawlComplete = false;
+            
+            lastSearchKeyword = '';
+            lastSearchResults = null;
+
+            pauseBtn.innerHTML = '⏸️ 暂停';
+
+            renderWebCards();
+            renderRawDb();
+            renderIndex();
+            
+            resultListDiv.innerHTML = '<div class="result-item"><span class="rank-badge">1</span>等待爬虫抓取完成（基础16个网页）...</div>';
+            sortHint.innerHTML = '💡 爬虫正在抓取网页内容，首次抓取完成前搜索按钮不可用';
+            searchInput.value = '水果';
+
+            // 更新搜索按钮状态
+            updateSearchButtonState();
+
+            // 重启爬虫
+            if (crawlInterval) clearInterval(crawlInterval);
+            startCrawler();
+        }
+
+        // 绑定事件
+        pauseBtn.addEventListener('click', togglePause);
+        searchBtn.addEventListener('click', doSearch);
+        resetBtn.addEventListener('click', resetAll);
+
+        // 初始化
+        resetAll();
+
+        // 清理定时器
+        window.addEventListener('beforeunload', function() {
+            if (crawlInterval) clearInterval(crawlInterval);
+        });
+    })();
+</script>
+</body>
+</html>

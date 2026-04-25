@@ -420,17 +420,35 @@ function AssessmentView({
                 {question.text}
               </h3>
               <div className="space-y-3">
-                {question.options.map(function (option: { id: Key | null | undefined; label: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; text: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }) {
+                {question.options.map(function (option: any) {
+                  const isMulti = question.category === '多选题';
+                  const isSelected = Array.isArray(answers[question.id])
+                    ? (answers[question.id] as string[]).includes(option.id)
+                    : answers[question.id] === option.id;
+                  
+                  const handleOptionClick = () => {
+                    if (isMulti) {
+                      const current = Array.isArray(answers[question.id]) ? (answers[question.id] as string[]) : [];
+                      if (current.includes(option.id)) {
+                        setAnswers({ ...answers, [question.id]: current.filter(id => id !== option.id) });
+                      } else {
+                        setAnswers({ ...answers, [question.id]: [...current, option.id] });
+                      }
+                    } else {
+                      setAnswers({ ...answers, [question.id]: option.id });
+                    }
+                  };
+
                   return (
                     <button
                       key={option.id}
-                      onClick={() => setAnswers({ ...answers, [question.id]: option.id })}
-                      className={`w-full p-5 rounded-2xl transition-all text-left flex items-center gap-4 active:scale-[0.98] ${answers[question.id] === option.id
+                      onClick={handleOptionClick}
+                      className={`w-full p-5 rounded-2xl transition-all text-left flex items-center gap-4 active:scale-[0.98] ${isSelected
                         ? 'bg-primary-fixed border-2 border-primary shadow-sm'
                         : 'bg-surface-container-low border-2 border-transparent'}`}
                     >
-                      <span className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold text-base shrink-0 ${answers[question.id] === option.id ? 'bg-primary text-white' : 'bg-surface-container-high text-primary'}`}>{option.label}</span>
-                      <span className={`text-base font-medium ${answers[question.id] === option.id ? 'text-on-surface' : 'text-on-surface-variant'}`}>
+                      <span className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold text-base shrink-0 ${isSelected ? 'bg-primary text-white' : 'bg-surface-container-high text-primary'}`}>{option.label}</span>
+                      <span className={`text-base font-medium ${isSelected ? 'text-on-surface' : 'text-on-surface-variant'}`}>
                         {option.text}
                       </span>
                     </button>
@@ -591,7 +609,23 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, onGoLearn
         <div className="space-y-6">
           {currentAssessment.questions.map((q, idx) => {
             const userAnswer = result.answers.find(a => a.questionId === q.id)?.selectedOptionId;
-            const isCorrect = userAnswer === q.correctOptionId;
+            
+            const checkIsCorrect = (uAns: any, cAns: any) => {
+              if (!uAns) return false;
+              if (Array.isArray(cAns)) {
+                if (!Array.isArray(uAns)) return false;
+                if (cAns.length !== uAns.length) return false;
+                const sortedC = [...cAns].sort();
+                const sortedU = [...uAns].sort();
+                return sortedC.every((v, i) => v === sortedU[i]);
+              }
+              return uAns === cAns;
+            };
+            
+            const isCorrect = checkIsCorrect(userAnswer, q.correctOptionId);
+            const isOptionUserSelected = (optId: string) => Array.isArray(userAnswer) ? userAnswer.includes(optId) : userAnswer === optId;
+            const isOptionActualCorrect = (optId: string) => Array.isArray(q.correctOptionId) ? q.correctOptionId.includes(optId) : q.correctOptionId === optId;
+
             return (
               <motion.div key={q.id} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 className="bg-surface-container-lowest rounded-3xl p-6 card-shadow">
@@ -604,8 +638,8 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, onGoLearn
                 </div>
                 <h4 className="font-headline text-lg font-bold text-on-surface leading-snug mb-5">{q.text}</h4>
                 <div className="space-y-2.5 mb-5">
-                  {q.options.filter(opt => opt.id === userAnswer || opt.id === q.correctOptionId).map(opt => {
-                    const isActualCorrect = opt.id === q.correctOptionId;
+                  {q.options.filter(opt => isOptionUserSelected(opt.id) || isOptionActualCorrect(opt.id)).map(opt => {
+                    const isActualCorrect = isOptionActualCorrect(opt.id);
                     return (
                       <div key={opt.id} className={`p-4 rounded-2xl flex items-center justify-between ${isActualCorrect ? 'bg-secondary/5 border-2 border-secondary' : 'bg-error/5 border-2 border-error'}`}>
                         <span className="font-bold text-on-surface text-sm">{opt.text}</span>

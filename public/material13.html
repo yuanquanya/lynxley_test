@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<!-- 本网页由石家庄40中李老师提供 -->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCP协议互动课堂</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f7ff;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1a6dcc 0%, #0d4d9c 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .section {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+        }
+        
+        h2 {
+            color: #1a6dcc;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #e8f5e9;
+            padding-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .analogy-box {
+            background-color: #e8f4ff;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 5px solid #1a6dcc;
+        }
+        
+        .analogy-title {
+            font-weight: bold;
+            color: #1a6dcc;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .comparison-table th {
+            background-color: #1a6dcc;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8fbff;
+        }
+        
+        .animation-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .animation-container {
+            width: 100%;
+            height: 500px;
+            position: relative;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .control-panel {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background-color: #1a6dcc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background-color: #0d4d9c;
+            transform: scale(1.05);
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .segment-btn {
+            background-color: #2196F3;
+        }
+        
+        .segment-btn:hover {
+            background-color: #1976D2;
+        }
+        
+        .handshake-btn {
+            background-color: #4b6cb7;
+        }
+        
+        .handshake-btn:hover {
+            background-color: #F57C00;
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #f0f7ff;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+        
+        .highlight {
+            background-color: #e8f5e9;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #2E7D32;
+        }
+        
+        .tcp-segment {
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .step-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        
+        .info-panel {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            z-index: 100;
+            font-size: 0.95rem;
+            border-left: 4px solid #1a6dcc;
+            transition: opacity 0.5s ease;
+        }
+        
+        .info-title {
+            font-weight: bold;
+            color: #0d4d9c;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-text {
+            line-height: 1.5;
+        }
+        
+        /* 大数据包分段动画区域 */
+        .segmentation-area {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            width: 220px;
+            height: 180px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            border: 2px dashed #ccc;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        
+        .big-data-packet {
+            width: 180px;
+            height: 80px;
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+            transition: all 0.8s ease;
+            cursor: pointer;
+        }
+        
+        .big-data-packet:hover {
+            transform: scale(1.05);
+        }
+        
+        /* 分段样式 */
+        .segment-box {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            z-index: 50;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        
+        .segment-seq {
+            font-size: 10px;
+            margin-top: 2px;
+        }
+        
+        .lost-packet {
+            animation: blink 1s infinite;
+            border: 2px dashed #ff0000;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* 重传动画样式 - 调整到上方空白位置 */
+        .retransmission-message {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(244, 67, 54, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.5);
+            opacity: 0;
+            z-index: 200;
+            animation: fadeInDown 0.8s forwards;
+        }
+        
+        @keyframes fadeInDown {
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(10px);
+            }
+        }
+        
+        /* NACK消息样式 - 减小尺寸，添加传输路径 */
+        .nack-packet {
+            position: absolute;
+            width: 60px;
+            height: 30px;
+            background-color: rgba(255, 152, 0, 0.9);
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            z-index: 60;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+        }
+        
+        /* 三次握手动画容器 */
+        .handshake-animation-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* 三次握手消息包样式 */
+        .handshake-packet {
+            position: absolute;
+            width: 80px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 50;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+        }
+        
+        .syn-packet {
+            background-color: #FF9800; /* 橙色 - SYN */
+        }
+        
+        .synack-packet {
+            background-color: #B34D4D; /* 深红 - SYN-ACK */
+        }
+        
+        .ack-packet {
+            background-color: #1AE6E6; /* 浅蓝 - ACK */
+        }
+        
+        .handshake-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        
+        .question-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4b6cb7;
+            display: flex;
+            align-items: center;
+        }
+        
+        .question-content {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            text-align: left;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .footer p {
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .animation-container {
+                height: 450px;
+            }
+            
+            .info-panel {
+                max-width: 90%;
+                font-size: 0.85rem;
+            }
+            
+            .control-panel {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            .segmentation-area {
+                width: 160px;
+                height: 140px;
+                left: 10px;
+                top: 10px;
+            }
+            
+            .big-data-packet {
+                width: 140px;
+                height: 60px;
+                font-size: 14px;
+            }
+            
+            .retransmission-message {
+                font-size: 14px;
+                padding: 8px 15px;
+                top: 10px;
+            }
+            
+            .handshake-packet {
+                width: 70px;
+                height: 35px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🔗 TCP协议互动课堂</h1>
+    </header>
+    
+    <div class="container">
+        <section class="section">
+            <h2>📊 TCP协议：可靠的数据传输</h2>
+            <p>TCP（传输控制协议）是一种面向连接的、可靠的传输层通信协议。与IP协议不同，TCP确保数据能够可靠、有序地传输。</p>
+            
+            <div class="analogy-box">
+                <div class="analogy-title">📦 可靠包裹递送系统</div>
+                <p>TCP协议可以比作一个可靠的包裹递送系统：</p>
+                
+                <table class="comparison-table">
+                    <tr>
+                        <th>TCP协议功能</th>
+                        <th>生活类比</th>
+                        <th>功能解释</th>
+                    </tr>
+                    <tr>
+                        <td><strong>分段</strong></td>
+                        <td>大包裹拆分</td>
+                        <td>将大数据分割成适合网络传输的小段（TCP段）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>序号</strong></td>
+                        <td>包裹编号</td>
+                        <td>为每个TCP段分配唯一序号，用于重组</td>
+                    </tr>
+                    <tr>
+                        <td><strong>确认与重传</strong></td>
+                        <td>签收确认</td>
+                        <td>接收方确认收到数据，未确认或损坏的数据会重发</td>
+                    </tr>
+                    <tr>
+                        <td><strong>排序</strong></td>
+                        <td>按编号整理</td>
+                        <td>接收方按序号重新排序乱序到达的数据</td>
+                    </tr>
+                    <tr>
+                        <td><strong>流量控制</strong></td>
+                        <td>调节递送速度</td>
+                        <td>根据接收方处理能力调整发送速度</td>
+                    </tr>
+                    <tr>
+                        <td><strong>三次握手</strong></td>
+                        <td>建立连接</td>
+                        <td>通信前建立可靠连接：SYN → SYN-ACK → ACK（详细解释见下面的动画演示）</td>
+                    </tr>
+                </table>
+                
+                <p style="margin-top: 20px;">就像快递公司确保每个包裹都能准确送达一样，TCP协议确保数据在网络中可靠传输。它通过序号、确认和重传机制，确保数据完整、有序地到达目的地。</p>
+            </div>
+        </section>
+        
+        <!-- 交换位置：三次握手现在在上方 -->
+        <section class="section animation-section">
+            <h2>🤝 TCP三次握手过程</h2>
+            <p>TCP在数据传输前需要通过三次握手建立连接：1. 客户端发送SYN；2. 服务器回复SYN-ACK；3. 客户端发送ACK。握手完成后，可靠连接建立。</p>
+            
+            <div class="animation-container" id="handshakeContainer">
+                <canvas id="handshakeCanvas"></canvas>
+                <div class="info-panel" id="handshakeInfoPanel">
+                    <div class="info-title">ℹ️ TCP三次握手</div>
+                    <div class="info-text" id="handshakeInfoText">点击"开始三次握手演示"观察TCP三次握手过程。点击"下一步"分步查看。</div>
+                </div>
+            </div>
+            
+            <div class="handshake-controls">
+                <button id="startHandshakeBtn" class="handshake-btn">▶️ 开始三次握手演示</button>
+                <button id="nextHandshakeBtn" disabled>⏭️ 下一步</button>
+                <button id="autoHandshakeBtn">▶️ 自动演示</button>
+                <button id="resetHandshakeBtn">🔄 重置握手</button>
+            </div>
+            
+            <p style="margin-top: 15px; text-align: center; font-size: 0.95rem; color: #666;">
+                ℹ️ 注意：三次握手确保客户端和服务器都准备好发送和接收数据，建立可靠的端到端连接。
+            </p>
+        </section>
+        
+        <!-- 交换位置：TCP数据分段与重组现在在下方 -->
+        <section class="section animation-section">
+            <h2>✂️ TCP数据分段与重组</h2>
+            <p>TCP在发送数据前会将大数据分割成适合网络传输的小段（TCP段），并为每个段分配序号。接收端根据序号重新排序，确保数据正确重组。</p>
+            
+            <div class="animation-container" id="segmentContainer">
+                <div class="segmentation-area" id="segmentationArea">
+                    <div class="big-data-packet" id="bigDataPacket">
+                        大数据包
+                        <div style="font-size: 12px; margin-top: 5px;">点击"开始分段演示"</div>
+                    </div>
+                </div>
+                <canvas id="networkCanvas"></canvas>
+                <div class="info-panel" id="segmentInfoPanel">
+                    <div class="info-title">ℹ️ TCP分段与重组</div>
+                    <div class="info-text" id="segmentInfoText">点击"开始分段演示"观察TCP如何将大数据分割成TCP段，然后传输、排序和重组。</div>
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <button id="segmentBtn" class="segment-btn">✂️ 开始分段演示</button>
+                <button id="transmitBtn" class="segment-btn">📤 开始传输演示</button>
+                <button id="reorderBtn" class="segment-btn">🔄 开始排序演示</button>
+                <button id="retransmitBtn" class="segment-btn">🔄 开始重传演示</button>
+                <button id="resetSegmentBtn">🔄 重置分段动画</button>
+            </div>
+            
+            <p style="margin-top: 15px; text-align: center; font-size: 0.95rem; color: #666;">
+                ℹ️ 注意：TCP分段确保大数据适合网络传输；排序确保乱序数据正确重组；重传确保丢失或损坏的数据能够恢复。
+            </p>
+        </section>
+        <section class="section">
+            <div class="question-section">
+                <h2>📝题目</h2>
+                <div class="question-content">
+                    <p>TCP协议在进行数据传输前，需要先完成什么过程______</p>
+                </div>
+            </div>
+        </section>
+        <div class="footer">
+            <p>信息科技学业水平考试学习资料</p>
+        </div>
+    </div>
+
+    <script>
+        // ==================== TCP三次握手动画部分 ====================
+        const handshakeContainer = document.getElementById('handshakeContainer');
+        const handshakeInfoText = document.getElementById('handshakeInfoText');
+        const handshakeInfoPanel = document.getElementById('handshakeInfoPanel');
+        const startHandshakeBtn = document.getElementById('startHandshakeBtn');
+        const nextHandshakeBtn = document.getElementById('nextHandshakeBtn');
+        const autoHandshakeBtn = document.getElementById('autoHandshakeBtn');
+        const resetHandshakeBtn = document.getElementById('resetHandshakeBtn');
+        
+        const handshakeCanvas = document.getElementById('handshakeCanvas');
+        const handshakeCtx = handshakeCanvas.getContext('2d');
+        
+        function resizeHandshakeCanvas() {
+            const container = handshakeCanvas.parentElement;
+            handshakeCanvas.width = container.clientWidth;
+            handshakeCanvas.height = container.clientHeight;
+            if (handshakeNetworkInitialized) {
+                drawHandshakeNetwork();
+            }
+        }
+        
+        window.addEventListener('load', function() {
+            resizeHandshakeCanvas();
+            initHandshakeNetwork();
+        });
+        window.addEventListener('resize', resizeHandshakeCanvas);
+        
+        const handshakeNodes = [];
+        const handshakeConnections = [];
+        let handshakeAnimationId = null;
+        let handshakePackets = [];
+        let handshakeStep = 0;
+        let handshakeNetworkInitialized = false;
+        let isAutoPlaying = false;
+        let handshakePacketElements = [];
+        
+        // 初始化三次握手网络
+        function initHandshakeNetwork() {
+            handshakeNodes.length = 0;
+            handshakeConnections.length = 0;
+            handshakePackets.length = 0;
+            handshakePacketElements.forEach(el => {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+            });
+            handshakePacketElements = [];
+            
+            handshakeStep = 0;
+            isAutoPlaying = false;
+            
+            if (handshakeAnimationId) {
+                cancelAnimationFrame(handshakeAnimationId);
+                handshakeAnimationId = null;
+            }
+            
+            const centerX = handshakeCanvas.width / 2;
+            const centerY = handshakeCanvas.height / 2;
+            const radius = Math.min(handshakeCanvas.width, handshakeCanvas.height) * 0.35;
+            
+            handshakeNodes.push({
+                id: 0,
+                x: centerX - radius,
+                y: centerY,
+                label: "客户端",
+                type: "device",
+                ip: "192.168.1.100",
+                color: "#B4EEB4",
+                size: 30
+            });
+            
+            handshakeNodes.push({
+                id: 1,
+                x: centerX + radius,
+                y: centerY,
+                label: "服务器",
+                type: "device",
+                ip: "203.0.113.50",
+                color: "#FFBBFF",
+                size: 30
+            });
+            
+            const routerPositions = [
+                {x: centerX - radius*0.3, y: centerY - radius*0.4},
+                {x: centerX + radius*0.3, y: centerY - radius*0.4},
+                {x: centerX, y: centerY + radius*0.4}
+            ];
+            
+            const routerIPs = ["172.16.1.1", "10.0.0.1", "192.168.10.1"];
+            const routerColors = ["#9c27b0", "#ff9800", "#4caf50"];
+            
+            for (let i = 0; i < 3; i++) {
+                handshakeNodes.push({
+                    id: i + 2,
+                    x: routerPositions[i].x,
+                    y: routerPositions[i].y,
+                    label: `路由器${i+1}`,
+                    type: "router",
+                    ip: routerIPs[i],
+                    color: routerColors[i],
+                    size: 20
+                });
+            }
+            
+            for (let i = 2; i < handshakeNodes.length; i++) {
+                handshakeConnections.push({ from: 0, to: i });
+                handshakeConnections.push({ from: 1, to: i });
+            }
+            
+            handshakeConnections.push({ from: 2, to: 3 });
+            handshakeConnections.push({ from: 3, to: 4 });
+            handshakeConnections.push({ from: 2, to: 4 });
+            
+            drawHandshakeNetwork();
+            
+            updateHandshakeInfo("TCP三次握手", "点击'开始三次握手演示'观察TCP三次握手过程。点击'下一步'分步查看。", false);
+            
+            startHandshakeBtn.disabled = false;
+            nextHandshakeBtn.disabled = true;
+            autoHandshakeBtn.disabled = false;
+            
+            handshakeNetworkInitialized = true;
+        }
+        
+        // 绘制三次握手网络
+        function drawHandshakeNetwork() {
+            handshakeCtx.clearRect(0, 0, handshakeCanvas.width, handshakeCanvas.height);
+            
+            handshakeCtx.strokeStyle = "#ddd";
+            handshakeCtx.lineWidth = 1;
+            
+            for (const conn of handshakeConnections) {
+                const fromNode = handshakeNodes[conn.from];
+                const toNode = handshakeNodes[conn.to];
+                
+                handshakeCtx.beginPath();
+                handshakeCtx.moveTo(fromNode.x, fromNode.y);
+                handshakeCtx.lineTo(toNode.x, toNode.y);
+                handshakeCtx.stroke();
+            }
+            
+            for (const node of handshakeNodes) {
+                handshakeCtx.beginPath();
+                handshakeCtx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
+                handshakeCtx.fillStyle = node.color;
+                handshakeCtx.fill();
+                handshakeCtx.strokeStyle = "#333";
+                handshakeCtx.lineWidth = 2;
+                handshakeCtx.stroke();
+                
+                handshakeCtx.fillStyle = "white";
+                handshakeCtx.font = "14px Arial";
+                handshakeCtx.textAlign = "center";
+                handshakeCtx.textBaseline = "middle";
+                handshakeCtx.fillText(node.type === "device" ? (node.id === 0 ? "💻" : "🖥️") : "📶", node.x, node.y);
+                
+                handshakeCtx.fillStyle = "#333";
+                handshakeCtx.font = "bold 12px Arial";
+                handshakeCtx.fillText(node.label, node.x, node.y + node.size + 15);
+                
+                handshakeCtx.fillStyle = "#666";
+                handshakeCtx.font = "10px Arial";
+                handshakeCtx.fillText(node.ip, node.x, node.y + node.size + 30);
+            }
+            
+            for (const packet of handshakePackets) {
+                drawHandshakePacket(packet);
+            }
+        }
+        
+        // 绘制三次握手数据包
+        function drawHandshakePacket(packet) {
+            const size = 30;
+            
+            let x, y;
+            if (packet.progress >= 1) {
+                x = packet.nextNode.x;
+                y = packet.nextNode.y;
+            } else {
+                x = packet.currentNode.x + (packet.nextNode.x - packet.currentNode.x) * packet.progress;
+                y = packet.currentNode.y + (packet.nextNode.y - packet.currentNode.y) * packet.progress;
+            }
+            
+            handshakeCtx.beginPath();
+            handshakeCtx.rect(x - size/2, y - size/2, size, size);
+            handshakeCtx.fillStyle = packet.color;
+            handshakeCtx.fill();
+            handshakeCtx.strokeStyle = "#333";
+            handshakeCtx.lineWidth = 2;
+            handshakeCtx.stroke();
+            
+            handshakeCtx.fillStyle = "white";
+            handshakeCtx.font = "bold 12px Arial";
+            handshakeCtx.textAlign = "center";
+            handshakeCtx.textBaseline = "middle";
+            handshakeCtx.fillText(packet.label, x, y);
+        }
+        
+        // 更新握手信息
+        function updateHandshakeInfo(title, text, animate = true) {
+            if (animate) {
+                handshakeInfoPanel.style.opacity = '0';
+                
+                setTimeout(() => {
+                    handshakeInfoText.textContent = text;
+                    handshakeInfoPanel.querySelector('.info-title').innerHTML = `ℹ️ ${title}`;
+                    handshakeInfoPanel.style.opacity = '1';
+                }, 300);
+            } else {
+                handshakeInfoText.textContent = text;
+                handshakeInfoPanel.querySelector('.info-title').innerHTML = `ℹ️ ${title}`;
+                handshakeInfoPanel.style.opacity = '1';
+            }
+        }
+        
+        // 开始三次握手动画
+        function startHandshakeAnimation() {
+            if (handshakeAnimationId) {
+                cancelAnimationFrame(handshakeAnimationId);
+                handshakeAnimationId = null;
+            }
+            
+            startHandshakeBtn.disabled = true;
+            nextHandshakeBtn.disabled = false;
+            autoHandshakeBtn.disabled = true;
+            handshakeStep = 1;
+            
+            handshakePackets = [];
+            
+            updateHandshakeInfo(
+                "第一次握手 - SYN", 
+                "客户端向服务器发送SYN（同步）包，请求建立连接。"
+            );
+            
+            const synPath = [
+                handshakeNodes[0],
+                handshakeNodes[2],
+                handshakeNodes[3],
+                handshakeNodes[1]
+            ];
+            
+            handshakePackets.push({
+                id: 0,
+                label: "SYN",
+                color: "#FF9800",
+                path: synPath,
+                currentNode: synPath[0],
+                nextNode: synPath[1],
+                progress: 0,
+                speed: 0.02,
+                currentNodeIndex: 0,
+                arrived: false
+            });
+            
+            animateHandshake();
+        }
+        
+        // 三次握手下一步
+        function handshakeNextStep() {
+            handshakeStep++;
+            
+            if (handshakeStep === 2) {
+                updateHandshakeInfo(
+                    "第二次握手 - SYN-ACK", 
+                    "服务器收到SYN后回复SYN-ACK包，表示同意建立连接。"
+                );
+                
+                const synackPath = [
+                    handshakeNodes[1],
+                    handshakeNodes[3],
+                    handshakeNodes[4],
+                    handshakeNodes[0]
+                ];
+                
+                handshakePackets.push({
+                    id: 1,
+                    label: "SYN-ACK",
+                    color: "#EE0000",
+                    path: synackPath,
+                    currentNode: synackPath[0],
+                    nextNode: synackPath[1],
+                    progress: 0,
+                    speed: 0.02,
+                    currentNodeIndex: 0,
+                    arrived: false
+                });
+                
+                if (handshakeAnimationId) {
+                    cancelAnimationFrame(handshakeAnimationId);
+                }
+                animateHandshake();
+                
+            } else if (handshakeStep === 3) {
+                updateHandshakeInfo(
+                    "第三次握手 - ACK", 
+                    "客户端收到SYN-ACK后发送ACK包，确认连接建立。"
+                );
+                
+                const ackPath = [
+                    handshakeNodes[0],
+                    handshakeNodes[4],
+                    handshakeNodes[2],
+                    handshakeNodes[1]
+                ];
+                
+                handshakePackets.push({
+                    id: 2,
+                    label: "ACK",
+                    color: "#2196F3",
+                    path: ackPath,
+                    currentNode: ackPath[0],
+                    nextNode: ackPath[1],
+                    progress: 0,
+                    speed: 0.02,
+                    currentNodeIndex: 0,
+                    arrived: false
+                });
+                
+                if (handshakeAnimationId) {
+                    cancelAnimationFrame(handshakeAnimationId);
+                }
+                animateHandshake();
+                
+                nextHandshakeBtn.disabled = true;
+            }
+        }
+        
+        // 三次握手动画主循环
+        function animateHandshake() {
+            let allPacketsArrived = true;
+            
+            for (const packet of handshakePackets) {
+                if (!packet.arrived && packet.currentNodeIndex < packet.path.length - 1) {
+                    allPacketsArrived = false;
+                    
+                    packet.progress += packet.speed;
+                    
+                    if (packet.progress >= 1) {
+                        packet.currentNodeIndex++;
+                        
+                        if (packet.currentNodeIndex < packet.path.length - 1) {
+                            packet.currentNode = packet.nextNode;
+                            packet.nextNode = packet.path[packet.currentNodeIndex + 1];
+                            packet.progress = 0;
+                        } else {
+                            packet.currentNode = packet.nextNode;
+                            packet.progress = 1;
+                            packet.arrived = true;
+                            
+                            if (handshakeStep === 3 && packet.id === 2 && packet.arrived) {
+                                setTimeout(() => {
+                                    updateHandshakeInfo(
+                                        "连接建立", 
+                                        "三次握手完成，TCP连接成功建立。客户端和服务器可以开始可靠的数据传输。"
+                                    );
+                                }, 1000);
+                            }
+                        }
+                    }
+                } else if (!packet.arrived) {
+                    allPacketsArrived = false;
+                }
+            }
+            
+            drawHandshakeNetwork();
+            
+            if (allPacketsArrived && handshakePackets.length > 0) {
+                cancelAnimationFrame(handshakeAnimationId);
+                handshakeAnimationId = null;
+                
+                if (handshakeStep < 3) {
+                    nextHandshakeBtn.disabled = false;
+                }
+                
+                return;
+            }
+            
+            handshakeAnimationId = requestAnimationFrame(animateHandshake);
+        }
+        
+        // 自动演示三次握手
+        function autoHandshake() {
+            if (isAutoPlaying) return;
+            
+            isAutoPlaying = true;
+            startHandshakeBtn.disabled = true;
+            nextHandshakeBtn.disabled = true;
+            autoHandshakeBtn.disabled = true;
+            
+            initHandshakeNetwork();
+            
+            setTimeout(() => {
+                startHandshakeAnimation();
+                
+                setTimeout(() => {
+                    handshakeNextStep();
+                    
+                    setTimeout(() => {
+                        handshakeNextStep();
+                    }, 3000);
+                }, 3000);
+                
+                setTimeout(() => {
+                    isAutoPlaying = false;
+                    autoHandshakeBtn.disabled = false;
+                }, 10000);
+            }, 1000);
+        }
+        
+        // ==================== TCP分段与重组动画部分 ====================
+        const segmentContainer = document.getElementById('segmentContainer');
+        const segmentInfoText = document.getElementById('segmentInfoText');
+        const segmentInfoPanel = document.getElementById('segmentInfoPanel');
+        const segmentationArea = document.getElementById('segmentationArea');
+        const bigDataPacket = document.getElementById('bigDataPacket');
+        
+        const segmentBtn = document.getElementById('segmentBtn');
+        const transmitBtn = document.getElementById('transmitBtn');
+        const reorderBtn = document.getElementById('reorderBtn');
+        const retransmitBtn = document.getElementById('retransmitBtn');
+        const resetSegmentBtn = document.getElementById('resetSegmentBtn');
+        
+        const canvas = document.getElementById('networkCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            if (networkInitialized) {
+                drawNetwork();
+            }
+        }
+        
+        window.addEventListener('load', function() {
+            resizeCanvas();
+            initNetwork();
+        });
+        window.addEventListener('resize', resizeCanvas);
+        
+        const nodes = [];
+        const connections = [];
+        let animationId = null;
+        let dataPackets = [];
+        let animationSpeed = 5;
+        let currentMode = null;
+        let networkInitialized = false;
+        let segmentStep = 0;
+        let lostSegmentIndex = -1;
+        let retransmitted = false;
+        let segmentElements = [];
+        let nackPacket = null;
+        let nackAnimationId = null;
+        let nackArrived = false;
+        
+        const segmentColors = [
+            '#FF5252', '#FF9800', '#FFEB3B', '#4CAF50', 
+            '#2196F3', '#9C27B0', '#E91E63', '#795548'
+        ];
+        
+        function initNetwork() {
+            nodes.length = 0;
+            connections.length = 0;
+            dataPackets.length = 0;
+            segmentElements.forEach(el => {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+            });
+            segmentElements = [];
+            
+            currentMode = null;
+            segmentStep = 0;
+            lostSegmentIndex = -1;
+            retransmitted = false;
+            nackArrived = false;
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            if (nackAnimationId) {
+                cancelAnimationFrame(nackAnimationId);
+                nackAnimationId = null;
+            }
+            
+            const retransmissionMsg = segmentContainer.querySelector('.retransmission-message');
+            if (retransmissionMsg) retransmissionMsg.remove();
+            
+            if (nackPacket) {
+                nackPacket.remove();
+                nackPacket = null;
+            }
+            
+            bigDataPacket.style.display = 'flex';
+            bigDataPacket.style.opacity = '1';
+            bigDataPacket.style.transform = 'scale(1)';
+            bigDataPacket.innerHTML = '大数据包<div style="font-size: 12px; margin-top: 5px;">点击"开始分段演示"</div>';
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(canvas.width, canvas.height) * 0.35;
+            
+            nodes.push({
+                id: 0,
+                x: centerX - radius,
+                y: centerY,
+                label: "发送端",
+                type: "device",
+                ip: "192.168.1.10",
+                color: "#2196F3",
+                size: 30
+            });
+            
+            nodes.push({
+                id: 1,
+                x: centerX + radius,
+                y: centerY,
+                label: "接收端",
+                type: "device",
+                ip: "203.0.113.25",
+                color: "#FF9800",
+                size: 30
+            });
+            
+            const routerPositions = [
+                {x: centerX - radius*0.5, y: centerY - radius*0.6},
+                {x: centerX, y: centerY - radius*0.8},
+                {x: centerX + radius*0.5, y: centerY - radius*0.6},
+                {x: centerX - radius*0.5, y: centerY + radius*0.6},
+                {x: centerX, y: centerY + radius*0.8},
+                {x: centerX + radius*0.5, y: centerY + radius*0.6}
+            ];
+            
+            const routerIPs = [
+                "172.16.1.1",
+                "10.0.0.1",
+                "192.168.10.1",
+                "172.31.0.1",
+                "10.10.1.1",
+                "192.168.100.1"
+            ];
+            
+            const routerColors = ["#9c27b0", "#ff9800", "#4caf50", "#e91e63", "#00bcd4", "#8bc34a"];
+            
+            for (let i = 0; i < 6; i++) {
+                nodes.push({
+                    id: i + 2,
+                    x: routerPositions[i].x,
+                    y: routerPositions[i].y,
+                    label: `路由器${i+1}`,
+                    type: "router",
+                    ip: routerIPs[i],
+                    color: routerColors[i],
+                    size: 20
+                });
+            }
+            
+            for (let i = 2; i < nodes.length; i++) {
+                connections.push({ from: 0, to: i });
+                connections.push({ from: 1, to: i });
+            }
+            
+            connections.push({ from: 2, to: 3 });
+            connections.push({ from: 3, to: 4 });
+            connections.push({ from: 2, to: 4 });
+            connections.push({ from: 5, to: 6 });
+            connections.push({ from: 6, to: 7 });
+            connections.push({ from: 5, to: 7 });
+            connections.push({ from: 2, to: 5 });
+            connections.push({ from: 2, to: 6 });
+            connections.push({ from: 3, to: 5 });
+            connections.push({ from: 3, to: 7 });
+            connections.push({ from: 4, to: 6 });
+            connections.push({ from: 4, to: 7 });
+            
+            drawNetwork();
+            
+            updateSegmentInfo("TCP分段与重组", "点击'开始分段演示'观察TCP如何将大数据分割成TCP段，然后传输、排序和重组。", false);
+            
+            segmentBtn.disabled = false;
+            transmitBtn.disabled = true;
+            reorderBtn.disabled = true;
+            retransmitBtn.disabled = true;
+            
+            networkInitialized = true;
+        }
+        
+        function drawNetwork() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.strokeStyle = "#ddd";
+            ctx.lineWidth = 1;
+            
+            for (const conn of connections) {
+                const fromNode = nodes[conn.from];
+                const toNode = nodes[conn.to];
+                
+                ctx.beginPath();
+                ctx.moveTo(fromNode.x, fromNode.y);
+                ctx.lineTo(toNode.x, toNode.y);
+                ctx.stroke();
+            }
+            
+            for (const node of nodes) {
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
+                ctx.fillStyle = node.color;
+                ctx.fill();
+                ctx.strokeStyle = "#333";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                ctx.fillStyle = "white";
+                ctx.font = "14px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(node.type === "device" ? (node.id === 0 ? "📤" : "📥") : "📶", node.x, node.y);
+                
+                ctx.fillStyle = "#333";
+                ctx.font = "bold 12px Arial";
+                ctx.fillText(node.label, node.x, node.y + node.size + 15);
+                
+                ctx.fillStyle = "#666";
+                ctx.font = "10px Arial";
+                ctx.fillText(node.ip, node.x, node.y + node.size + 30);
+            }
+            
+            for (const packet of dataPackets) {
+                drawPacket(packet);
+            }
+        }
+        
+        function drawPacket(packet) {
+            const size = 20;
+            
+            let x, y;
+            if (packet.progress >= 1) {
+                x = packet.nextNode.x;
+                y = packet.nextNode.y;
+            } else {
+                x = packet.currentNode.x + (packet.nextNode.x - packet.currentNode.x) * packet.progress;
+                y = packet.currentNode.y + (packet.nextNode.y - packet.currentNode.y) * packet.progress;
+            }
+            
+            ctx.beginPath();
+            ctx.rect(x - size/2, y - size/2, size, size);
+            ctx.fillStyle = packet.color;
+            ctx.fill();
+            ctx.strokeStyle = packet.isLost ? "#ff0000" : "#333";
+            ctx.lineWidth = packet.isLost ? 2 : 1;
+            if (packet.isLost) {
+                ctx.setLineDash([5, 3]);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.fillStyle = "white";
+            ctx.font = "bold 11px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(packet.label, x, y);
+            
+            if (packet.seq) {
+                ctx.fillStyle = "#333";
+                ctx.font = "9px Arial";
+                ctx.fillText(`SEQ:${packet.seq}`, x, y + size/2 + 10);
+            }
+        }
+        
+        function updateSegmentInfo(title, text, animate = true) {
+            if (animate) {
+                segmentInfoPanel.style.opacity = '0';
+                
+                setTimeout(() => {
+                    segmentInfoText.textContent = text;
+                    segmentInfoPanel.querySelector('.info-title').innerHTML = `ℹ️ ${title}`;
+                    segmentInfoPanel.style.opacity = '1';
+                }, 300);
+            } else {
+                segmentInfoText.textContent = text;
+                segmentInfoPanel.querySelector('.info-title').innerHTML = `ℹ️ ${title}`;
+                segmentInfoPanel.style.opacity = '1';
+            }
+        }
+        
+        function startSegmentAnimation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            segmentBtn.disabled = true;
+            transmitBtn.disabled = false;
+            segmentStep = 1;
+            currentMode = 'segment';
+            
+            updateSegmentInfo(
+                "TCP分段", 
+                "TCP将大数据分割成适合网络传输的小段（TCP段），并为每个段分配序号。"
+            );
+            
+            bigDataPacket.style.transform = 'scale(0.8)';
+            bigDataPacket.style.opacity = '0.5';
+            
+            setTimeout(() => {
+                bigDataPacket.style.display = 'none';
+                createSegments();
+            }, 500);
+        }
+        
+        function createSegments() {
+            segmentElements.forEach(el => {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+            });
+            segmentElements = [];
+            
+            const segmentationAreaRect = segmentationArea.getBoundingClientRect();
+            const segmentContainerRect = segmentContainer.getBoundingClientRect();
+            
+            const centerX = segmentationAreaRect.left - segmentContainerRect.left + segmentationAreaRect.width / 2;
+            const centerY = segmentationAreaRect.top - segmentContainerRect.top + segmentationAreaRect.height / 2;
+            
+            for (let i = 0; i < 8; i++) {
+                const segment = document.createElement('div');
+                segment.className = 'segment-box';
+                segment.id = `segment-${i}`;
+                segment.innerHTML = `段${i+1}<div class="segment-seq">SEQ:${i+1}</div>`;
+                segment.style.backgroundColor = segmentColors[i];
+                
+                segment.style.left = (centerX - 20) + 'px';
+                segment.style.top = (centerY - 20) + 'px';
+                
+                segment.dataset.index = i;
+                segment.dataset.sequence = i + 1;
+                
+                segmentContainer.appendChild(segment);
+                segmentElements.push(segment);
+                
+                setTimeout(() => {
+                    const angle = (i / 8) * Math.PI * 2;
+                    const radius = 80;
+                    const targetX = centerX + Math.cos(angle) * radius - 20;
+                    const targetY = centerY + Math.sin(angle) * radius - 20;
+                    
+                    segment.style.left = targetX + 'px';
+                    segment.style.top = targetY + 'px';
+                    segment.style.opacity = '1';
+                    segment.style.transform = 'scale(1)';
+                    
+                    createCanvasSegment(i, targetX, targetY);
+                }, i * 150);
+            }
+            
+            setTimeout(() => {
+                updateSegmentInfo(
+                    "TCP分段完成", 
+                    "大数据已被分割成8个TCP段，每个段都有唯一序号。点击'开始传输演示'继续。"
+                );
+            }, 1500);
+        }
+        
+        function createCanvasSegment(index, x, y) {
+            const seq = index + 1;
+            
+            dataPackets.push({
+                id: index,
+                label: `段${seq}`,
+                seq: seq,
+                color: segmentColors[index],
+                x: x,
+                y: y,
+                isOriginal: true,
+                isVisible: true
+            });
+            
+            drawNetwork();
+        }
+        
+        function startTransmitAnimation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            segmentElements.forEach(el => {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+            });
+            segmentElements = [];
+            
+            transmitBtn.disabled = true;
+            reorderBtn.disabled = false;
+            retransmitBtn.disabled = false;
+            segmentStep = 2;
+            currentMode = 'transmit';
+            
+            updateSegmentInfo(
+                "TCP段传输", 
+                "TCP段通过网络传输到接收端。注意：数据包可能乱序到达，也可能丢失或损坏。"
+            );
+            
+            dataPackets = [];
+            
+            lostSegmentIndex = Math.floor(Math.random() * 8);
+            
+            const pathOptions = [
+                [nodes[0], nodes[2], nodes[3], nodes[4], nodes[1]],
+                [nodes[0], nodes[2], nodes[5], nodes[6], nodes[1]],
+                [nodes[0], nodes[5], nodes[6], nodes[7], nodes[1]],
+                [nodes[0], nodes[3], nodes[5], nodes[7], nodes[1]],
+                [nodes[0], nodes[4], nodes[6], nodes[7], nodes[1]],
+                [nodes[0], nodes[2], nodes[4], nodes[6], nodes[1]],
+                [nodes[0], nodes[3], nodes[6], nodes[7], nodes[1]],
+                [nodes[0], nodes[2], nodes[7], nodes[1]]
+            ];
+            
+            const transmitOrder = [];
+            for (let i = 0; i < 8; i++) {
+                transmitOrder.push(i);
+            }
+            
+            for (let i = transmitOrder.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [transmitOrder[i], transmitOrder[j]] = [transmitOrder[j], transmitOrder[i]];
+            }
+            
+            for (let i = 0; i < 8; i++) {
+                const seq = transmitOrder[i] + 1;
+                const pathIndex = i % pathOptions.length;
+                const isLost = (seq - 1) === lostSegmentIndex && !retransmitted;
+                const delay = i * 300 + Math.random() * 500;
+                
+                dataPackets.push({
+                    id: i,
+                    label: `段${seq}`,
+                    seq: seq,
+                    color: segmentColors[seq - 1],
+                    path: pathOptions[pathIndex],
+                    currentNode: pathOptions[pathIndex][0],
+                    nextNode: pathOptions[pathIndex][1],
+                    progress: 0,
+                    speed: 0.01 + Math.random() * 0.01,
+                    currentNodeIndex: 0,
+                    isLost: isLost,
+                    arrived: false,
+                    delay: delay,
+                    startTime: null
+                });
+            }
+            
+            animate();
+        }
+        
+        function startReorderAnimation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            reorderBtn.disabled = true;
+            segmentStep = 3;
+            currentMode = 'reorder';
+            
+            updateSegmentInfo(
+                "TCP段排序", 
+                "接收端根据TCP段序号重新排序，为重组数据做准备。"
+            );
+            
+            const arrivedPackets = dataPackets.filter(p => p.arrived && !p.isLost);
+            arrivedPackets.sort((a, b) => a.seq - b.seq);
+            
+            const receiverX = nodes[1].x;
+            const receiverY = nodes[1].y;
+            
+            for (let i = 0; i < arrivedPackets.length; i++) {
+                const packet = arrivedPackets[i];
+                packet.targetX = receiverX - 70 + i * 35;
+                packet.targetY = receiverY + 50;
+                packet.reorderProgress = 0;
+            }
+            
+            function animateReorder() {
+                let allArrived = true;
+                
+                drawNetworkBase();
+                
+                for (const packet of dataPackets) {
+                    if (packet.arrived && packet.targetX && packet.targetY) {
+                        packet.reorderProgress = Math.min(packet.reorderProgress + 0.03, 1);
+                        
+                        const currentX = packet.x || receiverX;
+                        const currentY = packet.y || receiverY;
+                        
+                        packet.x = currentX + (packet.targetX - currentX) * packet.reorderProgress;
+                        packet.y = currentY + (packet.targetY - currentY) * packet.reorderProgress;
+                        
+                        drawPacketAtPosition(packet);
+                        
+                        if (packet.reorderProgress < 1) {
+                            allArrived = false;
+                        }
+                    } else if (!packet.arrived && !packet.isLost) {
+                        drawPacket(packet);
+                        allArrived = false;
+                    }
+                }
+                
+                const lostPacket = dataPackets.find(p => p.isLost && !p.arrived);
+                if (lostPacket) {
+                    drawPacket(lostPacket);
+                }
+                
+                if (!allArrived) {
+                    animationId = requestAnimationFrame(animateReorder);
+                } else {
+                    animationId = null;
+                    
+                    if (lostSegmentIndex >= 0 && !retransmitted) {
+                        updateSegmentInfo(
+                            "排序完成（有缺失）", 
+                            `TCP段已按序号排序，但段${lostSegmentIndex+1}丢失或损坏。接收端将请求重传该段。点击'开始重传演示'观察TCP重传机制。`
+                        );
+                    } else {
+                        updateSegmentInfo(
+                            "排序完成", 
+                            "TCP段已按序号正确排序。数据可以重组。"
+                        );
+                    }
+                }
+            }
+            
+            animateReorder();
+        }
+        
+        function drawPacketAtPosition(packet) {
+            const size = 20;
+            const x = packet.x;
+            const y = packet.y;
+            
+            ctx.beginPath();
+            ctx.rect(x - size/2, y - size/2, size, size);
+            ctx.fillStyle = packet.color;
+            ctx.fill();
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            ctx.fillStyle = "white";
+            ctx.font = "bold 11px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(packet.label, x, y);
+            
+            ctx.fillStyle = "#333";
+            ctx.font = "9px Arial";
+            ctx.fillText(`SEQ:${packet.seq}`, x, y + size/2 + 10);
+        }
+        
+        function startRetransmitAnimation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            retransmitBtn.disabled = true;
+            segmentStep = 4;
+            currentMode = 'retransmit';
+            
+            nackArrived = false;
+            
+            showRetransmissionAnimation();
+            
+            setTimeout(() => {
+                showNACKAnimation();
+            }, 1500);
+        }
+        
+        function showRetransmissionAnimation() {
+            const existingAnim = segmentContainer.querySelector('.retransmission-message');
+            if (existingAnim) existingAnim.remove();
+            
+            const retransmissionMsg = document.createElement('div');
+            retransmissionMsg.className = 'retransmission-message';
+            retransmissionMsg.textContent = '检测到数据包丢失或损坏，开始重传...';
+            
+            segmentContainer.appendChild(retransmissionMsg);
+            
+            setTimeout(() => {
+                retransmissionMsg.remove();
+            }, 3000);
+        }
+        
+        function showNACKAnimation() {
+            if (nackPacket) {
+                nackPacket.remove();
+                nackPacket = null;
+            }
+            
+            nackPacket = document.createElement('div');
+            nackPacket.className = 'nack-packet';
+            nackPacket.textContent = `NACK`;
+            nackPacket.style.left = nodes[1].x + 'px';
+            nackPacket.style.top = nodes[1].y + 'px';
+            
+            segmentContainer.appendChild(nackPacket);
+            
+            const nackPath = [
+                nodes[1],
+                nodes[7],
+                nodes[5],
+                nodes[2],
+                nodes[0]
+            ];
+            
+            let currentPathIndex = 0;
+            let nackProgress = 0;
+            const nackSpeed = 0.02;
+            
+            function animateNACK() {
+                if (currentPathIndex < nackPath.length - 1) {
+                    const currentNode = nackPath[currentPathIndex];
+                    const nextNode = nackPath[currentPathIndex + 1];
+                    
+                    nackProgress += nackSpeed;
+                    
+                    const x = currentNode.x + (nextNode.x - currentNode.x) * nackProgress;
+                    const y = currentNode.y + (nextNode.y - currentNode.y) * nackProgress;
+                    
+                    nackPacket.style.left = x + 'px';
+                    nackPacket.style.top = y + 'px';
+                    
+                    if (nackProgress >= 1) {
+                        currentPathIndex++;
+                        nackProgress = 0;
+                        
+                        if (currentPathIndex >= nackPath.length - 1) {
+                            nackArrived = true;
+                            
+                            setTimeout(() => {
+                                nackPacket.remove();
+                                nackPacket = null;
+                            }, 500);
+                            
+                            cancelAnimationFrame(nackAnimationId);
+                            nackAnimationId = null;
+                            
+                            startRetransmission();
+                            return;
+                        }
+                    }
+                    
+                    nackAnimationId = requestAnimationFrame(animateNACK);
+                }
+            }
+            
+            nackAnimationId = requestAnimationFrame(animateNACK);
+        }
+        
+        function startRetransmission() {
+            retransmitted = true;
+            
+            const lostPacketIndex = dataPackets.findIndex(p => p.seq - 1 === lostSegmentIndex);
+            
+            if (lostPacketIndex >= 0) {
+                const lostPacket = dataPackets[lostPacketIndex];
+                lostPacket.isLost = false;
+                lostPacket.arrived = false;
+                lostPacket.progress = 0;
+                lostPacket.currentNodeIndex = 0;
+                lostPacket.currentNode = nodes[0];
+                lostPacket.nextNode = lostPacket.path[1];
+                lostPacket.x = undefined;
+                lostPacket.y = undefined;
+                lostPacket.targetX = undefined;
+                lostPacket.targetY = undefined;
+                lostPacket.startTime = Date.now();
+                
+                updateSegmentInfo(
+                    "TCP重传中", 
+                    `接收端发送的NACK已到达发送端。发送端正在重新传输段${lostSegmentIndex+1}。`
+                );
+                
+                animate();
+                
+                setTimeout(() => {
+                    if (segmentStep === 4) {
+                        startReorderAnimation();
+                    }
+                }, 7000);
+            }
+        }
+        
+        function drawNetworkBase() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.strokeStyle = "#ddd";
+            ctx.lineWidth = 1;
+            
+            for (const conn of connections) {
+                const fromNode = nodes[conn.from];
+                const toNode = nodes[conn.to];
+                
+                ctx.beginPath();
+                ctx.moveTo(fromNode.x, fromNode.y);
+                ctx.lineTo(toNode.x, toNode.y);
+                ctx.stroke();
+            }
+            
+            for (const node of nodes) {
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
+                ctx.fillStyle = node.color;
+                ctx.fill();
+                ctx.strokeStyle = "#333";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                ctx.fillStyle = "white";
+                ctx.font = "14px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(node.type === "device" ? (node.id === 0 ? "📤" : "📥") : "📶", node.x, node.y);
+                
+                ctx.fillStyle = "#333";
+                ctx.font = "bold 12px Arial";
+                ctx.fillText(node.label, node.x, node.y + node.size + 15);
+                
+                ctx.fillStyle = "#666";
+                ctx.font = "10px Arial";
+                ctx.fillText(node.ip, node.x, node.y + node.size + 30);
+            }
+        }
+        
+        function animate() {
+            const currentTime = Date.now();
+            
+            let allPacketsArrived = true;
+            let activePackets = 0;
+            
+            for (const packet of dataPackets) {
+                if (!packet.arrived && packet.currentNodeIndex < packet.path.length - 1) {
+                    if (!packet.startTime) {
+                        packet.startTime = currentTime + packet.delay;
+                    }
+                    
+                    if (currentTime >= packet.startTime) {
+                        activePackets++;
+                        allPacketsArrived = false;
+                        
+                        packet.progress += packet.speed * (animationSpeed / 5);
+                        
+                        if (packet.progress >= 1) {
+                            packet.currentNodeIndex++;
+                            
+                            if (packet.currentNodeIndex < packet.path.length - 1) {
+                                packet.currentNode = packet.nextNode;
+                                packet.nextNode = packet.path[packet.currentNodeIndex + 1];
+                                packet.progress = 0;
+                            } else {
+                                packet.currentNode = packet.nextNode;
+                                packet.progress = 1;
+                                packet.arrived = true;
+                                
+                                packet.x = packet.nextNode.x;
+                                packet.y = packet.nextNode.y;
+                            }
+                        }
+                    } else {
+                        allPacketsArrived = false;
+                    }
+                } else if (!packet.arrived) {
+                    allPacketsArrived = false;
+                }
+            }
+            
+            drawNetwork();
+            
+            if (allPacketsArrived && activePackets === 0 && dataPackets.length > 0 && currentMode === 'transmit') {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+                
+                updateSegmentInfo(
+                    "传输完成", 
+                    `TCP段已传输，${lostSegmentIndex >= 0 && !retransmitted ? `但段${lostSegmentIndex+1}丢失或损坏。` : '所有段都已到达。'}点击'开始排序演示'观察TCP如何重组数据。`
+                );
+                
+                return;
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 事件监听
+        segmentBtn.addEventListener('click', startSegmentAnimation);
+        transmitBtn.addEventListener('click', startTransmitAnimation);
+        reorderBtn.addEventListener('click', startReorderAnimation);
+        retransmitBtn.addEventListener('click', startRetransmitAnimation);
+        resetSegmentBtn.addEventListener('click', initNetwork);
+        
+        startHandshakeBtn.addEventListener('click', startHandshakeAnimation);
+        nextHandshakeBtn.addEventListener('click', handshakeNextStep);
+        autoHandshakeBtn.addEventListener('click', autoHandshake);
+        resetHandshakeBtn.addEventListener('click', initHandshakeNetwork);
+        
+        // 初始化
+        initNetwork();
+        initHandshakeNetwork();
+    </script>
+</body>
+</html>

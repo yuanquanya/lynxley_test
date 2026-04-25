@@ -1,0 +1,208 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=utf-8">
+<meta name=Generator content="Microsoft Word 15 (filtered)">
+
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.8;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px 20px;
+        background-color: #f1f5f9;
+    }
+    .wrapper {
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    h1 {
+        color: #1a365d;
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 2.2rem;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 20px;
+    }
+    p {
+        margin-bottom: 18px;
+        font-size: 1.1rem;
+        color: #334155;
+    }
+    strong {
+        color: #0f172a;
+        font-weight: 600;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 30px 0;
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    th, td {
+        padding: 15px 20px;
+        border: 1px solid #e2e8f0;
+        text-align: left;
+        font-size: 1.05rem;
+    }
+    thead td, thead th, tr:first-child td {
+        background-color: #f8fafc;
+        color: #1a365d;
+        font-weight: bold;
+    }
+    tbody tr:hover {
+        background-color: #f1f5f9;
+    }
+    ul, ol {
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+        padding-left: 25px;
+        color: #334155;
+    }
+    li {
+        margin-bottom: 10px;
+    }
+    .concept-card {
+        background-color: #f8fafc;
+        border-left: 5px solid #3b82f6;
+        padding: 25px;
+        margin: 30px 0;
+        border-radius: 0 12px 12px 0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+</style>
+
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<h1>水果编码：用0和1给水果拍“数字照片”</h1>
+
+<p>数据编码是计算机处理中非常关键的一部分。它通过使用编码符号来表示信息或数据，从而便于使用和记忆。数据编码就像给事物特征编密码，用简单数字精准记录外形特点，最常用的就是0和1。我们可以用0和1为水果的外形特征制定二进制编码规则，轻松读懂数字背后的水果模样。我们为水果制定了5个容易观察的特征，每个特征只有两种可能，用0或1表示。</p>
+
+<p align=center>表1 水果的特征属性编码表</p>
+
+<div align=center>
+
+<table>
+ <thead>
+  <tr>
+   <td>
+   <p align=center><strong>水果特征</strong></p>
+   </td>
+   <td>
+   <p align=center><strong>特征描述</strong></p>
+   </td>
+   <td>
+   <p align=center><strong>编码（0）</strong></p>
+   </td>
+   <td>
+   <p align=center><strong>编码（1）</strong></p>
+   </td>
+  </tr>
+ </thead>
+ <tr>
+  <td>
+  <p align=left>①表皮颜色</p>
+  </td>
+  <td>
+  <p align=center>看水果表面的主要颜色</p>
+  </td>
+  <td>
+  <p align=center>暖色系（红/黄/橙）</p>
+  </td>
+  <td>
+  <p align=center>冷色系（绿/紫/蓝）</p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p align=left>②表面质感</p>
+  </td>
+  <td>
+  <p align=center>摸一摸水果表面</p>
+  </td>
+  <td>
+  <p align=center>光滑</p>
+  </td>
+  <td>
+  <p align=center>粗糙</p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p align=left>③大小</p>
+  </td>
+  <td>
+  <p align=center>看水果有多大 </p>
+  </td>
+  <td>
+  <p align=center>小型（单手可握/拿）</p>
+  </td>
+  <td>
+  <p align=center>大型（双手捧）</p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p align=left>④形状</p>
+  </td>
+  <td>
+  <p align=center>看水果是什么形状</p>
+  </td>
+  <td>
+  <p align=center>圆形/椭圆形</p>
+  </td>
+  <td>
+  <p align=center>非圆形（如草莓形）</p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p align=left>⑤有无明显籽/核</p>
+  </td>
+  <td>
+  <p align=center>切开或咬开看看</p>
+  </td>
+  <td>
+  <p align=center>无/不明显</p>
+  </td>
+  <td>
+  <p align=center>有明显籽/核</p>
+  </td>
+ </tr>
+</table>
+
+</div>
+
+<p>&nbsp;</p>
+
+<p>编码按【表皮颜色→表面质感→大小→形状→有无明显籽/核】的固定位序组合，每串5位二进制编码对应唯一的水果特征。</p>
+
+<p align=center><img height=77 id="图片 3"
+src="material30.files/image001.jpg" alt=菠萝></p>
+
+<p>上图所示的菠萝就可以用编码01110表示，这是一个暖色表皮、大型、粗糙、非圆形、无籽的水果。</p>
+
+<p>&nbsp;</p>
+
+<p>【题目】根据以上学习资料，下图所示冬枣的编码应该为<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</u>。</p>
+
+<p align=center><img height=161 id="图片 4" src="material30.files/image002.jpg" alt=冬枣></p>
+
+</div>
+
+</body>
+
+</html>

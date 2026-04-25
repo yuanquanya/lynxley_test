@@ -324,17 +324,37 @@ function AssessmentView({
           <div className="space-y-12">
             <h3 className="text-3xl font-bold leading-tight text-on-surface tracking-tight">{question.text}</h3>
             <div className="space-y-4">
-              {question.options.map((option) => (
-                <button key={option.id} onClick={() => setAnswers({ ...answers, [question.id]: option.id })}
-                  className={`w-full p-6 rounded-2xl border-2 transition-all text-left flex items-center gap-5 group ${
-                    answers[question.id] === option.id ? 'bg-primary-fixed border-primary shadow-md' : 'bg-surface-container-lowest border-transparent hover:border-outline-variant/30 ambient-shadow'
-                  }`}>
-                  <span className={`w-12 h-12 flex items-center justify-center rounded-xl font-black text-lg transition-colors ${
-                    answers[question.id] === option.id ? 'bg-primary text-white' : 'bg-surface-container-high text-primary group-hover:bg-primary-fixed'
-                  }`}>{option.label}</span>
-                  <span className={`text-lg font-bold ${answers[question.id] === option.id ? 'text-on-surface' : 'text-on-surface-variant'}`}>{option.text}</span>
-                </button>
-              ))}
+              {question.options.map((option) => {
+                const isMulti = question.category === '多选题';
+                const isSelected = Array.isArray(answers[question.id])
+                  ? (answers[question.id] as string[]).includes(option.id)
+                  : answers[question.id] === option.id;
+                
+                const handleOptionClick = () => {
+                  if (isMulti) {
+                    const current = Array.isArray(answers[question.id]) ? (answers[question.id] as string[]) : [];
+                    if (current.includes(option.id)) {
+                      setAnswers({ ...answers, [question.id]: current.filter(id => id !== option.id) });
+                    } else {
+                      setAnswers({ ...answers, [question.id]: [...current, option.id] });
+                    }
+                  } else {
+                    setAnswers({ ...answers, [question.id]: option.id });
+                  }
+                };
+
+                return (
+                  <button key={option.id} onClick={handleOptionClick}
+                    className={`w-full p-6 rounded-2xl border-2 transition-all text-left flex items-center gap-5 group ${
+                      isSelected ? 'bg-primary-fixed border-primary shadow-md' : 'bg-surface-container-lowest border-transparent hover:border-outline-variant/30 ambient-shadow'
+                    }`}>
+                    <span className={`w-12 h-12 flex items-center justify-center rounded-xl font-black text-lg transition-colors ${
+                      isSelected ? 'bg-primary text-white' : 'bg-surface-container-high text-primary group-hover:bg-primary-fixed'
+                    }`}>{option.label}</span>
+                    <span className={`text-lg font-bold ${isSelected ? 'text-on-surface' : 'text-on-surface-variant'}`}>{option.text}</span>
+                  </button>
+                );
+              })}
             </div>
 
             <div className="flex items-center justify-between pt-12">
@@ -366,7 +386,7 @@ function AssessmentView({
                 className={`w-10 h-10 flex flex-col items-center justify-center rounded-xl font-black text-xs transition-all relative overflow-hidden ${
                   idx === currentQuestionIndex ? 'bg-primary text-white ring-4 ring-primary-fixed shadow-lg'
                     : markedQuestions[q.id] ? 'bg-secondary-container/20 text-secondary border border-secondary'
-                    : answers[q.id] ? 'bg-surface-container-high text-on-surface-variant border border-outline-variant/30'
+                    : (Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).length > 0 : answers[q.id]) ? 'bg-surface-container-high text-on-surface-variant border border-outline-variant/30'
                     : 'bg-surface-container-low text-on-surface-variant border border-outline-variant/10 hover:border-primary'
                 }`}>
                 <span>{idx + 1}</span>
@@ -476,7 +496,23 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHis
 
           {currentAssessment.questions.map((q, idx) => {
             const userAnswer = result.answers.find(a => a.questionId === q.id)?.selectedOptionId;
-            const isCorrect = userAnswer === q.correctOptionId;
+
+            const checkIsCorrect = (uAns: any, cAns: any) => {
+              if (!uAns) return false;
+              if (Array.isArray(cAns)) {
+                if (!Array.isArray(uAns)) return false;
+                if (cAns.length !== uAns.length) return false;
+                const sortedC = [...cAns].sort();
+                const sortedU = [...uAns].sort();
+                return sortedC.every((v, i) => v === sortedU[i]);
+              }
+              return uAns === cAns;
+            };
+
+            const isCorrect = checkIsCorrect(userAnswer, q.correctOptionId);
+            const isOptionUserSelected = (optId: string) => Array.isArray(userAnswer) ? userAnswer.includes(optId) : userAnswer === optId;
+            const isOptionActualCorrect = (optId: string) => Array.isArray(q.correctOptionId) ? q.correctOptionId.includes(optId) : q.correctOptionId === optId;
+
             return (
               <motion.div key={q.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 className={`bg-surface-container-lowest rounded-[2rem] p-12 border-2 transition-all ambient-shadow ${isCorrect ? 'border-transparent' : 'border-error/20'}`}>
@@ -489,9 +525,9 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHis
                 </div>
                 <h3 className="font-headline text-3xl font-bold mb-10 leading-tight tracking-tight">{q.text}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                  {q.options.filter(opt => opt.id === userAnswer || opt.id === q.correctOptionId).map(opt => {
-                    const isSelected = opt.id === userAnswer;
-                    const isActualCorrect = opt.id === q.correctOptionId;
+                  {q.options.filter(opt => isOptionUserSelected(opt.id) || isOptionActualCorrect(opt.id)).map(opt => {
+                    const isSelected = isOptionUserSelected(opt.id);
+                    const isActualCorrect = isOptionActualCorrect(opt.id);
                     return (
                       <div key={opt.id} className={`p-8 rounded-2xl border-2 relative ${isActualCorrect ? 'bg-secondary/5 border-secondary' : 'bg-error/5 border-error'}`}>
                         <div className="flex justify-between mb-4">

@@ -144,16 +144,30 @@ export default function App() {
   const handleFinishAssessment = useCallback(() => {
     const { remaining, totalSeconds } = timerRef.current;
     const timeTaken = computeTimeTaken(remaining, totalSeconds);
+    
+    const checkIsCorrect = (userAns: string | string[] | undefined, correctAns: string | string[]) => {
+      if (!userAns) return false;
+      if (Array.isArray(correctAns)) {
+        if (!Array.isArray(userAns)) return false;
+        if (correctAns.length !== userAns.length) return false;
+        const sortedCorrect = [...correctAns].sort();
+        const sortedUser = [...userAns].sort();
+        return sortedCorrect.every((val, index) => val === sortedUser[index]);
+      }
+      return userAns === correctAns;
+    };
+
     const correctCount = currentAssessment.questions.reduce((acc, q) => {
-      return acc + (answers[q.id] === q.correctOptionId ? 1 : 0);
+      return acc + (checkIsCorrect(answers[q.id], q.correctOptionId) ? 1 : 0);
     }, 0);
+    
     const score = Math.round((correctCount / currentAssessment.questions.length) * 100);
     const categoryStats: Record<string, { correct: number; total: number }> = {};
     currentAssessment.questions.forEach(q => {
       const cat = q.category || '未分类';
       if (!categoryStats[cat]) categoryStats[cat] = { correct: 0, total: 0 };
       categoryStats[cat].total += 1;
-      if (answers[q.id] === q.correctOptionId) categoryStats[cat].correct += 1;
+      if (checkIsCorrect(answers[q.id], q.correctOptionId)) categoryStats[cat].correct += 1;
     });
 
     const breakdown = Object.entries(categoryStats).map(([category, stats]) => ({

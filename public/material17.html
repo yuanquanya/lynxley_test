@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<!-- 本网页由石家庄40中李老师提供 -->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>UDP协议工作原理</title>
+    <style>
+        /* 紧凑蓝色系风格 - 恢复网络图高度，功能按钮保留 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background-color: #e7f0ff;
+            color: #1e2b45;
+            line-height: 1.3;
+            padding: 10px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        /* 纯标题头 */
+        header {
+            text-align: center;
+            margin-bottom: 12px;
+            padding: 12px 10px;
+            background: linear-gradient(135deg, #1e5f9e, #0d3b6a);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 8px rgba(0, 30, 60, 0.2);
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        /* 生活化例子块 */
+        .life-example {
+            background-color: #fff7e0;
+            border-left: 8px solid #ffae42;
+            padding: 14px 18px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+            font-size: 1.05rem;
+        }
+        .life-example strong {
+            color: #b45f06;
+            font-size: 1.15rem;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .left-panel {
+            flex: 1.1;
+            min-width: 280px;
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 40, 80, 0.1);
+        }
+        .right-panel {
+            flex: 2;
+            min-width: 350px;
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 40, 80, 0.1);
+        }
+        .section-title {
+            color: #0d3b6a;
+            margin-bottom: 12px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #c3d9ff;
+            font-size: 1.2rem;
+        }
+        .feature-card {
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            background-color: #e3f0ff;
+            border-left: 5px solid #1e5f9e;
+        }
+        .feature-card h3 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+            color: #0d3b6a;
+            font-size: 1.1rem;
+        }
+        .feature-card h3 i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        .feature-card p {
+            font-size: 0.92rem;
+        }
+        .control-panel {
+            background-color: #f2f8ff;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #1e5f9e;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex: 1 0 auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            background-color: #0d3b6a;
+            transform: translateY(-1px);
+        }
+        button:disabled {
+            background-color: #a0b9d6;
+            cursor: default;
+            transform: none;
+        }
+        #resetBtn {
+            background-color: #4a6a8a;
+        }
+        #stepBtn {
+            background-color: #ff8c42;
+        }
+        .step-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            align-items: center;
+        }
+        .step-info {
+            flex: 2;
+            text-align: center;
+            padding: 6px;
+            background-color: #d4e4ff;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .canvas-container {
+            position: relative;
+            height: 380px;  /* 恢复原高度，让网络图更舒展 */
+            background-color: #f5faff;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #b8d1f3;
+            margin-top: 8px;
+        }
+        #transmissionCanvas {
+            width: 100%;
+            height: 100%;
+        }
+        /* 消息框加宽到420px，确保文字完整显示 */
+        .message-box {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background-color: rgba(255,255,255,0.98);
+            padding: 12px 12px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            width: 400px;    /* 进一步加大宽度 */
+            z-index: 10;
+            border-left: 5px solid #1e5f9e;
+            font-size: 0.9rem;
+            pointer-events: none;  /* 让鼠标可以穿透点击画布 */
+            word-wrap: break-word;
+        }
+        .message-box h4 {
+            color: #0d3b6a;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+        .message-box p {
+            line-height: 1.4;
+        }
+        .status-panel {
+            background-color: #e3f0ff;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 12px;
+            border-left: 5px solid #1e5f9e;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 0.85rem;
+        }
+        .status-label {
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+        .status-value {
+            font-weight: 700;
+            color: #0d3b6a;
+        }
+        .packet-visualization {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+            justify-content: center;
+            min-height: 45px;
+        }
+        .packet {
+            width: 45px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: white;
+            transition: all 0.2s;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .udp-packet {
+            background-color: #1e5f9e;
+            border: 1px solid #0d3b6a;
+        }
+        .lost-packet {
+            background-color: #ff6b6b;
+            border: 1px dashed #b00020;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+        .received-packet {
+            background-color: #2e9a5e;
+            border: 1px solid #1b6b3c;
+        }
+        .transmitting-packet {
+            background-color: #ffae42;
+            border: 1px dashed #b86000;
+            animation: pulse 1.2s infinite;
+        }
+        @keyframes pulse { 0%{transform:scale(1);} 50%{transform:scale(1.05);} }
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 8px;
+            font-size: 0.8rem;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+        .app-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #b8d5ff;
+            border-radius: 50%;
+            margin: 3px;
+            font-size: 1.1rem;
+        }
+        /* 考试题目区域 */
+        .question-section {
+            margin: 15px 0 10px;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0,40,80,0.1);
+        }
+        .question-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #4b6cb7;
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+        }
+        .question-content {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            font-size: 1rem;
+            text-align: left;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #c3d9ff;
+            color: #4a6a8a;
+            font-size: 0.8rem;
+        }
+        .footer p { margin-bottom: 3px; }
+        @media (max-width: 800px) {
+            .container { flex-direction: column; }
+            .canvas-container { height: 300px; }
+            button { padding: 8px 10px; }
+            .message-box { width: 280px; left: 5px; padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 极简标题 -->
+    <header>
+        <h1>📡 UDP协议工作原理</h1>
+    </header>
+
+    <!-- 生活化例子：纸飞机 -->
+    <div class="life-example">
+        UDP 协议就像在操场上“喊话”一样简单直接。想象你正在操场上和朋友玩，你想叫同桌过来，于是你直接张嘴喊：“喂，过来一下！”这就是 UDP 的工作方式：
+<p><strong>无连接‌：</strong>你不用先打电话确认对方是否方便，也不用提前约定时间，直接喊就行。</p>
+<p>‌<strong>不可靠‌：</strong>你喊完就完了，不用确认对方是否听见。若他没听见、或被其他声音盖过了，你也不知道。</p>
+<p><strong>速度快‌：</strong>因为不需要确认、不需要重传，你喊话的速度非常快，延迟极低。</p>
+    </div>
+
+    <div class="container">
+        <!-- 左侧特点 + 状态 -->
+        <div class="left-panel">
+            <h2 class="section-title"><span>📋</span> UDP的特点</h2>
+            <div class="feature-card">
+                <h3><span>⚡</span> 无连接 · 直接发</h3>
+                <p>不需要“握手”，想发就发，速度很快。</p>
+            </div>
+            <div class="feature-card">
+                <h3><span>📭</span> 不确认 · 不重传</h3>
+                <p>数据丢了就丢了，接收方不告诉发送方“收到了”。</p>
+            </div>
+            <div class="feature-card">
+                <h3><span>📦</span> 不拆分也不合并</h3>
+                <p>应用层给多少数据，UDP就原样发送。如果数据太大，由下层（IP协议）负责分片。</p>
+            </div>
+            <div class="feature-card">
+                <h3><span>🔄</span> 不保证顺序</h3>
+                <p>后发的包可能先到，顺序乱了怎么办？<strong>由应用程序自己负责整理</strong>。UDP不管顺序。</p>
+            </div>
+            <div class="feature-card">
+                <h3><span>🎬</span> 常见用法</h3>
+                <p>由于速度快，适合对实时性要求高的场景：视频直播 · 在线游戏 · 语音通话 · 智能电视(DHCP)</p>
+                <div style="display:flex; justify-content:center; margin-top:6px;">
+                    <span class="app-icon">📺</span>
+                    <span class="app-icon">🎮</span>
+                    <span class="app-icon">📞</span>
+                </div>
+            </div>
+
+            <div class="status-panel">
+                <h3 style="font-size:1rem; margin-bottom:8px;">📊 传输状态</h3>
+                <div class="status-item"><span class="status-label">UDP包总数:</span><span class="status-value" id="totalUdpPackets">0</span></div>
+                <div class="status-item"><span class="status-label">已发出:</span><span class="status-value" id="sentUdpPackets">0</span></div>
+                <div class="status-item"><span class="status-label">成功到达:</span><span class="status-value" id="receivedUdpPackets">0</span></div>
+                <div class="status-item"><span class="status-label">丢失/损坏:</span><span class="status-value" id="lostUdpPackets">0</span></div>
+                <div class="status-item"><span class="status-label">经过时间:</span><span class="status-value" id="transmissionTime">0秒</span></div>
+                <div style="margin-top:8px; background:#c3d9ff; padding:6px; border-radius:5px; text-align:center; font-size:0.8rem;">
+                    ⚠️ UDP没有“收到”的回信，丢了就丢了，顺序乱了应用自己整理
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧动画 + 控制（所有功能按钮保留） -->
+        <div class="right-panel">
+            <h2 class="section-title"><span>🎬</span> UDP发送动画</h2>
+            <div class="control-panel">
+                <div class="controls">
+                    <button id="startBtn"><span>▶️</span> 开始</button>
+                    <button id="pauseBtn"><span>⏸️</span> 暂停</button>
+                    <button id="resetBtn"><span>🔄</span> 重置</button>
+                    <button id="stepBtn"><span>⏩</span> 单步</button>
+                </div>
+                <div class="step-controls">
+                    <div class="step-info" id="stepDisplay">第1步 · 应用层把数据交给UDP</div>
+                </div>
+            </div>
+
+            <!-- 画布 + 消息框（加宽到420px，文字精简） -->
+            <div class="canvas-container">
+                <div class="message-box" id="messageBox">
+                    <h4><span>ℹ️</span> <span id="messageTitle">UDP：无连接</span></h4>
+                    <p id="messageText">不需要打招呼，直接扔出数据包。每个包走不同路径，可能乱序到达。</p>
+                </div>
+                <canvas id="transmissionCanvas"></canvas>
+            </div>
+
+            <!-- 下方小包图标 + 图例 -->
+            <div class="packet-visualization" id="packetVisualization"></div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color udp-packet"></div><span>UDP数据包</span></div>
+                <div class="legend-item"><div class="legend-color transmitting-packet"></div><span>传输中</span></div>
+                <div class="legend-item"><div class="legend-color received-packet"></div><span>已到达</span></div>
+                <div class="legend-item"><div class="legend-color lost-packet"></div><span>丢失</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UDP工作流程（四个简单步骤） -->
+    <div class="left-panel" style="width:100%; margin:5px 0; padding:12px;">
+        <h2 class="section-title"><span>📋</span> UDP工作的四个简单步骤</h2>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; text-align:center;">
+            <div style="flex:1; background:#e3f0ff; padding:8px; border-radius:8px;"><span style="font-size:1.5rem;">①📦</span><br><strong>应用交给UDP</strong><br><span style="font-size:0.8rem;">游戏数据交给UDP，UDP给它加个“快递单”(端口号)</span></div>
+            <div style="flex:1; background:#e3f0ff; padding:8px; border-radius:8px;"><span style="font-size:1.5rem;">②🚀</span><br><strong>UDP原样发送</strong><br><span style="font-size:0.8rem;">不加连接，不拆分数据，直接扔给IP层</span></div>
+            <div style="flex:1; background:#e3f0ff; padding:8px; border-radius:8px;"><span style="font-size:1.5rem;">③📥</span><br><strong>对方可能收到</strong><br><span style="font-size:0.8rem;">不回复“收到了”，直接读数据。如果路上丢了，就丢了</span></div>
+            <div style="flex:1; background:#e3f0ff; padding:8px; border-radius:8px;"><span style="font-size:1.5rem;">④🔚</span><br><strong>结束，无重传</strong><br><span style="font-size:0.8rem;">发送方继续发下一个，不管上一个是否到达</span></div>
+        </div>
+    </div>
+
+    <!-- 考试题目模块（无输入框） -->
+    <div class="question-section">
+        <h2>📝题目</h2>
+        <div class="question-content">
+            <p>在UDP工作的四个步骤中，如果数据包在网络中丢失了，发送方会怎么做______</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>信息科技学业水平考试学习资料</p>
+    </div>
+
+    <script>
+        (function(){
+            // 画布与元素
+            const canvas = document.getElementById('transmissionCanvas');
+            const ctx = canvas.getContext('2d');
+            const startBtn = document.getElementById('startBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const stepBtn = document.getElementById('stepBtn');
+            const stepDisplay = document.getElementById('stepDisplay');
+            const messageTitle = document.getElementById('messageTitle');
+            const messageText = document.getElementById('messageText');
+            const packetVisual = document.getElementById('packetVisualization');
+
+            // 状态显示
+            const totalUdpSpan = document.getElementById('totalUdpPackets');
+            const sentUdpSpan = document.getElementById('sentUdpPackets');
+            const receivedUdpSpan = document.getElementById('receivedUdpPackets');
+            const lostUdpSpan = document.getElementById('lostUdpPackets');
+            const timeSpan = document.getElementById('transmissionTime');
+
+            // 全局变量
+            let animationId = null;
+            let isPlaying = false;
+            let elapsedTime = 0;
+            let startTimestamp = 0;
+            let udpPackets = [];
+            const LOSS_RATE = 0.35;  // 中高丢包率
+
+            // 网络节点
+            let networkNodes = [];
+            let networkEdges = [];
+
+            // 统计数据
+            let udpSent = 0, udpReceived = 0, udpLost = 0;
+
+            // 步骤描述 - 精简文字，只保留游戏例子
+            const stepMessages = [
+                { title: "① 应用层把数据交给UDP", text: "比如游戏画面，UDP给它们加上端口号，准备发送。" },
+                { title: "② UDP原样交给IP层", text: "UDP不建立连接，不拆分数据，直接整个包扔给IP层。" },
+                { title: "③ 包在网络中传输", text: "每个包走不同路径，有的可能走丢，有的顺利到达。" },
+                { title: "④ 到达或丢失", text: "接收端取出数据，但不会回复。丢掉的包永远不会重传。" },
+                { title: "⑤ 传输继续", text: "发送方继续发下一个包，不管上一个是否收到。" }
+            ];
+            let currentStep = 0;
+
+            // 初始化网络节点 - 恢复更丰富的网状结构，让网络图更饱满
+            function initMeshNetwork() {
+                networkNodes = [];
+                networkEdges = [];
+                const w = canvas.width, h = canvas.height;
+                if (w < 10) return;
+                const centerX = w/2, centerY = h/2;
+                const netW = w * 0.7;
+                const netH = h * 0.7;
+                
+                // 发送端和接收端
+                networkNodes.push({ id:0, x: w*0.15, y: centerY, type:'sender', label:'发' });
+                networkNodes.push({ id:1, x: w*0.85, y: centerY, type:'receiver', label:'收' });
+                
+                // 7个路由器，形成更立体的网状
+                const routerPositions = [
+                    {x: centerX - netW/3, y: centerY - netH/3},
+                    {x: centerX, y: centerY - netH/3},
+                    {x: centerX + netW/3, y: centerY - netH/3},
+                    {x: centerX - netW/3, y: centerY},
+                    {x: centerX + netW/3, y: centerY},
+                    {x: centerX - netW/3, y: centerY + netH/3},
+                    {x: centerX, y: centerY + netH/3}
+                ];
+                
+                for (let i=0; i<7; i++) {
+                    networkNodes.push({
+                        id: i+2,
+                        x: routerPositions[i].x,
+                        y: routerPositions[i].y,
+                        type: 'router',
+                        label: `R${i+1}`
+                    });
+                }
+                
+                // 丰富的网状连接
+                const connections = [
+                    [0,2],[0,3],[0,5],
+                    [1,4],[1,6],[1,8],
+                    [2,3],[2,4],[2,5],
+                    [3,4],[3,6],
+                    [4,6],[4,8],
+                    [5,6],[5,7],
+                    [6,7],[6,8],
+                    [7,8]
+                ];
+                
+                for (let [f,t] of connections) {
+                    if (f < networkNodes.length && t < networkNodes.length) {
+                        networkEdges.push({
+                            from: f, to: t,
+                            fromX: networkNodes[f].x, fromY: networkNodes[f].y,
+                            toX: networkNodes[t].x, toY: networkNodes[t].y
+                        });
+                    }
+                }
+            }
+
+            // 随机路径 - 确保每个包走真正不同的路径
+            function randomPath(usedPaths = []) {
+                const templates = [
+                    [0,2,3,4,1],      // 路径1：发→R1→R2→R3→收
+                    [0,3,4,6,1],      // 路径2：发→R2→R3→R5→收
+                    [0,5,6,8,1],      // 路径3：发→R4→R5→R7→收
+                    [0,2,5,7,8,1],    // 路径4：发→R1→R4→R6→R7→收
+                    [0,3,6,8,1],      // 路径5：发→R2→R5→R7→收
+                    [0,5,7,6,8,1],    // 路径6：发→R4→R6→R5→R7→收
+                    [0,2,4,6,1],      // 路径7：发→R1→R3→R5→收
+                    [0,3,5,6,8,1],    // 路径8：发→R2→R4→R5→R7→收
+                    [0,2,3,6,8,1],    // 路径9：发→R1→R2→R5→R7→收
+                    [0,5,6,4,1]       // 路径10：发→R4→R5→R3→收
+                ];
+                
+                // 如果没有提供已使用路径，随机选一个
+                if (!usedPaths || usedPaths.length === 0) {
+                    let idx = Math.floor(Math.random() * templates.length);
+                    return [...templates[idx]];
+                }
+                
+                // 尝试找一个不同的路径（最多尝试20次）
+                for (let attempt = 0; attempt < 20; attempt++) {
+                    let idx = Math.floor(Math.random() * templates.length);
+                    let candidate = templates[idx];
+                    
+                    // 检查是否与已使用路径相似度过高（简单检查：路径长度或第一个路由器不同）
+                    let isDifferent = true;
+                    for (let used of usedPaths) {
+                        // 如果路径长度相同且第二个节点（第一个路由器）相同，认为太相似
+                        if (used.length === candidate.length && used[1] === candidate[1]) {
+                            isDifferent = false;
+                            break;
+                        }
+                        // 或者路径完全相同
+                        if (used.toString() === candidate.toString()) {
+                            isDifferent = false;
+                            break;
+                        }
+                    }
+                    
+                    if (isDifferent) {
+                        return [...candidate];
+                    }
+                }
+                
+                // 如果找不到完全不同的，就随机选一个
+                let idx = Math.floor(Math.random() * templates.length);
+                return [...templates[idx]];
+            }
+
+            // 生成UDP包 - 确保每个包走不同路径
+            function generatePackets() {
+                udpPackets = [];
+                let count = 7;
+                let usedPaths = [];
+                
+                for (let i=0; i<count; i++) {
+                    let corrupted = Math.random() < LOSS_RATE;
+                    let path = randomPath(usedPaths);
+                    usedPaths.push(path);
+                    
+                    udpPackets.push({
+                        id: i,
+                        path: path,
+                        currentNodeIndex: 0,
+                        progress: 0,
+                        speed: 0.5 + Math.random() * 0.5, // 随机速度让包不同时到达
+                        status: 'pending',
+                        isCorrupted: corrupted,
+                        sequence: i
+                    });
+                }
+                udpSent = 0; udpReceived = 0; udpLost = 0;
+                elapsedTime = 0;
+                currentStep = 0;
+                updateStepDisplay();
+                updateStatus();
+            }
+
+            // 更新统计
+            function updateStatus() {
+                totalUdpSpan.textContent = udpPackets.length;
+                sentUdpSpan.textContent = udpPackets.filter(p => p.status!=='pending').length;
+                receivedUdpSpan.textContent = udpPackets.filter(p => p.status==='received').length;
+                lostUdpSpan.textContent = udpPackets.filter(p => p.status==='lost').length;
+                timeSpan.textContent = elapsedTime.toFixed(1) + '秒';
+            }
+
+            // 更新步骤显示
+            function updateStepDisplay() {
+                let msg = stepMessages[currentStep % stepMessages.length];
+                stepDisplay.textContent = `第${currentStep+1}步 · ${msg.title}`;
+                messageTitle.textContent = msg.title;
+                messageText.textContent = msg.text;
+            }
+
+            // 绘制网络+包
+            function drawScene() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                
+                // 画边
+                for (let e of networkEdges) {
+                    ctx.beginPath();
+                    ctx.moveTo(e.fromX, e.fromY);
+                    ctx.lineTo(e.toX, e.toY);
+                    ctx.strokeStyle = '#a0b8d9';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+                
+                // 画节点
+                for (let n of networkNodes) {
+                    ctx.beginPath();
+                    ctx.arc(n.x, n.y, n.type==='router'? 12 : 18, 0, 2*Math.PI);
+                    ctx.fillStyle = n.type==='sender'? '#1e5f9e' : (n.type==='receiver'? '#2e9a5e' : '#7a8aa5');
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 10px Arial';
+                    ctx.textAlign='center'; ctx.textBaseline='middle';
+                    ctx.fillText(n.label, n.x, n.y-1);
+                }
+                
+                // 画包
+                for (let p of udpPackets) {
+                    if (p.status !== 'transmitting' && p.status !== 'received') continue;
+                    let idx = p.currentNodeIndex;
+                    if (idx >= p.path.length-1) {
+                        let last = networkNodes[p.path[p.path.length-1]];
+                        if (last) drawPacket(p, last.x, last.y);
+                        continue;
+                    }
+                    let cur = networkNodes[p.path[idx]];
+                    let nxt = networkNodes[p.path[idx+1]];
+                    if (!cur || !nxt) continue;
+                    let x = cur.x + (nxt.x - cur.x) * p.progress;
+                    let y = cur.y + (nxt.y - cur.y) * p.progress;
+                    drawPacket(p, x, y);
+                }
+            }
+
+            function drawPacket(p, x, y) {
+                let size = 12;
+                ctx.beginPath();
+                if (p.status === 'transmitting') {
+                    ctx.fillStyle = p.isCorrupted ? '#ffae42' : '#ffae42';
+                } else if (p.status === 'received') {
+                    ctx.fillStyle = '#2e9a5e';
+                } else return;
+                ctx.arc(x, y, size, 0, 2*Math.PI);
+                ctx.fill();
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 9px Arial';
+                ctx.textAlign='center'; ctx.textBaseline='middle';
+                ctx.fillText('U'+(p.sequence+1), x, y);
+            }
+
+            // 下方小包可视化
+            function updatePacketsView() {
+                packetVisual.innerHTML = '';
+                for (let p of udpPackets) {
+                    let div = document.createElement('div');
+                    div.className = 'packet';
+                    if (p.status === 'pending') div.classList.add('udp-packet');
+                    else if (p.status === 'transmitting') div.classList.add('transmitting-packet');
+                    else if (p.status === 'received') div.classList.add('received-packet');
+                    else if (p.status === 'lost') div.classList.add('lost-packet');
+                    div.textContent = `U${p.sequence+1}`;
+                    packetVisual.appendChild(div);
+                }
+            }
+
+            // 动画更新
+            function animate() {
+                if (!isPlaying) return;
+                let now = Date.now();
+                elapsedTime += (now - startTimestamp) / 1000;
+                startTimestamp = now;
+
+                let anyMoving = false;
+                for (let p of udpPackets) {
+                    if (p.status === 'transmitting') {
+                        anyMoving = true;
+                        if (p.currentNodeIndex >= p.path.length-1) {
+                            if (p.isCorrupted && Math.random() < 0.4) {
+                                p.status = 'lost';
+                                udpLost++;
+                            } else {
+                                p.status = 'received';
+                                udpReceived++;
+                            }
+                            continue;
+                        }
+                        p.progress += p.speed * 0.02;
+                        if (p.progress >= 1) {
+                            p.currentNodeIndex++;
+                            p.progress = 0;
+                        }
+                    }
+                }
+
+                // 根据传输进度更新步骤
+                let receivedCount = udpPackets.filter(p => p.status === 'received').length;
+                let lostCount = udpPackets.filter(p => p.status === 'lost').length;
+                let totalDone = receivedCount + lostCount;
+                if (totalDone === 0 && anyMoving) {
+                    currentStep = 1;
+                } else if (totalDone > 0 && totalDone < udpPackets.length * 0.5) {
+                    currentStep = 2;
+                } else if (totalDone >= udpPackets.length * 0.5 && totalDone < udpPackets.length) {
+                    currentStep = 3;
+                } else if (totalDone === udpPackets.length) {
+                    currentStep = 4;
+                }
+                updateStepDisplay();
+
+                let stillMoving = udpPackets.some(p => p.status === 'transmitting');
+                if (!stillMoving) {
+                    isPlaying = false;
+                    startBtn.disabled = false;
+                    pauseBtn.disabled = true;
+                    if (animationId) cancelAnimationFrame(animationId);
+                } else {
+                    animationId = requestAnimationFrame(animate);
+                }
+
+                updateStatus();
+                updatePacketsView();
+                drawScene();
+            }
+
+            // 开始
+            function startTransmission() {
+                if (isPlaying) return;
+                for (let p of udpPackets) {
+                    if (p.status === 'pending') {
+                        p.status = 'transmitting';
+                    }
+                }
+                isPlaying = true;
+                startTimestamp = Date.now();
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
+                currentStep = 1;
+                updateStepDisplay();
+                if (animationId) cancelAnimationFrame(animationId);
+                animationId = requestAnimationFrame(animate);
+            }
+
+            // 暂停/继续
+            function pauseToggle() {
+                if (isPlaying) {
+                    isPlaying = false;
+                    pauseBtn.innerHTML = '<span>▶️</span> 继续';
+                    if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
+                } else {
+                    isPlaying = true;
+                    pauseBtn.innerHTML = '<span>⏸️</span> 暂停';
+                    startTimestamp = Date.now();
+                    animate();
+                }
+            }
+
+            // 重置
+            function resetAll() {
+                isPlaying = false;
+                if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
+                startBtn.disabled = false;
+                pauseBtn.innerHTML = '<span>⏸️</span> 暂停';
+                pauseBtn.disabled = false;
+                initMeshNetwork();
+                generatePackets();
+                updateStatus();
+                updatePacketsView();
+                drawScene();
+            }
+
+            // 单步
+            function nextStep() {
+                if (isPlaying) return;
+                currentStep = (currentStep + 1) % stepMessages.length;
+                updateStepDisplay();
+                if (currentStep === 1) {
+                    for (let i=0; i<Math.min(3, udpPackets.length); i++) {
+                        if (udpPackets[i].status === 'pending') udpPackets[i].status = 'transmitting';
+                    }
+                } else if (currentStep === 2) {
+                    for (let i=3; i<Math.min(6, udpPackets.length); i++) {
+                        if (udpPackets[i].status === 'pending') udpPackets[i].status = 'transmitting';
+                    }
+                } else if (currentStep === 3) {
+                    for (let p of udpPackets) if (p.status === 'pending') p.status = 'transmitting';
+                }
+                drawScene();
+                updatePacketsView();
+                updateStatus();
+            }
+
+            // 画布大小自适应
+            function resizeCanvas() {
+                let container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                resetAll();
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            // 绑定事件
+            startBtn.addEventListener('click', startTransmission);
+            pauseBtn.addEventListener('click', pauseToggle);
+            resetBtn.addEventListener('click', resetAll);
+            stepBtn.addEventListener('click', nextStep);
+
+            // 初始化
+            resetAll();
+        })();
+    </script>
+</body>
+</html>

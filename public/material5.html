@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<!-- 本网页由石家庄40中李老师提供 -->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP地址小课堂</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f0f7ff;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 25px;
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            color: white;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4b6cb7;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2 i {
+            margin-right: 10px;
+            color: #4b6cb7;
+        }
+        
+        .analogy {
+            background-color: #e8f4fc;
+            border-left: 5px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .analogy h3 {
+            color: #2980b9;
+            margin-bottom: 10px;
+        }
+        
+        .dot {
+            color: #f1c40f;
+            font-weight: bold;
+            display: inline-block;
+            width: 10px;
+            text-align: center;
+        }
+        
+        /* IP输入区域样式 */
+        .ip-input-section {
+            margin-top: 20px;
+        }
+        
+        .ip-input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .ip-input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .ip-input {
+            width: 70px;
+            height: 40px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        
+        .ip-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+        
+        .ip-input.error {
+            border-color: #e74c3c;
+            background-color: #ffeaea;
+        }
+        
+        .ip-dot {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0 5px;
+        }
+        
+        .ip-validation-result {
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        .ip-validation-result.valid {
+            background-color: #d5edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .ip-validation-result.invalid {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .unique-ip-demo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .device {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            transition: border-color 0.3s ease;
+        }
+        
+        .device:hover {
+            border-color: #3498db;
+        }
+        
+        .device-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .device-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            color: #4b6cb7;
+        }
+        
+        .device-ip {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .subnet-mask-section {
+            margin-top: 20px;
+        }
+        
+        .ip-mask-combined {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .combined-display {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            border-radius: 10px;
+            padding: 12px;
+            width: 100%;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        .ip-mask-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            position: relative;
+        }
+        
+        .ip-line, .mask-line {
+            font-size: 1.4rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            width: 100%;
+            height: 30px;
+        }
+        
+        .number-block {
+            display: inline-block;
+            width: 50px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .network-part {
+            color: #1abc9c;
+            font-weight: bold;
+        }
+        
+        .host-part {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+        
+        .mask-255 {
+            color: #1abc9c;
+            font-weight: bold;
+        }
+        
+        .mask-0 {
+            color: #f1c40f;
+        }
+        
+        .division-line {
+            position: absolute;
+            top: -20px;
+            bottom: -40px;
+            width: 0;
+            border-left: 2px dashed rgba(255, 255, 255, 0.8);
+            z-index: 1;
+        }
+        
+        .mask-type {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .explanation {
+            margin-top: 5px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.3;
+        }
+        
+        /* 黄色说明框样式 */
+        .explanation-box {
+            background-color: #fff8e1;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .explanation-box h4 {
+            color: #ff9800;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .explanation-box h4 i {
+            margin-right: 8px;
+        }
+        
+        .question-section {
+            grid-column: span 2;
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 900px) {
+            .question-section {
+                grid-column: span 1;
+            }
+        }
+        
+        .question-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4b6cb7;
+            display: flex;
+            align-items: center;
+        }
+        
+        .question-content {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            text-align: left;
+        }
+        
+        .tip-box {
+            background-color: #fff8e1;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .tip-box h4 {
+            color: #ff9800;
+            margin-bottom: 8px;
+        }
+        
+        .subnet-legend {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 0;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>IP地址小课堂</h1>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2>什么是IP地址？</h2>
+            <p>IP地址就像互联网世界中每个设备的<strong class="highlight">"家庭地址"</strong>。有了这个地址，信息才能准确找到你要访问的设备。</p>
+            
+            <div class="analogy">
+                <h3>生活小类比</h3>
+                <p>想象一下，你要给朋友寄一封信，你需要在信封上写下他家的<strong>详细地址</strong>（比如：北京市朝阳区XX街道XX号）。</p>
+                <p>同样，当你的手机想要访问一个网站时，也需要知道那个网站的"地址"——这就是<strong>IP地址</strong>。</p>
+            </div>
+            
+            <p>在互联网上，每个连接到网络的设备（手机、电脑、平板等）都需要一个唯一的IP地址，这样数据包才能准确送达。</p>
+        </div>
+        
+        <div class="card">
+            <h2>IP地址的格式</h2>
+            <p>IPv4地址由<strong class="highlight">4个数字</strong>组成，每个数字之间用<strong>点号(.)</strong>分隔。</p>
+            
+            <p>每个部分可以是<strong>0到255之间</strong>的数字，就像地址中的区、街道、门牌号一样。</p>
+            
+            <!-- IP地址输入区域 -->
+            <div class="ip-input-section">
+                <p style="text-align: center; margin-bottom: 15px; color: #2c3e50; font-weight: bold;">
+                    亲自试一试：修改下面的IP地址
+                </p>
+                
+                <div class="ip-input-container">
+                    <div class="ip-input-group">
+                        <input type="number" class="ip-input" id="ip-part1" min="0" max="255" value="192">
+                    </div>
+                    <span class="ip-dot">.</span>
+                    <div class="ip-input-group">
+                        <input type="number" class="ip-input" id="ip-part2" min="0" max="255" value="168">
+                    </div>
+                    <span class="ip-dot">.</span>
+                    <div class="ip-input-group">
+                        <input type="number" class="ip-input" id="ip-part3" min="0" max="255" value="1">
+                    </div>
+                    <span class="ip-dot">.</span>
+                    <div class="ip-input-group">
+                        <input type="number" class="ip-input" id="ip-part4" min="0" max="255" value="105">
+                    </div>
+                </div>
+                
+                <div id="validation-result" class="ip-validation-result">
+                    示例IP地址：192.168.1.105，尝试修改它！
+                </div>
+            </div>
+            
+            <div class="tip-box">
+                <h4>小知识</h4>
+                <p>IPv4地址看起来像4个单独的数字，但实际上它是一个整体，就像电话号码的区号和号码一样，必须完整才能联系到对方。</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>IP地址的唯一性</h2>
+            <p>在同一个网络中，每个设备的IP地址必须是<strong class="highlight">独一无二</strong>的，就像每个人的身份证号码一样。</p>
+            
+            <div class="analogy">
+                <h3>生活小类比</h3>
+                <p>在一个小区里，不能有两家住户有完全相同的地址，否则邮递员就不知道把信件送到哪里了。</p>
+                <p>同样，在一个网络中，不能有两个设备使用相同的IP地址，否则网络数据就会发送到错误的地方。</p>
+            </div>
+            
+            <div class="unique-ip-demo">
+                <div class="device">
+                    <div class="device-info">
+                        <div class="device-icon">💻</div>
+                        <div>
+                            <h4>小明家的电脑</h4>
+                            <p class="device-ip">IP地址: 192.168.1.101</p>
+                        </div>
+                    </div>
+                    <div style="color: #2ecc71; font-size: 1.5rem;">✓</div>
+                </div>
+                
+                <div class="device">
+                    <div class="device-info">
+                        <div class="device-icon">📱</div>
+                        <div>
+                            <h4>小明的手机</h4>
+                            <p class="device-ip">IP地址: 192.168.1.102</p>
+                        </div>
+                    </div>
+                    <div style="color: #2ecc71; font-size: 1.5rem;">✓</div>
+                </div>
+                
+                <div class="device">
+                    <div class="device-info">
+                        <div class="device-icon">📟</div>
+                        <div>
+                            <h4>小明的平板电脑</h4>
+                            <p class="device-ip">IP地址: 192.168.1.103</p>
+                        </div>
+                    </div>
+                    <div style="color: #2ecc71; font-size: 1.5rem;">✓</div>
+                </div>
+            </div>
+            
+            <!-- 添加的黄色说明框 -->
+            <div class="explanation-box">
+                <h4>家中网络小知识</h4>
+                <p>小明家中的所有设备都连接到同一个家庭Wi-Fi网络，因此它们都在<strong>同一个网段</strong>中。</p>
+                <p>以小明家的设备为例（子网掩码为255.255.255.0）：</p>
+                <ul style="margin-top: 8px; padding-left: 20px;">
+                    <li><strong>网络号</strong>：<span class="network-part">192.168.1</span>（所有设备都相同）</li>
+                    <li><strong>机器号</strong>：<span class="host-part">101</span>、<span class="host-part">102</span>、<span class="host-part">103</span>（每个设备不同）</li>
+                </ul>
+                <p style="margin-top: 8px;">同一家庭网络中的设备拥有相同的网络号，但机器号必须各不相同，这样才能确保数据准确送达。</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>子网掩码</h2>
+            <p>子网掩码用于<strong class="highlight">定义IP地址的格式</strong>，告诉我们IP地址中哪部分是网络号，哪部分是机器号。</p>
+            
+            <div class="analogy">
+                <h3>班级学号类比</h3>
+                <p>学校规定："前3位是班级号，后3位是学号"</p>
+                <p>那么学号"202115"中：<strong>202是班级号</strong>，<strong>115是学号</strong></p>
+                <p>子网掩码就像这个规定，告诉我们IP地址如何划分。</p>
+            </div>
+            
+            <div class="subnet-mask-section">
+                <!-- 图例放在上方 -->
+                <div class="subnet-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #1abc9c;"></div>
+                        <span>网络号（对应掩码255）</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f1c40f;"></div>
+                        <span>机器号（对应掩码0）</span>
+                    </div>
+                </div>
+                
+                <div class="ip-mask-combined">
+                    <div class="mask-type">子网掩码：255.0.0.0</div>
+                    <div class="combined-display">
+                        <div class="ip-mask-container">
+                            <div class="ip-line">
+                                <span class="number-block network-part">10</span>
+                                <span class="dot">.</span>
+                                <span class="number-block host-part">25</span>
+                                <span class="dot">.</span>
+                                <span class="number-block host-part">30</span>
+                                <span class="dot">.</span>
+                                <span class="number-block host-part">5</span>
+                                <!-- 虚线在第一个点号位置 -->
+                                <div class="division-line" style="left: 37%;"></div>
+                            </div>
+                            <div class="mask-line">
+                                <span class="number-block mask-255">255</span>
+                                <span class="dot">.</span>
+                                <span class="number-block mask-0">0</span>
+                                <span class="dot">.</span>
+                                <span class="number-block mask-0">0</span>
+                                <span class="dot">.</span>
+                                <span class="number-block mask-0">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="explanation">网络号：<span class="network-part">10</span> | 机器号：<span class="host-part">25.30.5</span></p>
+                </div>
+                
+                <div class="ip-mask-combined">
+                    <div class="mask-type">子网掩码：255.255.0.0</div>
+                    <div class="combined-display">
+                        <div class="ip-mask-container">
+                            <div class="ip-line">
+                                <span class="number-block network-part">172</span>
+                                <span class="dot">.</span>
+                                <span class="number-block network-part">16</span>
+                                <span class="dot">.</span>
+                                <span class="number-block host-part">30</span>
+                                <span class="dot">.</span>
+                                <span class="number-block host-part">5</span>
+                                <!-- 虚线在第二个点号位置 -->
+                                <div class="division-line" style="left: 50%;"></div>
+                            </div>
+                            <div class="mask-line">
+                                <span class="number-block mask-255">255</span>
+                                <span class="dot">.</span>
+                                <span class="number-block mask-255">255</span>
+                                <span class="dot">.</span>
+                                <span class="number-block mask-0">0</span>
+                                <span class="dot">.</span>
+                                <span class="number-block mask-0">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="explanation">网络号：<span class="network-part">172.16</span> | 机器号：<span class="host-part">30.5</span></p>
+                </div>
+                
+                <div class="ip-mask-combined">
+                    <div class="mask-type">子网掩码：255.255.255.0</div>
+                    <div class="combined-display">
+                        <div class="ip-mask-container">
+                            <div class="ip-line">
+                                <span class="number-block network-part">192</span>
+                                <span class="dot">.</span>
+                                <span class="number-block network-part">168</span>
+                                <span class="dot">.</span>
+                                <span class="number-block network-part">1</span>
+                                <span class="dot">.</span>
+                                <span class="number-block host-part">105</span>
+                                <!-- 虚线在第三个点号位置 -->
+                                <div class="division-line" style="left: 63%;"></div>
+                            </div>
+                            <div class="mask-line">
+                                <span class="number-block mask-255">255</span>
+                                <span class="dot">.</span>
+                                <span class="number-block mask-255">255</span>
+                                <span class="dot">.</span>
+                                <span class="number-block mask-255">255</span>
+                                <span class="dot">.</span>
+                                <span class="number-block mask-0">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="explanation">网络号：<span class="network-part">192.168.1</span> | 机器号：<span class="host-part">105</span></p>
+                </div>
+            </div>
+            
+            <div class="tip-box">
+                <h4>说明</h4>
+                <p>初中阶段我们只需掌握<strong>255.0.0.0</strong>、<strong>255.255.0.0</strong>和<strong>255.255.255.0</strong>三种子网掩码。其它更复杂的子网划分等大家升到高中再学习！</p>
+            </div>
+        </div>
+        
+        <div class="question-section">
+            <h2>📝题目</h2>
+            <div class="question-content">
+                <p>假设文中的小明家新购置了一台智能电视，它连入了小明家的wifi，那么智能电视获取的IP地址可能是______</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>初中信息科技学业水平考试学习资料</p>
+    </footer>
+
+    <script>
+        // 为设备卡片添加简单交互
+        const devices = document.querySelectorAll('.device');
+        devices.forEach(device => {
+            device.addEventListener('click', function() {
+                // 添加视觉反馈
+                this.style.borderColor = '#3498db';
+                this.style.boxShadow = '0 0 10px rgba(52, 152, 219, 0.5)';
+                
+                setTimeout(() => {
+                    this.style.borderColor = '';
+                    this.style.boxShadow = '';
+                }, 1000);
+            });
+        });
+        
+        // 子网掩码示例交互效果
+        const ipMaskCombined = document.querySelectorAll('.ip-mask-combined');
+        ipMaskCombined.forEach(combined => {
+            combined.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
+            });
+            
+            combined.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '';
+            });
+        });
+        
+        // IP地址输入验证功能
+        const ipInputs = document.querySelectorAll('.ip-input');
+        const validationResult = document.getElementById('validation-result');
+        
+        // 验证IP地址各部分是否在0-255范围内
+        function validateIPInput() {
+            let isValid = true;
+            let allFilled = true;
+            let ipParts = [];
+            
+            // 检查每个输入框
+            ipInputs.forEach((input, index) => {
+                const value = input.value.trim();
+                
+                // 检查是否为空
+                if (value === '') {
+                    allFilled = false;
+                    input.classList.remove('error');
+                    return;
+                }
+                
+                // 检查是否为有效数字
+                const numValue = parseInt(value, 10);
+                if (isNaN(numValue) || numValue < 0 || numValue > 255) {
+                    isValid = false;
+                    input.classList.add('error');
+                } else {
+                    ipParts.push(numValue);
+                    input.classList.remove('error');
+                }
+            });
+            
+            // 更新验证结果提示
+            if (!allFilled) {
+                validationResult.textContent = "请输入完整的IP地址（4个部分）";
+                validationResult.className = "ip-validation-result";
+                return;
+            }
+            
+            if (!isValid) {
+                validationResult.textContent = "错误：IP地址的每个部分必须在0到255之间！";
+                validationResult.className = "ip-validation-result invalid";
+            } else {
+                validationResult.textContent = `当前IP地址：${ipParts.join('.')}（格式正确）`;
+                validationResult.className = "ip-validation-result valid";
+            }
+        }
+        
+        // 为每个输入框添加事件监听
+        ipInputs.forEach(input => {
+            // 输入时验证
+            input.addEventListener('input', validateIPInput);
+            
+            // 失去焦点时验证
+            input.addEventListener('blur', validateIPInput);
+            
+            // 限制输入范围
+            input.addEventListener('change', function() {
+                const value = parseInt(this.value, 10);
+                if (!isNaN(value)) {
+                    if (value < 0) this.value = 0;
+                    if (value > 255) this.value = 255;
+                }
+            });
+            
+            // 键盘上下箭头调整数值
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const currentValue = parseInt(this.value, 10) || 0;
+                    const newValue = e.key === 'ArrowUp' ? currentValue + 1 : currentValue - 1;
+                    
+                    if (newValue >= 0 && newValue <= 255) {
+                        this.value = newValue;
+                        validateIPInput();
+                    }
+                }
+            });
+        });
+        
+        // 页面加载时初始化验证
+        window.addEventListener('DOMContentLoaded', function() {
+            validateIPInput();
+        });
+    </script>
+</body>
+</html>

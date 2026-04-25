@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<!-- 本网页由石家庄40中李老师提供 -->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP协议互动课堂</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f7ff;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1a6dcc 0%, #0d4d9c 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .section {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+        }
+        
+        h2 {
+            color: #1a6dcc;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #e8f4ff;
+            padding-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .analogy-box {
+            background-color: #e8f4ff;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 5px solid #1a6dcc;
+        }
+        
+        .analogy-title {
+            font-weight: bold;
+            color: #1a6dcc;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    table-layout: fixed; /* 固定表格布局 */
+}
+
+.comparison-table th {
+    background-color: #1a6dcc;
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap; /* 禁止表头换行 */
+}
+
+.comparison-table td {
+    padding: 15px;
+    border-bottom: 1px solid #eaeaea;
+    vertical-align: top; /* 顶部对齐，使多行内容更好看 */
+}
+
+/* 调整各列宽度 */
+.comparison-table th:nth-child(1),
+.comparison-table td:nth-child(1) {
+    width: 15%; /* 第一列：IP协议术语 */
+    white-space: nowrap; /* 禁止换行 */
+}
+
+.comparison-table th:nth-child(2),
+.comparison-table td:nth-child(2) {
+    width: 18%; /* 第二列：邮递系统对应物 */
+    white-space: nowrap; /* 禁止换行 */
+}
+
+.comparison-table th:nth-child(3),
+.comparison-table td:nth-child(3) {
+    width: 67%; /* 第三列：功能解释 */
+    white-space: normal; /* 允许换行 */
+    min-width: 300px; /* 确保最小宽度 */
+}
+
+/* 特别为"分片"行设置样式 */
+.comparison-table tr:nth-child(7) td {
+    white-space: normal; /* 允许分片单元格正常换行 */
+}
+
+.comparison-table tr:nth-child(even) {
+    background-color: #f8fbff;
+}
+
+/* 响应式调整：在小屏幕上允许所有列换行 */
+@media (max-width: 768px) {
+    .comparison-table th:nth-child(1),
+    .comparison-table td:nth-child(1),
+    .comparison-table th:nth-child(2),
+    .comparison-table td:nth-child(2) {
+        white-space: normal; /* 在小屏幕上允许换行 */
+    }
+    
+    .comparison-table th:nth-child(1),
+    .comparison-table td:nth-child(1),
+    .comparison-table th:nth-child(2),
+    .comparison-table td:nth-child(2),
+    .comparison-table th:nth-child(3),
+    .comparison-table td:nth-child(3) {
+        width: auto; /* 在小屏幕上恢复自动宽度 */
+    }
+}
+        
+        .animation-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .animation-container {
+            width: 100%;
+            height: 500px;
+            position: relative;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .control-panel {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background-color: #1a6dcc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background-color: #0d4d9c;
+            transform: scale(1.05);
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .dynamic-route-btn {
+            background-color: #ff9800;
+        }
+        
+        .dynamic-route-btn:hover {
+            background-color: #f57c00;
+        }
+        
+        .next-step-btn {
+            background-color: #4caf50;
+        }
+        
+        .next-step-btn:hover {
+            background-color: #388e3c;
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #f0f7ff;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+        
+        .highlight {
+            background-color: #e8f4ff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #1a6dcc;
+        }
+        
+        .ip-address {
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        
+        .exam-footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .info-panel {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            z-index: 100;
+            font-size: 0.95rem;
+            border-left: 4px solid #1a6dcc;
+        }
+        
+        .info-title {
+            font-weight: bold;
+            color: #0d4d9c;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-text {
+            line-height: 1.5;
+        }
+        
+        .routing-table-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+            z-index: 100;
+            font-size: 0.85rem;
+            border-left: 4px solid #4caf50;
+            display: none;
+        }
+        
+        .routing-table-title {
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .routing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+        
+        .routing-table th {
+            background-color: #4caf50;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .routing-table td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.8rem;
+        }
+        
+        .routing-table tr:hover {
+            background-color: #f1f8e9;
+        }
+        
+        .current-location {
+            background-color: #e8f5e9 !important;
+            font-weight: bold;
+        }
+        
+        .congestion-indicator {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(244, 67, 54, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            z-index: 50;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .step-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .animation-container {
+                height: 450px;
+            }
+            
+            .info-panel {
+                max-width: 90%;
+                font-size: 0.85rem;
+            }
+            
+            .routing-table-panel {
+                max-width: 45%;
+                font-size: 0.75rem;
+                padding: 10px;
+            }
+            
+            .control-panel {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+        .question-section {
+            grid-column: span 2;
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 900px) {
+            .question-section {
+                grid-column: span 1;
+            }
+        }
+        
+        .question-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4b6cb7;
+            display: flex;
+            align-items: center;
+        }
+        
+        .question-content {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            text-align: left;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .footer p {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📡 IP协议互动课堂</h1>
+    </header>
+    
+    <div class="container">
+        <section class="section">
+            <h2>📧 IP协议：互联网世界的邮递系统</h2>
+            <p>IP协议（Internet Protocol，网际协议）是互联网的基础协议，负责在网络上将数据包从源地址传送到目的地址。为了更好地理解这个抽象概念，我们可以将它比作一个现代化的邮递系统。</p>
+            
+            <div class="analogy-box">
+                <div class="analogy-title">📧 互联网邮递系统</div>
+                <p>想象一下，整个互联网就像一个庞大的全球邮递系统，而IP协议就是这个系统的核心运作机制：</p>
+                
+                <table class="comparison-table">
+                    <tr>
+                        <th>IP协议术语</th>
+                        <th>邮递系统对应物</th>
+                        <th>功能解释</th>
+                    </tr>
+                    <tr>
+                        <td><strong>IP地址</strong></td>
+                        <td>邮政编码+门牌地址</td>
+                        <td>唯一标识网络上的每个设备，就像每个家庭有唯一地址</td>
+                    </tr>
+                    <tr>
+                        <td><strong>数据包</strong></td>
+                        <td>信件或包裹</td>
+                        <td>在网络上传输的信息单位，包含数据和目标地址</td>
+                    </tr>
+                    <tr>
+                        <td><strong>路由器</strong></td>
+                        <td>邮局分拣中心</td>
+                        <td>检查数据包地址并决定最佳传输路径</td>
+                    </tr>
+                    <tr>
+                        <td><strong>路由表</strong></td>
+                        <td>邮递路线图</td>
+                        <td>存储如何到达不同地址的最佳路径信息</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TTL（生存时间）</strong></td>
+                        <td>包裹有效期限</td>
+                        <td>防止数据包在网络中无限循环，每经过一个路由器减1</td>
+                    </tr>
+                    <tr>
+                        <td><strong>分片</strong></td>
+                        <td>大包裹拆分</td>
+                        <td>当数据包>最大传输单元（MTU）时，继续分割成适合网络传输的小包。一般TCP数据包会小于MTU，而UDP数据包会大于MTU，所以大多数情况UDP数据包会被IP协议进一步分成小包。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>动态路由</strong></td>
+                        <td>绕行路线</td>
+                        <td>当原路线拥堵时，自动选择替代路线</td>
+                    </tr>
+                    <tr>
+                        <td><strong>存储转发</strong></td>
+                        <td>临时存放包裹</td>
+                        <td>路由器先接收完整数据包，检查目标地址后再转发</td>
+                    </tr>
+                </table>
+                
+                <p style="margin-top: 20px;">就像你寄信时只需要填写正确地址，而不需要知道具体路线一样，IP协议让设备只需知道目标IP地址，就能通过网络将数据送达。路由器像邮局分拣中心一样，根据地址决定最佳路径，数据包可能经过多个中转站（路由器），最终送达目的地。</p>
+            </div>
+            
+            <p>这个比喻帮助我们形象化理解IP协议的基本概念和工作原理，但实际技术细节更加复杂精密。接下来通过动画演示，我们可以直观看到数据包是如何在网络中传输的。</p>
+        </section>
+        
+        <section class="section animation-section">
+            <h2>▶️ IP协议动画演示</h2>
+            <p>下面的动画展示了IP协议的数据包传输过程。第一个动画演示单个数据包的路由过程，第二个动画演示分包传输过程，第三个动画演示动态路由选择（遇拥堵自动换路）。</p>
+            
+            <div class="animation-container" id="animationContainer">
+                <canvas id="networkCanvas"></canvas>
+                <div class="info-panel" id="infoPanel">
+                    <div class="info-title">ℹ️ IP协议演示</div>
+                    <div class="info-text" id="infoText">点击"开始IP路由演示"观察单个数据包传输，或点击"分包演示"观察分包传输过程。</div>
+                </div>
+                <div class="routing-table-panel" id="routingTablePanel">
+                    <div class="routing-table-title">📊 路由表跟踪</div>
+                    <table class="routing-table" id="routingTable">
+                        <thead>
+                            <tr>
+                                <th>当前位置</th>
+                                <th>下一跳</th>
+                                <th>目标</th>
+                            </tr>
+                        </thead>
+                        <tbody id="routingTableBody">
+                            <!-- 路由表内容将通过JS动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <button id="singlePacketBtn">▶️ 开始IP路由演示</button>
+                <button id="splitPacketBtn">✂️ 分包演示</button>
+                <button id="dynamicRouteBtn" class="dynamic-route-btn">🔄 开始动态路由演示</button>
+                <button id="resetBtn">🔄 重置动画</button>
+                
+                <div class="speed-control">
+                    <span>速度：</span>
+                    <input type="range" id="speedControl" min="1" max="10" value="5">
+                </div>
+            </div>
+            
+            <div class="step-controls" id="stepControls">
+                <button id="prevStepBtn" class="next-step-btn">⏮️ 上一步</button>
+                <button id="nextStepBtn" class="next-step-btn">⏭️ 下一步</button>
+            </div>
+            
+            <p style="margin-top: 15px; text-align: center; font-size: 0.95rem; color: #666;">
+                ℹ️ 注意：动态路由演示展示路由器如何检测网络拥堵并重新规划路径。点击"下一步"按钮分步观察。
+            </p>
+        </section>
+        
+        <div class="question-section">
+            <h2>📝题目</h2>
+            <div class="question-content">
+                <p>网页中提到，当数据包大小超过最大传输单元（MTU）时，IP协议会如何处理？______</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>信息科技学业水平考试学习资料</p>
+        </div>
+    </div>
+
+    </div>
+    
+     <script>
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('networkCanvas');
+        const ctx = canvas.getContext('2d');
+        const singlePacketBtn = document.getElementById('singlePacketBtn');
+        const splitPacketBtn = document.getElementById('splitPacketBtn');
+        const dynamicRouteBtn = document.getElementById('dynamicRouteBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const speedControl = document.getElementById('speedControl');
+        const infoText = document.getElementById('infoText');
+        const infoPanel = document.getElementById('infoPanel');
+        const routingTablePanel = document.getElementById('routingTablePanel');
+        const routingTableBody = document.getElementById('routingTableBody');
+        const stepControls = document.getElementById('stepControls');
+        const prevStepBtn = document.getElementById('prevStepBtn');
+        const nextStepBtn = document.getElementById('nextStepBtn');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            if (initialized) {
+                drawNetwork();
+            }
+        }
+        
+        // 初始化Canvas
+        window.addEventListener('load', function() {
+            resizeCanvas();
+            initNetwork();
+        });
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 网络节点和数据
+        const nodes = [];
+        const connections = [];
+        let animationId = null;
+        let dataPackets = [];
+        let animationSpeed = 5;
+        let currentMode = null; // 'single', 'split' 或 'dynamic'
+        let initialized = false;
+        let currentRoutingTable = [];
+        let currentPacketLocation = null;
+        let congestionIndicators = [];
+        let congestionActive = false;
+        let dynamicStep = 0; // 动态路由的当前步骤
+        let isPaused = false; // 是否暂停
+        
+        // 初始化网络
+        function initNetwork() {
+            // 清除现有数据
+            nodes.length = 0;
+            connections.length = 0;
+            dataPackets.length = 0;
+            currentMode = null;
+            currentRoutingTable = [];
+            currentPacketLocation = null;
+            congestionIndicators = [];
+            congestionActive = false;
+            dynamicStep = 0;
+            isPaused = false;
+            routingTablePanel.style.display = 'none';
+            stepControls.style.display = 'none';
+            
+            // 清除拥堵指示器
+            document.querySelectorAll('.congestion-indicator').forEach(el => el.remove());
+            
+            // 创建节点
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(canvas.width, canvas.height) * 0.35;
+            
+            // 源设备和目标设备
+            nodes.push({
+                id: 0,
+                x: centerX - radius,
+                y: centerY,
+                label: "源设备",
+                type: "device",
+                ip: "192.168.1.10",
+                color: "#2196f3"
+            });
+            
+            nodes.push({
+                id: 1,
+                x: centerX + radius,
+                y: centerY,
+                label: "目标设备",
+                type: "device",
+                ip: "203.0.113.25",
+                color: "#ff5722"
+            });
+            
+            // 创建路由器节点 - 使用不同的IP地址避免同质化
+            const routerPositions = [
+                {x: centerX - radius*0.5, y: centerY - radius*0.6}, // 左上
+                {x: centerX, y: centerY - radius*0.8}, // 上中
+                {x: centerX + radius*0.5, y: centerY - radius*0.6}, // 右上
+                {x: centerX - radius*0.5, y: centerY + radius*0.6}, // 左下
+                {x: centerX, y: centerY + radius*0.8}, // 下中
+                {x: centerX + radius*0.5, y: centerY + radius*0.6}  // 右下
+            ];
+            
+            // 多样化的路由器IP地址
+            const routerIPs = [
+                "172.16.1.1",  // 私有A类地址
+                "10.0.0.1",    // 私有A类地址
+                "192.168.10.1", // 私有C类地址
+                "172.31.0.1",  // 私有B类地址
+                "10.10.1.1",   // 私有A类地址
+                "192.168.100.1" // 私有C类地址
+            ];
+            
+            const routerColors = ["#9c27b0", "#ff9800", "#4caf50", "#e91e63", "#00bcd4", "#8bc34a"];
+            
+            for (let i = 0; i < 6; i++) {
+                nodes.push({
+                    id: i + 2,
+                    x: routerPositions[i].x,
+                    y: routerPositions[i].y,
+                    label: `路由器${i+1}`,
+                    type: "router",
+                    ip: routerIPs[i],
+                    color: routerColors[i]
+                });
+            }
+            
+            // 创建连接 - 更合理的网络拓扑
+            // 每个路由器连接到源设备和目标设备
+            for (let i = 2; i < nodes.length; i++) {
+                connections.push({ from: 0, to: i });
+                connections.push({ from: 1, to: i });
+            }
+            
+            // 路由器之间的连接 - 创建更合理的网络路径
+            // 上层路由器互相连接
+            connections.push({ from: 2, to: 3 }); // 路由器1->路由器2
+            connections.push({ from: 3, to: 4 }); // 路由器2->路由器3
+            
+            // 下层路由器互相连接
+            connections.push({ from: 5, to: 6 }); // 路由器4->路由器5
+            connections.push({ from: 6, to: 7 }); // 路由器5->路由器6
+            
+            // 上下层路由器交叉连接 - 添加路由器1到路由器5的直接连接
+            connections.push({ from: 2, to: 6 }); // 路由器1->路由器5
+            connections.push({ from: 3, to: 5 }); // 路由器2->路由器4
+            connections.push({ from: 4, to: 7 }); // 路由器3->路由器6
+            
+            // 绘制网络
+            drawNetwork();
+            
+            // 更新信息
+            updateInfo("IP协议演示", "点击'开始IP路由演示'观察单个数据包传输，或点击'分包演示'观察分包传输过程。");
+            
+            // 更新按钮状态
+            singlePacketBtn.disabled = false;
+            splitPacketBtn.disabled = false;
+            dynamicRouteBtn.disabled = false;
+            prevStepBtn.disabled = true;
+            nextStepBtn.disabled = true;
+            
+            initialized = true;
+        }
+        
+        // 绘制网络
+        function drawNetwork() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制连接线
+            ctx.strokeStyle = "#ddd";
+            ctx.lineWidth = 1;
+            
+            for (const conn of connections) {
+                const fromNode = nodes[conn.from];
+                const toNode = nodes[conn.to];
+                
+                // 如果是拥堵的连接线，用红色显示
+                if (congestionActive && 
+                   ((fromNode.id === 2 && toNode.id === 3) || (fromNode.id === 3 && toNode.id === 4))) {
+                    ctx.strokeStyle = "#f44336";
+                    ctx.lineWidth = 3;
+                } else {
+                    ctx.strokeStyle = "#ddd";
+                    ctx.lineWidth = 1;
+                }
+                
+                ctx.beginPath();
+                ctx.moveTo(fromNode.x, fromNode.y);
+                ctx.lineTo(toNode.x, toNode.y);
+                ctx.stroke();
+                
+                // 恢复默认样式
+                ctx.strokeStyle = "#ddd";
+                ctx.lineWidth = 1;
+            }
+            
+            // 绘制节点
+            for (const node of nodes) {
+                // 绘制节点
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.type === "device" ? 30 : 20, 0, Math.PI * 2);
+                ctx.fillStyle = node.color;
+                ctx.fill();
+                ctx.strokeStyle = "#333";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 绘制节点图标
+                ctx.fillStyle = "white";
+                ctx.font = "16px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(node.type === "device" ? (node.id === 0 ? "💻" : "🖥️") : "📶", node.x, node.y);
+                
+                // 绘制节点标签
+                ctx.fillStyle = "#333";
+                ctx.font = node.type === "device" ? "bold 14px Arial" : "12px Arial";
+                ctx.fillText(node.label, node.x, node.y + 35);
+                
+                // 绘制IP地址
+                ctx.fillStyle = "#666";
+                ctx.font = "10px Arial";
+                ctx.fillText(node.ip, node.x, node.y + 50);
+            }
+            
+            // 绘制数据包
+            for (const packet of dataPackets) {
+                drawPacket(packet);
+            }
+        }
+        
+        // 绘制数据包
+        function drawPacket(packet) {
+            const size = 20;
+            
+            // 计算数据包当前位置
+            let x, y;
+            if (packet.progress >= 1) {
+                x = packet.nextNode.x;
+                y = packet.nextNode.y;
+            } else {
+                x = packet.currentNode.x + (packet.nextNode.x - packet.currentNode.x) * packet.progress;
+                y = packet.currentNode.y + (packet.nextNode.y - packet.currentNode.y) * packet.progress;
+            }
+            
+            // 绘制数据包
+            ctx.beginPath();
+            ctx.rect(x - size/2, y - size/2, size, size);
+            ctx.fillStyle = packet.color;
+            ctx.fill();
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // 绘制数据包标签
+            ctx.fillStyle = "white";
+            ctx.font = "bold 11px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(packet.label, x, y);
+        }
+        
+        // 更新信息
+        function updateInfo(title, text) {
+            infoText.textContent = text;
+            infoPanel.querySelector('.info-title').innerHTML = `ℹ️ ${title}`;
+        }
+        
+        // 更新路由表
+        function updateRoutingTable(packet, path) {
+            routingTablePanel.style.display = 'block';
+            routingTableBody.innerHTML = '';
+            
+            // 创建路由表数据
+            const routingData = [];
+            
+            for (let i = 0; i < path.length; i++) {
+                const currentNode = path[i];
+                const nextNode = i < path.length - 1 ? path[i + 1] : {label: "到达", ip: ""};
+                
+                routingData.push({
+                    current: currentNode.label,
+                    currentIp: currentNode.ip,
+                    next: nextNode.label,
+                    nextIp: nextNode.ip || "",
+                    target: path[path.length - 1].label
+                });
+            }
+            
+            // 更新当前数据包位置
+            currentPacketLocation = packet.currentNodeIndex;
+            currentRoutingTable = routingData;
+            
+            // 渲染路由表
+            routingData.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                
+                // 如果这是当前数据包所在位置，添加高亮样式
+                if (index === currentPacketLocation) {
+                    tr.className = 'current-location';
+                }
+                
+                tr.innerHTML = `
+                    <td>${row.current}<br><small>${row.currentIp}</small></td>
+                    <td>${row.next}<br><small>${row.nextIp}</small></td>
+                    <td>${row.target}</td>
+                `;
+                
+                routingTableBody.appendChild(tr);
+            });
+        }
+        
+        // 创建拥堵指示器
+        function createCongestionIndicators() {
+            // 清除旧的拥堵指示器
+            congestionIndicators.forEach(indicator => {
+                if (indicator.element && indicator.element.parentNode) {
+                    indicator.element.parentNode.removeChild(indicator.element);
+                }
+            });
+            congestionIndicators = [];
+            
+            // 在上层路由器连接处创建拥堵指示器
+            const congestionPoints = [
+                {x: (nodes[2].x + nodes[3].x) / 2, y: (nodes[2].y + nodes[3].y) / 2, label: "拥堵"},
+                {x: (nodes[3].x + nodes[4].x) / 2, y: (nodes[3].y + nodes[4].y) / 2, label: "拥堵"}
+            ];
+            
+            congestionPoints.forEach(point => {
+                const indicator = document.createElement('div');
+                indicator.className = 'congestion-indicator';
+                indicator.style.left = (point.x - 20) + 'px';
+                indicator.style.top = (point.y - 20) + 'px';
+                indicator.textContent = point.label;
+                
+                animationContainer.appendChild(indicator);
+                congestionIndicators.push({
+                    element: indicator,
+                    x: point.x,
+                    y: point.y
+                });
+            });
+            
+            congestionActive = true;
+        }
+        
+        // 暂停动画
+        function pauseAnimation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+                isPaused = true;
+            }
+        }
+        
+        // 继续动画
+        function resumeAnimation() {
+            if (isPaused) {
+                isPaused = false;
+                animate();
+            }
+        }
+        
+        // 开始单个数据包动画
+        function startSinglePacketAnimation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            currentMode = 'single';
+            singlePacketBtn.disabled = true;
+            splitPacketBtn.disabled = true;
+            dynamicRouteBtn.disabled = true;
+            stepControls.style.display = 'none';
+            
+            // 清除拥堵指示器
+            congestionIndicators.forEach(indicator => {
+                if (indicator.element && indicator.element.parentNode) {
+                    indicator.element.parentNode.removeChild(indicator.element);
+                }
+            });
+            congestionIndicators = [];
+            congestionActive = false;
+            
+            updateInfo(
+                "IP路由演示 - 单个数据包", 
+                "IP协议将数据包从源设备路由到目标设备。路由器根据IP地址选择最佳路径转发数据包。"
+            );
+            
+            // 选择一条清晰的路径：源设备 -> 路由器1 -> 路由器2 -> 路由器3 -> 目标设备
+            const path = [
+                nodes[0], // 源设备
+                nodes[2], // 路由器1
+                nodes[3], // 路由器2
+                nodes[4], // 路由器3
+                nodes[1]  // 目标设备
+            ];
+            
+            // 初始化路由表
+            updateRoutingTable({currentNodeIndex: 0}, path);
+            
+            // 创建数据包 - 使用深色以便看清
+            dataPackets.push({
+                id: 0,
+                label: "IP包",
+                color: "#e53935", // 深红色，更容易看清
+                path: path,
+                currentNode: path[0],
+                nextNode: path[1],
+                progress: 0,
+                speed: 0.02,
+                currentNodeIndex: 0
+            });
+            
+            // 开始动画
+            animate();
+        }
+        
+        // 开始分包动画
+        function startSplitPacketAnimation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            currentMode = 'split';
+            singlePacketBtn.disabled = true;
+            splitPacketBtn.disabled = true;
+            dynamicRouteBtn.disabled = true;
+            stepControls.style.display = 'none';
+            
+            // 清除拥堵指示器
+            congestionIndicators.forEach(indicator => {
+                if (indicator.element && indicator.element.parentNode) {
+                    indicator.element.parentNode.removeChild(indicator.element);
+                }
+            });
+            congestionIndicators = [];
+            congestionActive = false;
+            
+            updateInfo(
+                "分包演示 - IP层分片", 
+                "数据过大时，IP协议自动将其分片传输。每个分片独立路由，在目标设备重组。"
+            );
+            
+            // 隐藏路由表面板
+            routingTablePanel.style.display = 'none';
+            
+            // 创建多个分片数据包，走不同路径
+            const pathOptions = [
+                [nodes[0], nodes[2], nodes[3], nodes[4], nodes[1]], // 路径1：上路径
+                [nodes[0], nodes[5], nodes[6], nodes[7], nodes[1]], // 路径2：下路径
+                [nodes[0], nodes[2], nodes[6], nodes[7], nodes[1]], // 路径3：交叉路径1
+                [nodes[0], nodes[5], nodes[3], nodes[4], nodes[1]]  // 路径4：交叉路径2
+            ];
+            
+            const colors = ["#ff9800", "#ff5722", "#e91e63", "#9c27b0"];
+            
+            // 创建4个分片数据包
+            for (let i = 0; i < 4; i++) {
+                const path = pathOptions[i];
+                dataPackets.push({
+                    id: i,
+                    label: `分片${i+1}`,
+                    color: colors[i],
+                    path: path,
+                    currentNode: path[0],
+                    nextNode: path[1],
+                    progress: 0,
+                    speed: 0.015 + Math.random() * 0.01,
+                    currentNodeIndex: 0,
+                    isSplit: true
+                });
+            }
+            
+            // 开始动画
+            animate();
+        }
+        
+        // 开始动态路由动画
+        function startDynamicRouteAnimation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            currentMode = 'dynamic';
+            dynamicStep = 0;
+            singlePacketBtn.disabled = true;
+            splitPacketBtn.disabled = true;
+            dynamicRouteBtn.disabled = true;
+            
+            // 显示分步控制按钮
+            stepControls.style.display = 'flex';
+            prevStepBtn.disabled = true;
+            nextStepBtn.disabled = false;
+            
+            // 清除现有数据包
+            dataPackets = [];
+            
+            updateInfo(
+                "动态路由演示 - 步骤1/4", 
+                "数据包从源设备出发，计划通过上层路径传输。点击'下一步'继续。"
+            );
+            
+            // 创建拥堵指示器
+            createCongestionIndicators();
+            
+            // 定义两条路径
+            // 原计划路径：源设备 -> 路由器1 -> 路由器2 -> 路由器3 -> 目标设备
+            const originalPath = [
+                nodes[0], // 源设备
+                nodes[2], // 路由器1
+                nodes[3], // 路由器2
+                nodes[4], // 路由器3
+                nodes[1]  // 目标设备
+            ];
+            
+            // 重新规划路径：源设备 -> 路由器1 -> 路由器5 -> 路由器6 -> 目标设备
+            const alternativePath = [
+                nodes[0], // 源设备
+                nodes[2], // 路由器1
+                nodes[6], // 路由器5（直接连接，已有路径）
+                nodes[7], // 路由器6
+                nodes[1]  // 目标设备
+            ];
+            
+            // 初始化路由表
+            updateRoutingTable({currentNodeIndex: 0}, originalPath);
+            
+            // 创建数据包
+            dataPackets.push({
+                id: 0,
+                label: "IP包",
+                color: "#2196f3", // 蓝色
+                originalPath: originalPath,
+                alternativePath: alternativePath,
+                path: originalPath,
+                currentNode: originalPath[0],
+                nextNode: originalPath[1],
+                progress: 0,
+                speed: 0.02, // 第一步有动画速度
+                currentNodeIndex: 0,
+                isDynamic: true,
+                hasRerouted: false
+            });
+            
+            // 开始第一步动画
+            animate();
+        }
+        
+        // 动态路由下一步
+        function dynamicRouteNextStep() {
+            if (currentMode !== 'dynamic') return;
+            
+            dynamicStep++;
+            prevStepBtn.disabled = false;
+            
+            if (dynamicStep === 1) {
+                // 步骤2：数据包到达路由器1
+                updateInfo(
+                    "动态路由演示 - 步骤2/4", 
+                    "数据包到达路由器1。路由器检测到上层路径拥堵，开始重新规划路线。点击'下一步'继续。"
+                );
+                
+                // 暂停当前动画
+                pauseAnimation();
+                
+                // 数据包已经移动到路由器1（通过动画）
+                const packet = dataPackets[0];
+                packet.speed = 0; // 停止移动
+                
+                // 更新路由表，显示当前位置（路由器1）
+                updateRoutingTable(packet, packet.path);
+                
+                // 绘制当前状态
+                drawNetwork();
+                
+            } else if (dynamicStep === 2) {
+                // 步骤3：重新规划路径
+                updateInfo(
+                    "动态路由演示 - 步骤3/4", 
+                    "路由器1重新规划路线，选择下层替代路径。数据包颜色变为绿色表示新路径。点击'下一步'继续传输。"
+                );
+                
+                // 切换到替代路径
+                const packet = dataPackets[0];
+                packet.hasRerouted = true;
+                packet.path = packet.alternativePath;
+                packet.currentNode = nodes[2]; // 路由器1
+                packet.nextNode = nodes[6]; // 路由器5
+                packet.currentNodeIndex = 1;
+                packet.progress = 0;
+                packet.color = "#4caf50"; // 改为绿色表示重新路由
+                packet.speed = 0; // 先暂停，等待下一步
+                
+                // 更新路由表，显示当前位置（路由器1）
+                updateRoutingTable(packet, packet.path);
+                
+                // 绘制
+                drawNetwork();
+                
+            } else if (dynamicStep === 3) {
+                // 步骤4：继续传输到目标
+                updateInfo(
+                    "动态路由演示 - 步骤4/4", 
+                    "数据包通过替代路径继续传输。观察完整传输过程。"
+                );
+                
+                nextStepBtn.disabled = true;
+                
+                // 开始继续传输
+                const packet = dataPackets[0];
+                packet.speed = 0.02; // 恢复移动速度
+                
+                // 继续动画
+                resumeAnimation();
+            }
+            
+            // 更新下一步按钮状态
+            if (dynamicStep >= 3) {
+                nextStepBtn.disabled = true;
+            }
+        }
+        
+        // 动态路由上一步
+        function dynamicRoutePrevStep() {
+            if (currentMode !== 'dynamic' || dynamicStep <= 0) return;
+            
+            dynamicStep--;
+            nextStepBtn.disabled = false;
+            
+            if (dynamicStep === 0) {
+                // 回到步骤1：初始状态
+                updateInfo(
+                    "动态路由演示 - 步骤1/4", 
+                    "数据包从源设备出发，计划通过上层路径传输。点击'下一步'继续。"
+                );
+                
+                prevStepBtn.disabled = true;
+                
+                // 重置数据包到初始状态
+                const packet = dataPackets[0];
+                packet.color = "#2196f3";
+                packet.path = packet.originalPath;
+                packet.currentNode = nodes[0];
+                packet.nextNode = nodes[2];
+                packet.currentNodeIndex = 0;
+                packet.progress = 0;
+                packet.speed = 0.02;
+                packet.hasRerouted = false;
+                
+                // 更新路由表
+                updateRoutingTable(packet, packet.path);
+                
+                // 停止动画
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+                
+                // 开始第一步动画
+                animate();
+                
+            } else if (dynamicStep === 1) {
+                // 回到步骤2：到达路由器1
+                updateInfo(
+                    "动态路由演示 - 步骤2/4", 
+                    "数据包到达路由器1。路由器检测到上层路径拥堵，开始重新规划路线。点击'下一步'继续。"
+                );
+                
+                // 数据包移动到路由器1
+                const packet = dataPackets[0];
+                packet.color = "#2196f3";
+                packet.path = packet.originalPath;
+                packet.currentNode = nodes[2];
+                packet.nextNode = nodes[2];
+                packet.currentNodeIndex = 1;
+                packet.progress = 1;
+                packet.speed = 0;
+                packet.hasRerouted = false;
+                
+                // 更新路由表，显示当前位置（路由器1）
+                updateRoutingTable(packet, packet.path);
+                
+                // 停止动画
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+                
+                // 绘制
+                drawNetwork();
+                
+            } else if (dynamicStep === 2) {
+                // 回到步骤3：重新规划路径
+                updateInfo(
+                    "动态路由演示 - 步骤3/4", 
+                    "路由器1重新规划路线，选择下层替代路径。数据包颜色变为绿色表示新路径。点击'下一步'继续。"
+                );
+                
+                // 切换到替代路径但停在路由器1
+                const packet = dataPackets[0];
+                packet.hasRerouted = true;
+                packet.path = packet.alternativePath;
+                packet.currentNode = nodes[2];
+                packet.nextNode = nodes[6];
+                packet.currentNodeIndex = 1;
+                packet.progress = 0;
+                packet.color = "#4caf50";
+                packet.speed = 0;
+                
+                // 更新路由表，显示当前位置（路由器1）
+                updateRoutingTable(packet, packet.path);
+                
+                // 停止动画
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+                
+                // 绘制
+                drawNetwork();
+            }
+        }
+        
+        // 动画主循环
+        function animate() {
+            // 更新数据包位置
+            let allPacketsArrived = true;
+            
+            for (const packet of dataPackets) {
+                if (packet.currentNodeIndex < packet.path.length - 1) {
+                    allPacketsArrived = false;
+                    
+                    // 更新进度
+                    if (packet.speed > 0) {
+                        packet.progress += packet.speed * (animationSpeed / 5);
+                    }
+                    
+                    // 如果到达下一个节点
+                    if (packet.progress >= 1) {
+                        packet.currentNodeIndex++;
+                        
+                        if (packet.currentNodeIndex < packet.path.length - 1) {
+                            packet.currentNode = packet.nextNode;
+                            packet.nextNode = packet.path[packet.currentNodeIndex + 1];
+                            packet.progress = 0;
+                            
+                            // 如果是单个数据包模式，更新路由表
+                            if (currentMode === 'single') {
+                                updateRoutingTable(packet, packet.path);
+                            }
+                            
+                            // 如果是动态路由模式，更新路由表
+                            if (currentMode === 'dynamic' && packet.isDynamic) {
+                                updateRoutingTable(packet, packet.path);
+                            }
+                            
+                            // 如果是动态路由且到达路由器1
+                            if (currentMode === 'dynamic' && packet.isDynamic && !packet.hasRerouted && packet.currentNodeIndex === 1) {
+                                // 自动暂停，等待用户点击下一步
+                                packet.speed = 0;
+                                pauseAnimation();
+                                nextStepBtn.disabled = false;
+                            }
+                        } else {
+                            // 到达目标设备
+                            packet.currentNode = packet.nextNode;
+                            packet.progress = 1;
+                            
+                            // 如果是分包，到达后改变颜色表示重组
+                            if (packet.isSplit) {
+                                setTimeout(() => {
+                                    packet.color = "#4caf50";
+                                    packet.label = "重组";
+                                }, 300);
+                            }
+                            
+                            // 如果是单个数据包模式，更新路由表（显示到达）
+                            if (currentMode === 'single') {
+                                updateRoutingTable(packet, packet.path);
+                            }
+                            
+                            // 如果是动态路由模式，更新路由表（显示到达）
+                            if (currentMode === 'dynamic' && packet.isDynamic) {
+                                updateRoutingTable(packet, packet.path);
+                                updateInfo(
+                                    "动态路由完成", 
+                                    "数据包已通过替代路径成功到达目标设备。IP协议能够根据网络状况动态调整路由路径。"
+                                );
+                                
+                                // 重新启用按钮
+                                setTimeout(() => {
+                                    singlePacketBtn.disabled = false;
+                                    splitPacketBtn.disabled = false;
+                                    dynamicRouteBtn.disabled = false;
+                                    stepControls.style.display = 'none';
+                                }, 2000);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // 重新绘制网络
+            drawNetwork();
+            
+            // 检查是否所有数据包都到达
+            if (allPacketsArrived && dataPackets.length > 0) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+                
+                if (currentMode === 'single') {
+                    updateInfo(
+                        "IP路由完成", 
+                        "数据包已成功从源设备传输到目标设备。IP协议负责寻址和路由，但不保证数据完整性。"
+                    );
+                    
+                    // 重新启用按钮
+                    setTimeout(() => {
+                        singlePacketBtn.disabled = false;
+                        splitPacketBtn.disabled = false;
+                        dynamicRouteBtn.disabled = false;
+                    }, 2000);
+                } else if (currentMode === 'split') {
+                    updateInfo(
+                        "分包传输完成", 
+                        "所有分片已到达目标设备并重组。IP协议负责分片传输，分片独立路由，在目标设备重组。"
+                    );
+                    
+                    // 重新启用按钮
+                    setTimeout(() => {
+                        singlePacketBtn.disabled = false;
+                        splitPacketBtn.disabled = false;
+                        dynamicRouteBtn.disabled = false;
+                    }, 2000);
+                }
+                
+                return;
+            }
+            
+            // 继续动画
+            if (!isPaused) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        // 重置动画
+        function resetAnimation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            initNetwork();
+            updateInfo("IP协议演示", "点击'开始IP路由演示'观察单个数据包传输，或点击'分包演示'观察分包传输过程。");
+        }
+        
+        // 事件监听
+        singlePacketBtn.addEventListener('click', startSinglePacketAnimation);
+        splitPacketBtn.addEventListener('click', startSplitPacketAnimation);
+        dynamicRouteBtn.addEventListener('click', startDynamicRouteAnimation);
+        resetBtn.addEventListener('click', resetAnimation);
+        nextStepBtn.addEventListener('click', dynamicRouteNextStep);
+        prevStepBtn.addEventListener('click', dynamicRoutePrevStep);
+        
+        speedControl.addEventListener('input', function() {
+            animationSpeed = parseInt(this.value);
+        });
+        
+        // 初始化网络
+        initNetwork();
+    </script>
+</body>
+</html>

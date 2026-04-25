@@ -18,7 +18,7 @@ export interface Question {
     label: string;
     text: string;
   }[];
-  correctOptionId: string;
+  correctOptionId: string | string[];
   rationale: string;
   category: string;
 }
@@ -50,7 +50,7 @@ export interface UserResult {
   }[];
   answers: {
     questionId: string;
-    selectedOptionId: string;
+    selectedOptionId: string | string[];
   }[];
 }
 
