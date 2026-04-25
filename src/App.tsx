@@ -6,10 +6,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import DesktopApp from './DesktopApp';
 import MobileApp from './MobileApp';
+import AuthPage from './AuthPage';
 import { ASSESSMENTS } from './constants';
 import { Assessment, AssessmentItem, UserResult, HistoryRecord, ViewType } from './types';
 import { useTimer } from './useTimer';
-import { loadHistory, saveHistory } from './cookie';
+import { fetchHistory, saveHistoryRecord, deleteHistoryRecord, checkAuth, logout as apiLogout, AuthUser } from './api';
 import { AnimatePresence, motion } from 'motion/react';
 
 const MOBILE_BREAKPOINT = 768;
@@ -51,17 +52,23 @@ export interface SharedAppProps {
   setMarkedQuestions: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   showToast: (msg: string) => void;
   showConfirm: (msg: string, onConfirm: () => void) => void;
+  currentUser: AuthUser | null;
+  onLogout: () => void;
 }
 
 export default function App() {
   const isMobile = useIsMobile();
+
+  // 认证状态
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
   const [view, setView] = useState<ViewType>('library');
   const [selectedItem, setSelectedItem] = useState<AssessmentItem | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [result, setResult] = useState<UserResult | null>(null);
-  const [history, setHistory] = useState<HistoryRecord[]>(() => loadHistory());
+  const [history, setHistory] = useState<HistoryRecord[]>([]);
   const [selectedHistoryRecord, setSelectedHistoryRecord] = useState<HistoryRecord | null>(null);
   const [markedQuestions, setMarkedQuestions] = useState<Record<string, boolean>>({});
   const [toast, setToast] = useState<string | null>(null);
@@ -93,10 +100,29 @@ export default function App() {
     setConfirmState(null);
   }, []);
 
-  // 当历史记录变化时，同步到 Cookie
+  // 启动时检查登录状态
   useEffect(() => {
-    saveHistory(history);
-  }, [history]);
+    checkAuth().then(user => {
+      setCurrentUser(user);
+      setAuthChecked(true);
+    });
+  }, []);
+
+  // 登录后从 MySQL API 加载历史记录
+  useEffect(() => {
+    if (currentUser) {
+      fetchHistory().then(records => {
+        setHistory(records);
+      });
+    }
+  }, [currentUser]);
+
+  const handleLogout = useCallback(() => {
+    apiLogout();
+    setCurrentUser(null);
+    setHistory([]);
+    setView('library');
+  }, []);
 
   const handleStartAssessment = useCallback((item: AssessmentItem) => {
     setSelectedItem(item);
@@ -157,6 +183,8 @@ export default function App() {
       date: new Date().toLocaleString('zh-CN'),
     };
     setHistory(prev => [record, ...prev]);
+    // 异步保存到 MySQL
+    saveHistoryRecord(record);
 
     setView('results');
   }, [answers, selectedItem, currentAssessment]);
@@ -169,6 +197,8 @@ export default function App() {
 
   const handleDeleteRecord = useCallback((id: string) => {
     setHistory(prev => prev.filter(r => r.id !== id));
+    // 异步从 MySQL 删除
+    deleteHistoryRecord(id);
   }, []);
 
   const handleGoLibrary = useCallback(() => {
@@ -205,7 +235,27 @@ export default function App() {
     setMarkedQuestions,
     showToast,
     showConfirm,
+    currentUser,
+    onLogout: handleLogout,
   };
+
+  // 加载中状态
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+          className="w-8 h-8 border-3 border-outline-variant border-t-primary rounded-full"
+        />
+      </div>
+    );
+  }
+
+  // 未登录 -> 显示登录页
+  if (!currentUser) {
+    return <AuthPage onAuthSuccess={(user) => setCurrentUser(user)} />;
+  }
 
   return (
     <>

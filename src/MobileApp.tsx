@@ -28,6 +28,7 @@ import {
 import { LIBRARY_ITEMS } from './constants';
 import { Category, HistoryRecord, UserResult } from './types';
 import type { SharedAppProps } from './App';
+import type { AuthUser } from './api';
 
 /* ───────────────────────── Root ───────────────────────── */
 
@@ -42,13 +43,14 @@ export default function MobileApp(props: SharedAppProps) {
     onStartAssessment, onFinishAssessment,
     onViewHistoryRecord, onDeleteRecord, onGoLibrary,
     markedQuestions, setMarkedQuestions, showToast, showConfirm,
+    currentUser, onLogout,
   } = props;
 
   return (
     <div className="min-h-screen bg-surface selection:bg-primary-fixed selection:text-primary max-w-screen-md mx-auto relative">
       <AnimatePresence mode="wait">
         {view === 'library' && (
-          <LibraryView key="library" onStart={onStartAssessment} onGoReports={() => setView('reports')} onGoLearning={() => setView('learning')} showToast={showToast} />
+          <LibraryView key="library" onStart={onStartAssessment} onGoReports={() => setView('reports')} onGoLearning={() => setView('learning')} showToast={showToast} currentUser={currentUser} onLogout={onLogout} />
         )}
         {view === 'assessment' && (
           <AssessmentView
@@ -180,16 +182,46 @@ function TopAppBar({
 
 /* ───────────────────────── Library View ───────────────────────── */
 
-function LibraryView({ onStart, onGoReports, onGoLearning, showToast }: { onStart: (item: any) => void; onGoReports: () => void; onGoLearning: () => void; showToast: (msg: string) => void }) {
+function LibraryView({ onStart, onGoReports, onGoLearning, showToast, currentUser, onLogout }: { onStart: (item: any) => void; onGoReports: () => void; onGoLearning: () => void; showToast: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
       <TopAppBar
         title="Lynxley_test"
         rightAction={
-          <button onClick={() => showToast('你知道吗，点击 搜索 这个按钮可以浪费你整整1秒钟。。')} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high/50 transition-colors">
-            <Search size={20} className="text-on-surface-variant" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button onClick={() => showToast('你知道吗，点击 搜索 这个按钮可以浪费你整整1秒钟。。')} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high/50 transition-colors">
+              <Search size={20} className="text-on-surface-variant" />
+            </button>
+            {currentUser && (
+              <div className="relative">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="w-9 h-9 rounded-full signature-gradient flex items-center justify-center"
+                >
+                  <span className="text-white text-xs font-black">{currentUser.displayName.charAt(0).toUpperCase()}</span>
+                </button>
+                {showUserMenu && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
+                    <div className="absolute right-0 top-full mt-2 w-44 bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/10 py-2 z-50">
+                      <div className="px-4 py-3 border-b border-outline-variant/10">
+                        <p className="text-xs font-bold text-on-surface truncate">{currentUser.displayName}</p>
+                        <p className="text-[10px] text-on-surface-variant truncate">@{currentUser.username}</p>
+                      </div>
+                      <button
+                        onClick={() => { setShowUserMenu(false); onLogout?.(); }}
+                        className="w-full px-4 py-3 text-left text-sm font-bold text-error hover:bg-error/5 transition-colors"
+                      >
+                        退出登录
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         }
       />
 

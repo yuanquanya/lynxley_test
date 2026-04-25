@@ -34,6 +34,7 @@ import {
 import { LIBRARY_ITEMS } from './constants';
 import { Category, HistoryRecord, UserResult } from './types';
 import type { SharedAppProps } from './App';
+import type { AuthUser } from './api';
 
 export default function DesktopApp(props: SharedAppProps) {
   const {
@@ -46,13 +47,14 @@ export default function DesktopApp(props: SharedAppProps) {
     onStartAssessment, onFinishAssessment,
     onViewHistoryRecord, onDeleteRecord, onGoLibrary,
     markedQuestions, setMarkedQuestions, showToast, showConfirm,
+    currentUser, onLogout,
   } = props;
 
   return (
     <div className="min-h-screen bg-surface selection:bg-primary-fixed selection:text-primary">
       <AnimatePresence mode="wait">
         {view === 'library' && (
-          <LibraryView key="library" onStart={onStartAssessment} onGoReports={() => setView('reports')} onGoLearning={() => setView('learning')} showToast={showToast} />
+          <LibraryView key="library" onStart={onStartAssessment} onGoReports={() => setView('reports')} onGoLearning={() => setView('learning')} showToast={showToast} currentUser={currentUser} onLogout={onLogout} />
         )}
         {view === 'assessment' && (
           <AssessmentView
@@ -110,7 +112,7 @@ export default function DesktopApp(props: SharedAppProps) {
 
 /* ───────────────── Header ───────────────── */
 
-function AppHeader({ activeNav, onGoLibrary, onGoReports, onGoLearning, showToast }: { activeNav: string; onGoLibrary?: () => void; onGoReports?: () => void; onGoLearning?: () => void; showToast?: (msg: string) => void }) {
+function AppHeader({ activeNav, onGoLibrary, onGoReports, onGoLearning, showToast, currentUser, onLogout }: { activeNav: string; onGoLibrary?: () => void; onGoReports?: () => void; onGoLearning?: () => void; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
   return (
     <header className="glass-header border-b border-outline-variant/10">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -125,9 +127,30 @@ function AppHeader({ activeNav, onGoLibrary, onGoReports, onGoLearning, showToas
         <div className="flex items-center space-x-4">
           <IconButton icon={<Search size={20} />} onClick={() => showToast?.('你知道吗，点击 搜索 这个按钮可以浪费你整整1秒钟。。')} />
           <IconButton icon={<Bell size={20} />} onClick={() => showToast?.('你知道吗，点击 通知 这个按钮可以浪费你整整1秒钟。。')} />
-          <button onClick={() => showToast?.('你知道吗，点击 用户配置 这个按钮可以浪费你整整1秒钟。。')} className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant/20 hover:bg-surface-variant transition-colors">
-            <User size={20} className="text-on-surface-variant" />
-          </button>
+          {currentUser ? (
+            <div className="relative group">
+              <button className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-surface-container-highest border border-outline-variant/20 hover:bg-surface-variant transition-colors">
+                <div className="w-7 h-7 rounded-full signature-gradient flex items-center justify-center">
+                  <span className="text-white text-xs font-black">{currentUser.displayName.charAt(0).toUpperCase()}</span>
+                </div>
+                <span className="text-sm font-bold text-on-surface hidden lg:block max-w-[100px] truncate">{currentUser.displayName}</span>
+              </button>
+              <div className="absolute right-0 top-full mt-2 w-48 bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/10 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <div className="px-4 py-3 border-b border-outline-variant/10">
+                  <p className="text-xs font-bold text-on-surface truncate">{currentUser.displayName}</p>
+                  <p className="text-[10px] text-on-surface-variant truncate">@{currentUser.username}</p>
+                </div>
+                <button onClick={onLogout} className="w-full px-4 py-3 text-left text-sm font-bold text-error hover:bg-error/5 transition-colors flex items-center gap-3">
+                  <Settings size={14} />
+                  退出登录
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button onClick={() => showToast?.('你知道吗，点击 用户配置 这个按钮可以浪费你整整1秒钟。。')} className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant/20 hover:bg-surface-variant transition-colors">
+              <User size={20} className="text-on-surface-variant" />
+            </button>
+          )}
         </div>
       </div>
     </header>
@@ -136,11 +159,11 @@ function AppHeader({ activeNav, onGoLibrary, onGoReports, onGoLearning, showToas
 
 /* ───────────────── Library View ───────────────── */
 
-function LibraryView({ onStart, onGoReports, onGoLearning, showToast }: { onStart: (item: any) => void; onGoReports: () => void; onGoLearning: () => void; showToast?: (msg: string) => void }) {
+function LibraryView({ onStart, onGoReports, onGoLearning, showToast, currentUser, onLogout }: { onStart: (item: any) => void; onGoReports: () => void; onGoLearning: () => void; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void }) {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
-      <AppHeader activeNav="library" onGoReports={onGoReports} onGoLearning={onGoLearning} showToast={showToast} />
+      <AppHeader activeNav="library" onGoReports={onGoReports} onGoLearning={onGoLearning} showToast={showToast} currentUser={currentUser} onLogout={onLogout} />
 
       <main className="flex-grow max-w-7xl mx-auto px-6 py-16 w-full">
         <section className="mb-16">
