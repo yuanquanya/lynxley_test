@@ -1,21 +1,20 @@
 /**
- * 登录/注册页面 - Material Design 3 风格
+ * 登录页面 - Material Design 3 风格
+ * 支持账号登录 + 访客模式
  */
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { User, Lock, Eye, EyeOff, ArrowRight, Sparkles } from 'lucide-react';
-import { login, register, AuthUser } from './api';
+import { User, Lock, Eye, EyeOff, ArrowRight, Sparkles, UserCheck } from 'lucide-react';
+import { login, guestLogin, AuthUser } from './api';
 
 interface AuthPageProps {
   onAuthSuccess: (user: AuthUser) => void;
 }
 
 export default function AuthPage({ onAuthSuccess }: AuthPageProps) {
-  const [mode, setMode] = useState<'login' | 'register'>('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -26,20 +25,11 @@ export default function AuthPage({ onAuthSuccess }: AuthPageProps) {
     setLoading(true);
 
     try {
-      if (mode === 'login') {
-        const result = await login(username, password);
-        if (result.success && result.user) {
-          onAuthSuccess(result.user);
-        } else {
-          setError(result.error || '登录失败');
-        }
+      const result = await login(username, password);
+      if (result.success && result.user) {
+        onAuthSuccess(result.user);
       } else {
-        const result = await register(username, password, displayName || undefined);
-        if (result.success && result.user) {
-          onAuthSuccess(result.user);
-        } else {
-          setError(result.error || '注册失败');
-        }
+        setError(result.error || '登录失败');
       }
     } catch {
       setError('网络连接失败，请检查服务器是否运行');
@@ -48,12 +38,9 @@ export default function AuthPage({ onAuthSuccess }: AuthPageProps) {
     }
   };
 
-  const switchMode = () => {
-    setMode(mode === 'login' ? 'register' : 'login');
-    setError(null);
-    setUsername('');
-    setPassword('');
-    setDisplayName('');
+  const handleGuestLogin = () => {
+    const guest = guestLogin();
+    onAuthSuccess(guest);
   };
 
   return (
@@ -82,36 +69,12 @@ export default function AuthPage({ onAuthSuccess }: AuthPageProps) {
             Lynxley_test
           </h1>
           <p className="text-on-surface-variant font-medium text-lg">
-            {mode === 'login' ? '欢迎回来，请登录您的账户' : '创建账户，开始您的学习之旅'}
+            欢迎回来，请登录您的账户
           </p>
         </div>
 
         {/* Auth Card */}
         <div className="bg-surface-container-lowest rounded-[2rem] p-10 ambient-shadow border border-outline-variant/10">
-          {/* Mode Tabs */}
-          <div className="flex bg-surface-container-high rounded-2xl p-1.5 mb-10">
-            <button
-              onClick={() => mode !== 'login' && switchMode()}
-              className={`flex-1 py-3.5 rounded-xl font-bold text-sm tracking-wide transition-all ${
-                mode === 'login'
-                  ? 'bg-white text-on-surface shadow-md'
-                  : 'text-on-surface-variant hover:text-on-surface'
-              }`}
-            >
-              登录
-            </button>
-            <button
-              onClick={() => mode !== 'register' && switchMode()}
-              className={`flex-1 py-3.5 rounded-xl font-bold text-sm tracking-wide transition-all ${
-                mode === 'register'
-                  ? 'bg-white text-on-surface shadow-md'
-                  : 'text-on-surface-variant hover:text-on-surface'
-              }`}
-            >
-              注册
-            </button>
-          </div>
-
           {/* Error Message */}
           <AnimatePresence>
             {error && (
@@ -143,29 +106,6 @@ export default function AuthPage({ onAuthSuccess }: AuthPageProps) {
               />
             </div>
 
-            {/* Display Name (register only) */}
-            <AnimatePresence>
-              {mode === 'register' && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="overflow-hidden"
-                >
-                  <div className="relative">
-                    <Sparkles size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant/50 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder="昵称（可选）"
-                      className="w-full pl-14 pr-5 py-4.5 rounded-2xl bg-surface-container-low border-2 border-transparent focus:border-primary focus:bg-white outline-none text-on-surface font-bold placeholder:text-on-surface-variant/40 placeholder:font-medium transition-all"
-                    />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             {/* Password */}
             <div className="relative">
               <Lock size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface-variant/50 pointer-events-none" />
@@ -174,7 +114,7 @@ export default function AuthPage({ onAuthSuccess }: AuthPageProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="密码"
-                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                autoComplete="current-password"
                 required
                 className="w-full pl-14 pr-14 py-4.5 rounded-2xl bg-surface-container-low border-2 border-transparent focus:border-primary focus:bg-white outline-none text-on-surface font-bold placeholder:text-on-surface-variant/40 placeholder:font-medium transition-all"
               />
@@ -187,7 +127,7 @@ export default function AuthPage({ onAuthSuccess }: AuthPageProps) {
               </button>
             </div>
 
-            {/* Submit Button */}
+            {/* Login Button */}
             <button
               type="submit"
               disabled={loading || !username || !password}
@@ -201,17 +141,35 @@ export default function AuthPage({ onAuthSuccess }: AuthPageProps) {
                 />
               ) : (
                 <>
-                  {mode === 'login' ? '登录' : '创建账户'}
+                  登录
                   <ArrowRight size={18} />
                 </>
               )}
             </button>
           </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-4 my-8">
+            <div className="flex-1 h-px bg-outline-variant/20" />
+            <span className="text-on-surface-variant/40 text-xs font-bold tracking-widest">或</span>
+            <div className="flex-1 h-px bg-outline-variant/20" />
+          </div>
+
+          {/* Guest Login Button */}
+          <button
+            type="button"
+            onClick={handleGuestLogin}
+            className="w-full py-5 rounded-2xl bg-surface-container-high text-on-surface font-bold text-sm tracking-wider flex items-center justify-center gap-3 hover:bg-surface-container-highest transition-all active:scale-[0.98] border border-outline-variant/10"
+          >
+            <UserCheck size={18} className="text-on-surface-variant" />
+            访客模式
+            <span className="text-on-surface-variant/50 text-xs font-medium">· 数据仅保存在本地</span>
+          </button>
         </div>
 
         {/* Footer hint */}
         <p className="text-center text-on-surface-variant/50 text-xs mt-8 font-medium">
-          数据安全存储于云端数据库
+          访客模式数据存储在浏览器本地，登录账户可云端同步
         </p>
       </motion.div>
     </div>

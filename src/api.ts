@@ -2,6 +2,7 @@
  * API 调用封装 - 与 Netlify Functions 通信
  * 包含用户认证和历史记录 CRUD 操作
  * 当 API 不可用时，降级到 Cookie 存储
+ * 支持访客模式 - 数据存储在本地 localStorage
  */
 
 import { HistoryRecord } from './types';
@@ -14,11 +15,13 @@ const FUNC_BASE = '/.netlify/functions';
 
 const TOKEN_KEY = 'lynxley_auth_token';
 const USER_KEY = 'lynxley_auth_user';
+const GUEST_HISTORY_KEY = 'lynxley_guest_history';
 
 export interface AuthUser {
   id: number;
   username: string;
   displayName: string;
+  isGuest?: boolean;
 }
 
 function getToken(): string | null {
@@ -65,30 +68,6 @@ export interface AuthResponse {
   user: AuthUser;
 }
 
-/** 注册 */
-export async function register(
-  username: string,
-  password: string,
-  displayName?: string
-): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
-  try {
-    const res = await fetch(`${FUNC_BASE}/auth-register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password, displayName }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      return { success: false, error: data.error || '注册失败' };
-    }
-    setToken(data.token);
-    saveUser(data.user);
-    return { success: true, user: data.user };
-  } catch (err) {
-    return { success: false, error: '网络连接失败，请检查网络' };
-  }
-}
-
 /** 登录 */
 export async function login(
   username: string,
@@ -112,9 +91,22 @@ export async function login(
   }
 }
 
+/** 访客登录 - 纯本地模式，无需服务器 */
+export function guestLogin(): AuthUser {
+  const guest: AuthUser = {
+    id: -1,
+    username: 'guest',
+    displayName: '访客',
+    isGuest: true,
+  };
+  saveUser(guest);
+  return guest;
+}
+
 /** 登出 */
 export function logout() {
   clearToken();
+  localStorage.removeItem(GUEST_HISTORY_KEY);
 }
 
 /**
@@ -122,11 +114,14 @@ export function logout() {
  * 返回当前用户信息，如果未登录返回 null
  */
 export async function checkAuth(): Promise<AuthUser | null> {
+  // 先检查是否是访客模式
+  const savedUser = getSavedUser();
+  if (savedUser?.isGuest) {
+    return savedUser;
+  }
+
   const token = getToken();
   if (!token) return null;
-
-  // 先尝试从本地获取
-  const savedUser = getSavedUser();
 
   try {
     const res = await authFetch(`${FUNC_BASE}/auth-me`);
@@ -143,13 +138,43 @@ export async function checkAuth(): Promise<AuthUser | null> {
   }
 }
 
+// ── 访客本地存储 ──────────────────────────────────────────────
+
+function loadGuestHistory(): HistoryRecord[] {
+  try {
+    const raw = localStorage.getItem(GUEST_HISTORY_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) as HistoryRecord[];
+  } catch {
+    return [];
+  }
+}
+
+function saveGuestHistory(records: HistoryRecord[]) {
+  try {
+    localStorage.setItem(GUEST_HISTORY_KEY, JSON.stringify(records));
+  } catch (e) {
+    console.warn('访客历史保存失败:', e);
+  }
+}
+
 // ── 历史记录 API ──────────────────────────────────────────────
+
+/** 判断当前是否访客模式 */
+function isGuestMode(): boolean {
+  const user = getSavedUser();
+  return !!user?.isGuest;
+}
 
 /**
  * 从服务器获取当前用户的历史记录
- * 如果 API 不可用，降级到 Cookie
+ * 访客模式使用 localStorage，登录用户使用 API
  */
 export async function fetchHistory(): Promise<HistoryRecord[]> {
+  if (isGuestMode()) {
+    return loadGuestHistory();
+  }
+
   try {
     const res = await authFetch(`${FUNC_BASE}/history-get`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -163,9 +188,15 @@ export async function fetchHistory(): Promise<HistoryRecord[]> {
 
 /**
  * 保存一条历史记录到服务器
- * 如果 API 不可用，降级到 Cookie
+ * 访客模式使用 localStorage，登录用户使用 API
  */
 export async function saveHistoryRecord(record: HistoryRecord): Promise<boolean> {
+  if (isGuestMode()) {
+    const existing = loadGuestHistory();
+    saveGuestHistory([record, ...existing]);
+    return true;
+  }
+
   try {
     const res = await authFetch(`${FUNC_BASE}/history-save`, {
       method: 'POST',
@@ -184,9 +215,15 @@ export async function saveHistoryRecord(record: HistoryRecord): Promise<boolean>
 
 /**
  * 从服务器删除一条历史记录
- * 如果 API 不可用，降级到 Cookie
+ * 访客模式使用 localStorage，登录用户使用 API
  */
 export async function deleteHistoryRecord(id: string): Promise<boolean> {
+  if (isGuestMode()) {
+    const existing = loadGuestHistory();
+    saveGuestHistory(existing.filter((r) => r.id !== id));
+    return true;
+  }
+
   try {
     const res = await authFetch(`${FUNC_BASE}/history-delete?id=${encodeURIComponent(id)}`, {
       method: 'DELETE',
