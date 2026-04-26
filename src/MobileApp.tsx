@@ -795,80 +795,110 @@ function ReportsView({ history, onBack, onViewRecord, onDelete, showConfirm, sho
 /* ───────────────────────── Learning View ───────────────────────── */
 
 const VIDEO_PLACEHOLDERS = [
-  { id: 1, title: '第一个操作题演示', subtitle: '操作题 01', duration: '12:30', gradient: 'from-blue-500 to-indigo-600' },
-  { id: 2, title: '第二个操作题演示', subtitle: '操作题 02', duration: '18:45', gradient: 'from-violet-500 to-purple-600' },
-  { id: 3, title: '第三个操作题演示', subtitle: '操作题 03', duration: '15:20', gradient: 'from-cyan-500 to-blue-600' },
-  { id: 4, title: '第四个操作题演示', subtitle: '操作题 04', duration: '22:10', gradient: 'from-emerald-500 to-teal-600' },
-  { id: 5, title: '第五个操作题演示', subtitle: '操作题 05', duration: '19:55', gradient: 'from-amber-500 to-orange-600' },
-  { id: 6, title: '第六个操作题演示', subtitle: '操作题 06', duration: '25:00', gradient: 'from-rose-500 to-pink-600' },
-  { id: 7, title: '第七个操作题演示', subtitle: '操作题 07', duration: '20:35', gradient: 'from-fuchsia-500 to-violet-600' },
-  { id: 8, title: '第八个操作题演示', subtitle: '操作题 08', duration: '28:15', gradient: 'from-sky-500 to-cyan-600' },
+  { id: 1, title: '第一套操作题演示', subtitle: '课程 01', duration: '11:20', cover: '/covers/cover1.jpg', url: '/videos/第一套操作题.mp4' },
+  { id: 2, title: '第二套操作题演示', subtitle: '课程 02', duration: '12:25', cover: '/covers/cover2.jpg', url: '/videos/第二套操作题.mp4' },
+  { id: 3, title: '第三套操作题演示', subtitle: '课程 03', duration: '10:38', cover: '/covers/cover3.jpg', url: '/videos/第三套操作题.mp4' },
+  { id: 4, title: '第四套操作题演示', subtitle: '课程 04', duration: '12:11', cover: '/covers/cover4.jpg', url: '/videos/第四套操作题.mp4' },
+  { id: 5, title: '第五套操作题演示', subtitle: '课程 05', duration: '8:46', cover: '/covers/cover5.jpg', url: '/videos/第五套操作题2.mp4' },
+  { id: 6, title: '第六套操作题演示', subtitle: '课程 06', duration: '8:31', cover: '/covers/cover6.jpg', url: '/videos/第六套操作题.mp4' },
+  { id: 7, title: '第七套操作题演示', subtitle: '课程 07', duration: '5:30', cover: '/covers/cover7.jpg', url: '/videos/第七套操作题.mp4' },
+  { id: 8, title: '第八套操作题演示', subtitle: '课程 08', duration: '6:22', cover: '/covers/cover8.jpg', url: '/videos/第八套操作题.mp4' },
 ];
 
 function LearningView({ onGoLibrary, onGoReports, showToast, currentUser, onLogout, onOpenProfile }: { onGoLibrary: () => void; onGoReports: () => void; showToast: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
+  const [activeVideo, setActiveVideo] = useState<any>(null);
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
       <TopAppBar title="Lynxley_test" rightAction={<MobileRightAction currentUser={currentUser} onLogout={onLogout} showToast={showToast} onOpenProfile={onOpenProfile} />} />
 
-      <main className="pt-16 pb-28 px-5">
-        <div className="mb-8">
-          <span className="text-[11px] font-medium tracking-[0.1em] uppercase text-on-surface-variant/60">视频课程</span>
-          <h2 className="font-headline text-4xl font-extrabold text-on-surface mt-2 tracking-tight">学习中心</h2>
-          <p className="text-on-surface-variant text-sm mt-2 leading-relaxed">精选教学视频，助你系统掌握核心知识点</p>
-        </div>
-
-        <div className="space-y-4">
-          {VIDEO_PLACEHOLDERS.map((video, idx) => (
-            <motion.div
-              key={video.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.06 }}
-              className="bg-surface-container-lowest rounded-3xl overflow-hidden card-shadow border border-outline-variant/10 transition-all duration-300"
-            >
-              <button
-                onClick={() => showToast('视频功能即将上线，敬请期待！')}
-                className="w-full text-left active:scale-[0.98] transition-transform"
-              >
-                {/* Video Thumbnail */}
-                <div className={`relative w-full h-40 bg-gradient-to-br ${video.gradient} flex items-center justify-center`}>
-                  <div className="absolute inset-0 bg-black/10" />
-                  {/* Play button */}
-                  <div className="relative z-10 w-14 h-14 bg-white/25 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-white/40 shadow-lg">
-                    <Play size={24} className="text-white ml-1" fill="white" />
+      {activeVideo ? (
+        <main className="pt-14 pb-28">
+          <div className="w-full aspect-video bg-black">
+            <video 
+              key={activeVideo.id}
+              src={activeVideo.url} 
+              controls 
+              autoPlay
+              playsInline
+              className="w-full h-full"
+              preload="auto"
+            />
+          </div>
+          <div className="px-5 pt-4 pb-3 border-b border-outline-variant/10">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-black tracking-widest text-primary uppercase">{activeVideo.subtitle}</span>
+              <span className="text-on-surface-variant/30">•</span>
+              <span className="text-[10px] font-medium text-on-surface-variant">{activeVideo.duration}</span>
+            </div>
+            <h2 className="text-lg font-bold text-on-surface font-headline leading-tight">{activeVideo.title}</h2>
+          </div>
+          <div className="px-5 pt-4">
+            <button onClick={() => setActiveVideo(null)} className="flex items-center gap-2 text-sm font-bold text-on-surface-variant active:text-primary transition-colors mb-5">
+              <ArrowLeft size={16} /> 返回列表
+            </button>
+            <h3 className="font-headline font-bold text-on-surface mb-4 flex items-center gap-2">
+              <Video size={16} className="text-primary" /> 相关推荐
+            </h3>
+            <div className="space-y-3 pb-10">
+              {VIDEO_PLACEHOLDERS.map((v) => (
+                <button key={v.id} onClick={() => { setActiveVideo(v); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                  className={`w-full flex gap-3 text-left active:scale-[0.98] transition-all p-2 rounded-2xl ${activeVideo.id === v.id ? 'bg-primary/5 ring-1 ring-primary/20' : ''}`}>
+                  <div className="relative w-28 aspect-video shrink-0 rounded-xl overflow-hidden bg-surface-container-high">
+                    <img src={v.cover} alt="" className="w-full h-full object-cover" />
+                    <div className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-[9px] font-bold text-white px-1.5 py-0.5 rounded">{v.duration}</div>
+                    {activeVideo.id === v.id && (
+                      <div className="absolute inset-0 bg-primary/40 flex items-center justify-center">
+                        <div className="flex gap-0.5">
+                          {[0.4, 0.7, 0.5, 0.9].map((h, i) => (
+                            <motion.div key={i} animate={{ height: [4, 12, 4] }} transition={{ repeat: Infinity, duration: h + 0.5, delay: i * 0.1 }} className="w-0.5 bg-white rounded-full" />
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  {/* Duration badge */}
-                  <span className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">
-                    {video.duration}
-                  </span>
-                  {/* Coming soon badge for locked videos */}
-                  {video.id > 2 && (
-                    <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1">
-                      <Lock size={10} />
-                      即将上线
-                    </div>
-                  )}
-                </div>
-                {/* Video Info */}
-                <div className="p-5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[10px] font-bold tracking-widest uppercase text-primary bg-primary-fixed px-2.5 py-0.5 rounded-md">
-                      {video.subtitle}
-                    </span>
+                  <div className="flex-1 py-0.5 min-w-0">
+                    <h4 className={`text-sm font-bold leading-snug line-clamp-2 ${activeVideo.id === v.id ? 'text-primary' : 'text-on-surface'}`}>{v.title}</h4>
+                    <p className="text-[10px] text-on-surface-variant mt-1.5 font-medium">{v.subtitle}</p>
                   </div>
-                  <h3 className="font-headline text-lg font-bold text-on-surface leading-snug">
-                    {video.title}
-                  </h3>
-                </div>
-              </button>
-            </motion.div>
-          ))}
-        </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </main>
+      ) : (
+        <main className="pt-16 pb-28 px-5">
+          <div className="mb-8">
+            <span className="text-[11px] font-medium tracking-[0.1em] uppercase text-on-surface-variant/60">视频课程</span>
+            <h2 className="font-headline text-4xl font-extrabold text-on-surface mt-2 tracking-tight">操作题视频</h2>
 
-        <div className="text-center pt-8 pb-4">
-          <p className="text-on-surface-variant/40 text-sm italic">更多课程正在制作中…</p>
-        </div>
-      </main>
+          </div>
+          <div className="space-y-6">
+            {VIDEO_PLACEHOLDERS.map((video, idx) => (
+              <motion.div key={video.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.06 }}
+                className="active:scale-[0.98] transition-transform duration-200" onClick={() => setActiveVideo(video)}>
+                <div className="relative aspect-video rounded-2xl overflow-hidden card-shadow border border-outline-variant/10">
+                  <img src={video.cover} alt={video.title} className="absolute inset-0 w-full h-full object-cover" />
+                  <div className="absolute top-3 right-3">
+                    <div className="w-8 h-8 bg-black/40 backdrop-blur-md rounded-lg flex items-center justify-center text-white border border-white/10"><Clock size={14} /></div>
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-end p-3">
+                    <div className="bg-black/40 backdrop-blur-md px-2 py-0.5 rounded-md border border-white/10"><span className="text-[10px] font-bold text-white">{video.duration}</span></div>
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-12 h-12 bg-primary/90 text-white rounded-full flex items-center justify-center shadow-lg"><Play size={20} fill="currentColor" className="ml-0.5" /></div>
+                  </div>
+                </div>
+                <div className="mt-3 px-1">
+                  <div className="flex items-center gap-2 mb-1"><span className="text-[9px] font-black tracking-widest uppercase text-primary">{video.subtitle}</span></div>
+                  <h3 className="font-headline text-base font-bold text-on-surface leading-snug line-clamp-2">{video.title}</h3>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+        </main>
+      )}
 
       <BottomTabBar active="learning" onTabChange={(tab) => { if (tab === 'library') onGoLibrary(); if (tab === 'reports') onGoReports(); }} />
     </motion.div>
