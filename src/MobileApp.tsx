@@ -26,7 +26,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { LIBRARY_ITEMS } from './constants';
-import { Category, HistoryRecord, UserResult } from './types';
+import { Category, HistoryRecord, UserResult, Assessment, AssessmentItem, Question } from './types';
 import type { SharedAppProps } from './App';
 import type { AuthUser } from './api';
 
@@ -243,7 +243,7 @@ function MobileRightAction({ currentUser, onLogout, showToast, onOpenProfile }: 
 
 /* ───────────────────────── Library View ───────────────────────── */
 
-function LibraryView({ onStart, onGoReports, onGoLearning, showToast, currentUser, onLogout, onOpenProfile }: { onStart: (item: any) => void; onGoReports: () => void; onGoLearning: () => void; showToast: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
+function LibraryView({ onStart, onGoReports, onGoLearning, showToast, currentUser, onLogout, onOpenProfile }: { onStart: (item: AssessmentItem) => void; onGoReports: () => void; onGoLearning: () => void; showToast: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
   const [activeCategory, setActiveCategory] = useState<string>('全部');
   const categories = ['全部', '网络类', '编码类', '决策类', '安全类', '人工智能类'];
   const filteredItems = activeCategory === '全部' ? LIBRARY_ITEMS : LIBRARY_ITEMS.filter(item => item.category === activeCategory);
@@ -347,15 +347,15 @@ function AssessmentView({
   onGoLibrary: () => void;
   currentQuestionIndex: number;
   setCurrentQuestionIndex: (idx: number) => void;
-  answers: Record<string, string>;
-  setAnswers: (ans: Record<string, string>) => void;
+  answers: Record<string, string | string[]>;
+  setAnswers: (ans: Record<string, string | string[]>) => void;
   timerDisplay: string;
   timerIsLow: boolean;
   markedQuestions: Record<string, boolean>;
   setMarkedQuestions: (mq: Record<string, boolean>) => void;
   showToast: (msg: string) => void;
   showConfirm: (msg: string, cb: () => void) => void;
-  currentAssessment: any;
+  currentAssessment: Assessment;
 }) {
   const [activeTab, setActiveTab] = useState<'reading' | 'questions'>('reading');
   const [showQuestionMap, setShowQuestionMap] = useState(false);
@@ -461,12 +461,12 @@ function AssessmentView({
                 {question.options.map(function (option: any) {
                   const isMulti = question.category === '多选题';
                   const isSelected = Array.isArray(answers[question.id])
-                    ? (answers[question.id] as string[]).includes(option.id)
+                    ? (answers[question.id] as unknown as string[]).includes(option.id)
                     : answers[question.id] === option.id;
                   
                   const handleOptionClick = () => {
                     if (isMulti) {
-                      const current = Array.isArray(answers[question.id]) ? (answers[question.id] as string[]) : [];
+                      const current = Array.isArray(answers[question.id]) ? (answers[question.id] as unknown as string[]) : [];
                       if (current.includes(option.id)) {
                         setAnswers({ ...answers, [question.id]: current.filter(id => id !== option.id) });
                       } else {
@@ -527,7 +527,7 @@ function AssessmentView({
                 <span className="text-[10px] font-bold text-on-surface-variant uppercase">共 {currentAssessment.questions.length} 题</span>
               </div>
               <div className="grid grid-cols-6 gap-2">
-                {currentAssessment.questions.map((q, idx) => (
+                {currentAssessment.questions.map((q: Question, idx: number) => (
                   <button
                     key={q.id}
                     onClick={() => { setCurrentQuestionIndex(idx); setActiveTab('questions'); setShowQuestionMap(false); }}
@@ -576,7 +576,7 @@ function AssessmentView({
 
 /* ───────────────────────── Results View ───────────────────────── */
 
-function ResultsView({ result, currentAssessment, onBack, onGoReports, onGoLearning, isFromHistory, showToast, currentUser, onLogout, onOpenProfile }: { result: UserResult; currentAssessment: any; onBack: () => void; onGoReports: () => void; onGoLearning?: () => void; isFromHistory: boolean; showToast: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
+function ResultsView({ result, currentAssessment, onBack, onGoReports, onGoLearning, isFromHistory, showToast, currentUser, onLogout, onOpenProfile }: { result: UserResult; currentAssessment: Assessment; onBack: () => void; onGoReports: () => void; onGoLearning?: () => void; isFromHistory: boolean; showToast: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
       <TopAppBar title="测验结果" onBack={isFromHistory ? onGoReports : undefined} rightAction={<MobileRightAction currentUser={currentUser} onLogout={onLogout} showToast={showToast} onOpenProfile={onOpenProfile} />} />
@@ -645,7 +645,7 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, onGoLearn
         </div>
 
         <div className="space-y-6">
-          {currentAssessment.questions.map((q, idx) => {
+          {currentAssessment.questions.map((q: Question, idx: number) => {
             const userAnswer = result.answers.find(a => a.questionId === q.id)?.selectedOptionId;
             
             const checkIsCorrect = (uAns: any, cAns: any) => {
@@ -676,7 +676,7 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, onGoLearn
                 </div>
                 <h4 className="font-headline text-lg font-bold text-on-surface leading-snug mb-5">{q.text}</h4>
                 <div className="space-y-2.5 mb-5">
-                  {q.options.filter(opt => isOptionUserSelected(opt.id) || isOptionActualCorrect(opt.id)).map(opt => {
+                  {q.options.filter((opt: { id: string }) => isOptionUserSelected(opt.id) || isOptionActualCorrect(opt.id)).map((opt: { id: string; text: string }) => {
                     const isActualCorrect = isOptionActualCorrect(opt.id);
                     return (
                       <div key={opt.id} className={`p-4 rounded-2xl flex items-center justify-between ${isActualCorrect ? 'bg-secondary/5 border-2 border-secondary' : 'bg-error/5 border-2 border-error'}`}>

@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /**
  * Supabase 客户端初始化
  * 使用 Vite 环境变量注入 Supabase 配置

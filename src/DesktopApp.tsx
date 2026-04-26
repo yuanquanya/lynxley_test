@@ -32,7 +32,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { LIBRARY_ITEMS } from './constants';
-import { Category, HistoryRecord, UserResult } from './types';
+import { Category, HistoryRecord, UserResult, Assessment, AssessmentItem, Question } from './types';
 import type { SharedAppProps } from './App';
 import type { AuthUser } from './api';
 
@@ -175,7 +175,7 @@ function AppHeader({ activeNav, onGoLibrary, onGoReports, onGoLearning, showToas
 
 /* ───────────────── Library View ───────────────── */
 
-function LibraryView({ onStart, onGoReports, onGoLearning, showToast, currentUser, onLogout, onOpenProfile }: { onStart: (item: any) => void; onGoReports: () => void; onGoLearning: () => void; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
+function LibraryView({ onStart, onGoReports, onGoLearning, showToast, currentUser, onLogout, onOpenProfile }: { onStart: (item: AssessmentItem) => void; onGoReports: () => void; onGoLearning: () => void; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
   const [activeCategory, setActiveCategory] = useState<string>('全部');
   const categories = ['全部', '网络类', '编码类', '决策类', '安全类', '人工智能类'];
   const filteredItems = activeCategory === '全部' ? LIBRARY_ITEMS : LIBRARY_ITEMS.filter(item => item.category === activeCategory);
@@ -253,13 +253,13 @@ function AssessmentView({
   timerDisplay, timerIsLow,
   markedQuestions, setMarkedQuestions, showToast, showConfirm,
 }: {
-  currentAssessment: any;
+  currentAssessment: Assessment;
   onFinish: () => void;
   onGoLibrary: () => void;
   currentQuestionIndex: number;
   setCurrentQuestionIndex: (idx: number) => void;
-  answers: Record<string, string>;
-  setAnswers: (ans: Record<string, string>) => void;
+  answers: Record<string, string | string[]>;
+  setAnswers: (ans: Record<string, string | string[]>) => void;
   timerDisplay: string;
   timerIsLow: boolean;
   markedQuestions: Record<string, boolean>;
@@ -320,7 +320,7 @@ function AssessmentView({
                 <figcaption className="p-5 bg-surface-container-low text-xs text-on-surface-variant font-bold tracking-tight">{currentAssessment.readingMaterial.imageCaption}</figcaption>
               </figure>
               <article className="space-y-8 text-on-surface leading-relaxed text-xl font-medium">
-                {currentAssessment.readingMaterial.content?.map((p, i) => <p key={i}>{p}</p>)}
+                {currentAssessment.readingMaterial.content?.map((p: string, i: number) => <p key={i}>{p}</p>)}
                 {currentAssessment.readingMaterial.quote && (
                   <div className="p-10 bg-surface-container-low rounded-3xl italic text-on-surface border-l-8 border-primary ambient-shadow">
                     "{currentAssessment.readingMaterial.quote}"
@@ -348,15 +348,15 @@ function AssessmentView({
           <div className="space-y-12">
             <h3 className="text-3xl font-bold leading-tight text-on-surface tracking-tight">{question.text}</h3>
             <div className="space-y-4">
-              {question.options.map((option) => {
+              {question.options.map((option: { id: string; label: string; text: string }) => {
                 const isMulti = question.category === '多选题';
                 const isSelected = Array.isArray(answers[question.id])
-                  ? (answers[question.id] as string[]).includes(option.id)
+                  ? (answers[question.id] as unknown as string[]).includes(option.id)
                   : answers[question.id] === option.id;
                 
                 const handleOptionClick = () => {
                   if (isMulti) {
-                    const current = Array.isArray(answers[question.id]) ? (answers[question.id] as string[]) : [];
+                    const current = Array.isArray(answers[question.id]) ? (answers[question.id] as unknown as string[]) : [];
                     if (current.includes(option.id)) {
                       setAnswers({ ...answers, [question.id]: current.filter(id => id !== option.id) });
                     } else {
@@ -405,12 +405,12 @@ function AssessmentView({
             <p className="text-on-surface-variant text-[10px] font-bold uppercase tracking-wider">共 {currentAssessment.questions.length} 题</p>
           </div>
           <div className="grid grid-cols-4 gap-3">
-            {currentAssessment.questions.map((q, idx) => (
+            {currentAssessment.questions.map((q: Question, idx: number) => (
               <button key={q.id} onClick={() => setCurrentQuestionIndex(idx)}
                 className={`w-10 h-10 flex flex-col items-center justify-center rounded-xl font-black text-xs transition-all relative overflow-hidden ${
                   idx === currentQuestionIndex ? 'bg-primary text-white ring-4 ring-primary-fixed shadow-lg'
                     : markedQuestions[q.id] ? 'bg-secondary-container/20 text-secondary border border-secondary'
-                    : (Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).length > 0 : answers[q.id]) ? 'bg-surface-container-high text-on-surface-variant border border-outline-variant/30'
+                    : (Array.isArray(answers[q.id]) ? (answers[q.id] as unknown as string[]).length > 0 : answers[q.id]) ? 'bg-surface-container-high text-on-surface-variant border border-outline-variant/30'
                     : 'bg-surface-container-low text-on-surface-variant border border-outline-variant/10 hover:border-primary'
                 }`}>
                 <span>{idx + 1}</span>
@@ -431,7 +431,7 @@ function AssessmentView({
 
 /* ───────────────── Results View ───────────────── */
 
-function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHistory, showToast, currentUser, onLogout, onOpenProfile }: { result: UserResult; currentAssessment: any; onBack: () => void; onGoReports: () => void; isFromHistory: boolean; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
+function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHistory, showToast, currentUser, onLogout, onOpenProfile }: { result: UserResult; currentAssessment: Assessment; onBack: () => void; onGoReports: () => void; isFromHistory: boolean; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
       <AppHeader activeNav="reports" onGoLibrary={onBack} onGoReports={onGoReports} showToast={showToast} currentUser={currentUser} onLogout={onLogout} onOpenProfile={onOpenProfile} />
@@ -518,7 +518,7 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHis
             </div>
           </div>
 
-          {currentAssessment.questions.map((q, idx) => {
+          {currentAssessment.questions.map((q: Question, idx: number) => {
             const userAnswer = result.answers.find(a => a.questionId === q.id)?.selectedOptionId;
 
             const checkIsCorrect = (uAns: any, cAns: any) => {
@@ -549,7 +549,7 @@ function ResultsView({ result, currentAssessment, onBack, onGoReports, isFromHis
                 </div>
                 <h3 className="font-headline text-3xl font-bold mb-10 leading-tight tracking-tight">{q.text}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                  {q.options.filter(opt => isOptionUserSelected(opt.id) || isOptionActualCorrect(opt.id)).map(opt => {
+                  {q.options.filter((opt: { id: string }) => isOptionUserSelected(opt.id) || isOptionActualCorrect(opt.id)).map((opt: { id: string; text: string }) => {
                     const isSelected = isOptionUserSelected(opt.id);
                     const isActualCorrect = isOptionActualCorrect(opt.id);
                     return (

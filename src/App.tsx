@@ -37,8 +37,8 @@ export interface SharedAppProps {
   setView: (v: ViewType) => void;
   currentQuestionIndex: number;
   setCurrentQuestionIndex: (idx: number) => void;
-  answers: Record<string, string>;
-  setAnswers: (ans: Record<string, string>) => void;
+  answers: Record<string, string | string[]>;
+  setAnswers: (ans: Record<string, string | string[]>) => void;
   result: UserResult | null;
   history: HistoryRecord[];
   selectedHistoryRecord: HistoryRecord | null;
@@ -68,7 +68,7 @@ export default function App() {
   const [view, setView] = useState<ViewType>('library');
   const [selectedItem, setSelectedItem] = useState<AssessmentItem | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [result, setResult] = useState<UserResult | null>(null);
   const [history, setHistory] = useState<HistoryRecord[]>([]);
   const [selectedHistoryRecord, setSelectedHistoryRecord] = useState<HistoryRecord | null>(null);
@@ -186,7 +186,7 @@ export default function App() {
       breakdown,
       answers: Object.entries(answers).map(([questionId, selectedOptionId]) => ({
         questionId,
-        selectedOptionId: selectedOptionId as string,
+        selectedOptionId: selectedOptionId as string | string[],
       })),
     };
     setResult(newResult);

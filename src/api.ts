@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /**
  * API 层 - Supabase 云端 + localStorage 本地降级
  *
@@ -197,7 +198,7 @@ export async function fetchHistory(): Promise<HistoryRecord[]> {
 
     if (error) throw error;
 
-    return (data || []).map((row) => ({
+    return (data || []).map((row: any) => ({
       id: row.id,
       assessmentId: row.assessment_id,
       title: row.title,
