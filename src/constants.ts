@@ -4,7 +4,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '1',
     title: '1. 数据包封装过程可视化',
-    category: 'Logic',
+    category: '网络类',
     difficulty: 'Beginner',
     duration: '20 分钟',
     description: '通过数据从应用层到数据链路层的封装过程，了解网络协议是如何工作的。',
@@ -13,7 +13,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '2',
     title: '2. 文字编码与显示',
-    category: 'Logic',
+    category: '编码类',
     difficulty: 'Beginner',
     duration: '15 分钟',
     description: '深入了解字符背后的秘密，探究从键盘输入到屏幕显示的全过程。',
@@ -22,7 +22,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '3',
     title: '3. 密码里的数学魔法',
-    category: 'Logic',
+    category: '安全类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '通过数学组合数了解密码破解的原理与防御策略。',
@@ -31,7 +31,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '4',
     title: '4. 如何制定复习计划',
-    category: 'Logic',
+    category: '决策类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '通过决策树模型了解如何根据剩余天数和学科强弱智能规划复习策略。',
@@ -40,7 +40,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '5',
     title: '5. IP地址小课堂',
-    category: 'Logic',
+    category: '网络类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习IP地址小课堂相关知识，完成随堂测试以巩固学习成果。',
@@ -49,7 +49,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '6',
     title: '6. RGB颜色编码教学工具',
-    category: 'Logic',
+    category: '编码类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习RGB颜色编码教学工具相关知识，完成随堂测试以巩固学习成果。',
@@ -58,7 +58,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '7',
     title: '7. 网络与信息安全',
-    category: 'Logic',
+    category: '安全类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习网络与信息安全相关知识，完成随堂测试以巩固学习成果。',
@@ -67,7 +67,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '8',
     title: '8. 如何挑选一个好西瓜',
-    category: 'Logic',
+    category: '决策类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习如何挑选一个好西瓜相关知识，完成随堂测试以巩固学习成果。',
@@ -76,7 +76,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '9',
     title: '9. IP协议互动课堂',
-    category: 'Logic',
+    category: '网络类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习IP协议互动课堂相关知识，完成随堂测试以巩固学习成果。',
@@ -85,7 +85,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '10',
     title: '10. 乱码侦探社',
-    category: 'Logic',
+    category: '编码类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习乱码侦探社相关知识，完成随堂测试以巩固学习成果。',
@@ -94,7 +94,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '11',
     title: '11. 物联网：让物品“说话”的奇妙网络',
-    category: 'Logic',
+    category: '网络类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习物联网：让物品“说话”的奇妙网络相关知识，完成随堂测试以巩固学习成果。',
@@ -103,7 +103,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '12',
     title: '12. 假期数学作业分层决策',
-    category: 'Logic',
+    category: '决策类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习假期数学作业分层决策相关知识，完成随堂测试以巩固学习成果。',
@@ -112,7 +112,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '13',
     title: '13. TCP协议互动课堂',
-    category: 'Logic',
+    category: '网络类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习TCP协议互动课堂相关知识，完成随堂测试以巩固学习成果。',
@@ -121,7 +121,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '14',
     title: '14. 图片编码教学',
-    category: 'Logic',
+    category: '编码类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习图片编码教学相关知识，完成随堂测试以巩固学习成果。',
@@ -130,7 +130,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '15',
     title: '15. 筑牢物联网安全防线，守护万物互联生态',
-    category: 'Logic',
+    category: '安全类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习筑牢物联网安全防线，守护万物互联生态相关知识，完成随堂测试以巩固学习成果。',
@@ -139,7 +139,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '16',
     title: '16. 医院分诊决策树',
-    category: 'Logic',
+    category: '决策类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习医院分诊决策树相关知识，完成随堂测试以巩固学习成果。',
@@ -148,7 +148,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '17',
     title: '17. UDP协议工作原理',
-    category: 'Logic',
+    category: '网络类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习UDP协议工作原理相关知识，完成随堂测试以巩固学习成果。',
@@ -157,7 +157,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '18',
     title: '18. 偏移量加密：让字母“走几步”的秘密编码',
-    category: 'Logic',
+    category: '安全类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习偏移量加密：让字母“走几步”的秘密编码相关知识，完成随堂测试以巩固学习成果。',
@@ -166,7 +166,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '19',
     title: '19. 走进人工智能的世界',
-    category: 'Logic',
+    category: '人工智能类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习走进人工智能的世界相关知识，完成随堂测试以巩固学习成果。',
@@ -175,7 +175,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '20',
     title: '20. 智能空调决策树',
-    category: 'Logic',
+    category: '决策类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习智能空调决策树相关知识，完成随堂测试以巩固学习成果。',
@@ -184,7 +184,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '21',
     title: '21. 域名解析过程学习工具',
-    category: 'Logic',
+    category: '网络类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习域名解析过程学习工具相关知识，完成随堂测试以巩固学习成果。',
@@ -193,7 +193,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '22',
     title: '22. 数字解码动物特征',
-    category: 'Logic',
+    category: '编码类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习数字解码动物特征相关知识，完成随堂测试以巩固学习成果。',
@@ -202,7 +202,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '23',
     title: '23. 机器学习三兄弟：回归、分类、聚类',
-    category: 'Logic',
+    category: '人工智能类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习机器学习三兄弟：回归、分类、聚类相关知识，完成随堂测试以巩固学习成果。',
@@ -211,7 +211,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '24',
     title: '24. 新能源汽车购车决策树',
-    category: 'Logic',
+    category: '决策类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习新能源汽车购车决策树相关知识，完成随堂测试以巩固学习成果。',
@@ -220,7 +220,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '25',
     title: '25. HTTP协议解析模拟器',
-    category: 'Logic',
+    category: '网络类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习HTTP协议解析模拟器相关知识，完成随堂测试以巩固学习成果。',
@@ -229,7 +229,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '26',
     title: '26. 数字解码物品特征',
-    category: 'Logic',
+    category: '编码类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习数字解码物品特征相关知识，完成随堂测试以巩固学习成果。',
@@ -238,7 +238,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '27',
     title: '27. 算力： AI 的“发动机”',
-    category: 'Logic',
+    category: '人工智能类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习算力： AI 的“发动机”相关知识，完成随堂测试以巩固学习成果。',
@@ -247,7 +247,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '28',
     title: '28. 外出晨练决策树',
-    category: 'Logic',
+    category: '决策类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习外出晨练决策树相关知识，完成随堂测试以巩固学习成果。',
@@ -256,7 +256,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '29',
     title: '29. 搜索引擎小课堂',
-    category: 'Logic',
+    category: '网络类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习搜索引擎小课堂相关知识，完成随堂测试以巩固学习成果。',
@@ -265,7 +265,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '30',
     title: '30. 水果编码：用 0 和 1 给水果拍“数字照片”',
-    category: 'Logic',
+    category: '编码类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习水果编码：用 0 和 1 给水果拍“数字照片”相关知识，完成随堂测试以巩固学习成果。',
@@ -274,7 +274,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '31',
     title: '31. 自主可控：把“命门”掌握在自己手中',
-    category: 'Logic',
+    category: '安全类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习自主可控：把“命门”掌握在自己手中相关知识，完成随堂测试以巩固学习成果。',
@@ -283,7 +283,7 @@ export const LIBRARY_ITEMS: AssessmentItem[] = [
   {
     id: '32',
     title: '32. 周末出游决策树',
-    category: 'Logic',
+    category: '决策类',
     difficulty: 'Beginner',
     duration: '10 分钟',
     description: '学习周末出游决策树相关知识，完成随堂测试以巩固学习成果。',

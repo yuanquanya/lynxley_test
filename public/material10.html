@@ -14,11 +14,9 @@
         }
         body {
             background: #eef2f7;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: block; /* Change from flex to block to avoid potential iframe centering issues */
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
         }
         .container {
             max-width: 1200px;
@@ -89,16 +87,20 @@
             padding: 10px 20px;
             border-radius: 40px;
             margin-top: 16px;
-            margin-left: 40px;
             display: inline-block;
             border: 1px solid #7e94bc;
+            word-break: break-all;
         }
         .shrug {
             margin-top: 12px;
-            margin-left: 40px;
             color: #4a6185;
             border-left: 3px solid #a7bade;
             padding-left: 18px;
+        }
+        @media (min-width: 600px) {
+            .garbled-preview, .shrug {
+                margin-left: 40px;
+            }
         }
 
         /* 三栏核心布局 */
@@ -107,6 +109,19 @@
             gap: 20px;
             margin: 20px 0 25px;
             align-items: stretch;
+        }
+        @media (max-width: 800px) {
+            .three-columns {
+                flex-direction: column;
+            }
+            .container {
+                padding: 20px 15px;
+                border-radius: 20px;
+            }
+            .title-section {
+                font-size: 1.5rem;
+                flex-wrap: wrap;
+            }
         }
         .col {
             flex: 1;

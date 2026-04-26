@@ -1,4 +1,4 @@
-export type Category = 'Ethics' | 'Strategy' | 'Leadership' | 'Innovation' | 'Economics' | 'Logistics' | 'Logic';
+export type Category = '网络类' | '决策类' | '编码类' | '安全类' | '人工智能类' | 'Ethics' | 'Strategy' | 'Leadership' | 'Innovation' | 'Economics' | 'Logistics' | 'Logic';
 
 export interface AssessmentItem {
   id: string;

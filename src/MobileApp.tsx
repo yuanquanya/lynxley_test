@@ -244,6 +244,10 @@ function MobileRightAction({ currentUser, onLogout, showToast, onOpenProfile }: 
 /* ───────────────────────── Library View ───────────────────────── */
 
 function LibraryView({ onStart, onGoReports, onGoLearning, showToast, currentUser, onLogout, onOpenProfile }: { onStart: (item: any) => void; onGoReports: () => void; onGoLearning: () => void; showToast: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
+  const [activeCategory, setActiveCategory] = useState<string>('全部');
+  const categories = ['全部', '网络类', '编码类', '决策类', '安全类', '人工智能类'];
+  const filteredItems = activeCategory === '全部' ? LIBRARY_ITEMS : LIBRARY_ITEMS.filter(item => item.category === activeCategory);
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
       <TopAppBar
@@ -252,13 +256,34 @@ function LibraryView({ onStart, onGoReports, onGoLearning, showToast, currentUse
       />
 
       <main className="pt-16 pb-28 px-5">
-        <div className="mb-8">
+        <div className="mb-6">
           <span className="text-[11px] font-medium tracking-[0.1em] uppercase text-on-surface-variant/60">知识题库</span>
           <h2 className="font-headline text-4xl font-extrabold text-on-surface mt-2 tracking-tight">题库中心</h2>
         </div>
 
+        <div className="flex overflow-x-auto gap-2 mb-6 pb-2 -mx-5 px-5" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <style>{`
+            .flex.overflow-x-auto::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
+          {categories.map(c => (
+            <button
+              key={c}
+              onClick={() => setActiveCategory(c)}
+              className={`whitespace-nowrap px-5 py-2 rounded-full font-bold text-xs tracking-wide transition-all active:scale-95 shrink-0 ${
+                activeCategory === c
+                  ? 'bg-primary text-white shadow-md shadow-primary/20'
+                  : 'bg-surface-container-lowest border border-outline-variant/10 text-on-surface-variant'
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+
         <div className="space-y-4">
-          {LIBRARY_ITEMS.map((item, idx) => (
+          {filteredItems.map((item, idx) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, y: 16 }}

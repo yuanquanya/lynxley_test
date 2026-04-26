@@ -176,21 +176,40 @@ function AppHeader({ activeNav, onGoLibrary, onGoReports, onGoLearning, showToas
 /* ───────────────── Library View ───────────────── */
 
 function LibraryView({ onStart, onGoReports, onGoLearning, showToast, currentUser, onLogout, onOpenProfile }: { onStart: (item: any) => void; onGoReports: () => void; onGoLearning: () => void; showToast?: (msg: string) => void; currentUser?: AuthUser | null; onLogout?: () => void; onOpenProfile?: () => void }) {
+  const [activeCategory, setActiveCategory] = useState<string>('全部');
+  const categories = ['全部', '网络类', '编码类', '决策类', '安全类', '人工智能类'];
+  const filteredItems = activeCategory === '全部' ? LIBRARY_ITEMS : LIBRARY_ITEMS.filter(item => item.category === activeCategory);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen">
       <AppHeader activeNav="library" onGoReports={onGoReports} onGoLearning={onGoLearning} showToast={showToast} currentUser={currentUser} onLogout={onLogout} onOpenProfile={onOpenProfile} />
 
       <main className="flex-grow max-w-7xl mx-auto px-6 py-16 w-full">
-        <section className="mb-16">
+        <section className="mb-10">
           <h1 className="text-6xl font-extrabold font-headline text-on-surface mb-6 tracking-tighter">题库中心</h1>
           <p className="text-on-surface-variant text-xl max-w-2xl leading-relaxed font-medium">
             浏览我们精心策划的专业级评估题目，旨在培养深度认知与战略思维能力。
           </p>
         </section>
 
+        <div className="flex flex-wrap gap-3 mb-10">
+          {categories.map(c => (
+            <button
+              key={c}
+              onClick={() => setActiveCategory(c)}
+              className={`px-6 py-2.5 rounded-full font-bold text-sm tracking-wide transition-all active:scale-95 ${
+                activeCategory === c
+                  ? 'bg-primary text-white shadow-md shadow-primary/20'
+                  : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {LIBRARY_ITEMS.map((item, idx) => (
+          {filteredItems.map((item, idx) => (
             <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}
               className="bg-surface-container-lowest rounded-3xl p-10 flex flex-col h-full ambient-shadow border border-outline-variant/5 hover:-translate-y-2 transition-transform duration-300 group">
               <div className="mb-8">
@@ -214,12 +233,7 @@ function LibraryView({ onStart, onGoReports, onGoLearning, showToast, currentUse
           ))}
         </div>
 
-        <div className="mt-20 flex justify-center">
-          <button onClick={() => showToast?.('你知道吗，点击 查看全部题目 这个按钮可以浪费你整整1秒钟。。')} className="flex items-center space-x-3 text-primary font-black group px-8 py-4 rounded-full hover:bg-primary/5 transition-colors">
-            <span className="group-hover:translate-y-1 transition-transform duration-300">查看全部 32 道题目</span>
-            <ChevronDown size={20} />
-          </button>
-        </div>
+
       </main>
 
       <footer className="py-12 border-t border-outline-variant/10 text-center bg-white/50">

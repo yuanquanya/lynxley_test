@@ -1,106 +1,109 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-<meta http-equiv=Content-Type content="text/html; charset=x-cp20936">
-<meta name=Generator content="Microsoft Word 15 (filtered)">
-
-<style>
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        line-height: 1.8;
-        color: #333;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 30px 20px;
-        background-color: #f1f5f9;
-    }
-    .wrapper {
-        background-color: #ffffff;
-        padding: 40px;
-        border-radius: 16px;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-    h1 {
-        color: #1a365d;
-        text-align: center;
-        margin-bottom: 40px;
-        font-size: 2.2rem;
-        border-bottom: 2px solid #e2e8f0;
-        padding-bottom: 20px;
-    }
-    p {
-        margin-bottom: 18px;
-        font-size: 1.1rem;
-        color: #334155;
-    }
-    strong {
-        color: #0f172a;
-        font-weight: 600;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 30px 0;
-        background-color: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
-    th, td {
-        padding: 15px 20px;
-        border: 1px solid #e2e8f0;
-        text-align: left;
-        font-size: 1.05rem;
-    }
-    thead td, thead th, tr:first-child td {
-        background-color: #f8fafc;
-        color: #1a365d;
-        font-weight: bold;
-    }
-    tbody tr:hover {
-        background-color: #f1f5f9;
-    }
-    ul, ol {
-        margin-bottom: 20px;
-        font-size: 1.1rem;
-        padding-left: 25px;
-        color: #334155;
-    }
-    li {
-        margin-bottom: 10px;
-    }
-    .concept-card {
-        background-color: #f8fafc;
-        border-left: 5px solid #3b82f6;
-        padding: 25px;
-        margin: 30px 0;
-        border-radius: 0 12px 12px 0;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
-</style>
-
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>假期数学作业分层决策</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <script>document.addEventListener("DOMContentLoaded", function() { mermaid.initialize({ startOnLoad: true, theme: 'default' }); });</script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #1a365d; text-align: center; margin-bottom: 30px; font-size: 2.2rem; }
+        .concept-card { background-color: #f8fafc; border-left: 5px solid #3b82f6; padding: 25px; margin: 30px 0; border-radius: 0 12px 12px 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .concept-card p { margin-bottom: 15px; font-size: 1.1rem; }
+        .concept-card p:last-child { margin-bottom: 0; }
+        .guide-text { font-size: 1.15rem; color: #475569; padding: 20px; background-color: #f0fdf4; border-radius: 12px; margin: 30px 0; text-align: center; border: 1px solid #bbf7d0; }
+        .guide-text strong { color: #166534; }
+        .scenario-box { background-color: #fffbeb; border: 1px solid #fde68a; padding: 25px; border-radius: 12px; margin-top: 40px; }
+        .scenario-box h3 { color: #b45309; margin-top: 0; font-size: 1.3rem; display: flex; align-items: center; gap: 8px; }
+        .scenario-box p { font-size: 1.1rem; color: #78350f; margin: 0; line-height: 1.6; }
+        .zoom-btn { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 10px 22px; border-radius: 10px; cursor: pointer; font-size: 15px; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(59,130,246,0.3); transition: all 0.3s cubic-bezier(0.4,0,0.2,1); display: inline-flex; align-items: center; gap: 8px; }
+        .zoom-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 15px -3px rgba(59,130,246,0.4); }
+        .zoom-btn:active { transform: translateY(0) scale(0.98); }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(241,245,249,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); z-index: 9999; justify-content: center; align-items: center; padding: 20px; touch-action: none; opacity: 0; transition: opacity 0.4s ease; }
+        .modal-overlay.show { opacity: 1; }
+        .modal-content { background: #ffffff; border-radius: 24px; padding: 24px; width: 96vw; height: 96vh; box-sizing: border-box; display: flex; flex-direction: column; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05); transform: scale(0.95) translateY(20px); opacity: 0; transition: all 0.5s cubic-bezier(0.16,1,0.3,1); }
+        .modal-overlay.show .modal-content { transform: scale(1) translateY(0); opacity: 1; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-shrink: 0; padding: 0 5px; }
+        .zoom-controls { display: flex; gap: 12px; }
+        .ctrl-btn { background: #f8fafc; border: 1px solid #e2e8f0; color: #334155; width: 44px; height: 44px; border-radius: 12px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 2px 4px rgba(0,0,0,0.05); user-select: none; }
+        .ctrl-btn:hover { background: #e2e8f0; color: #0f172a; transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .ctrl-btn:active { transform: scale(0.95); }
+        .modal-scroll-area { flex: 1; overflow: hidden; border-radius: 16px; background: #f8fafc; border: 1px solid #e2e8f0; position: relative; cursor: grab; }
+        .modal-scroll-area:active { cursor: grabbing; }
+        .close-btn { background: #f1f5f9; color: #64748b; border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-weight: bold; font-size: 24px; display: flex; justify-content: center; align-items: center; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
+        .close-btn:hover { background: #fee2e2; color: #ef4444; transform: rotate(90deg) scale(1.1); }
+        .close-btn:active { transform: rotate(90deg) scale(0.95); }
+        .mermaid-container { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .mermaid-container:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05) !important; }
+    </style>
 </head>
-
 <body>
+    <h1>假期数学作业分层决策</h1>
 
-<div class="wrapper">
+    <div class="concept-card">
+        <p><strong>决策树</strong>是一种树状结构的分类与预测模型，通过一系列规则对数据进行划分。</p>
+        <p>它模拟人类决策过程，从根节点开始，根据特征条件逐层分支，直到到达叶子节点得出结论。</p>
+        <p>这张分层作业设计图运用了决策树的逻辑，根据期末数学成绩的分数段和题型得分进行分层，并为不同层次的学生匹配针对性的巩固练习，体现了数据驱动的精准教学思路。</p>
+    </div>
 
-<h1>假期数学作业分层决策</h1>
+    <div class="guide-text">
+        根据学生的 <strong>期末数学成绩</strong> 和 <strong>各题型得分</strong>，智能匹配最合适的假期作业类型！
+    </div>
 
-<p>决策树是一种树状结构的分类与预测模型，通过一系列规则对数据进行划分。它模拟人类决策过程，从根节点开始，根据特征条件逐层分支，直到到达叶子节点得出结论。这种方法直观易懂，常用于机器学习和数据挖掘领域进行决策分析。这张分层作业设计图运用了决策树的逻辑，根据期末数学成绩的分数段和题型得分进行分层，并为不同层次的学生匹配针对性的巩固练习，体现了数据驱动的精准教学思路。</p>
+    <div style="text-align: right; margin-bottom: 20px;">
+        <button class="zoom-btn" onclick="openModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+            放大图表
+        </button>
+    </div>
 
-<p>&nbsp;</p>
+    <div class="mermaid-container" style="display: flex; justify-content: center; overflow-x: auto; padding: 20px; background: #fff; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 40px;">
+        <div class="mermaid">
+        graph TD
+            A([期末数学成绩]) --> B{分数段?}
+            B -- "≥95分" --> C[跨学科开放性练习]
+            B -- "60~94分" --> D{按题型得分分类}
+            B -- "<60分" --> E[基础巩固练习]
 
-<p align=center><img height=377 id="图片 3"
-src="material12.files/image001.png" alt=分层作业></p>
+            D -- "选择和填空题<35分" --> F[概念辨析专项]
+            D -- "计算题<20分" --> G[计算技能专项]
+            D -- "应用题<35分" --> H[应用建模专项]
 
-<p align=center>&nbsp;</p>
+            classDef startNode fill:#e9d5ff,stroke:#a855f7,stroke-width:2px;
+            classDef condition fill:#ede9fe,stroke:#8b5cf6,stroke-width:2px;
+            classDef blueNode fill:#eff6ff,stroke:#3b82f6,stroke-width:2px;
+            classDef greenNode fill:#f0fdf4,stroke:#22c55e,stroke-width:2px;
+            classDef orangeNode fill:#fff7ed,stroke:#f97316,stroke-width:2px;
+            classDef redNode fill:#fef2f2,stroke:#ef4444,stroke-width:2px;
 
-<p>【题目】按文中策略，如果一名同学的数学成绩为78分，其中填空选择得34分，计算题得20分，应用题得24分，那么他只需要做“应用建模专项”作业。</p>
+            class A startNode;
+            class B,D condition;
+            class C blueNode;
+            class E redNode;
+            class F orangeNode;
+            class G greenNode;
+            class H blueNode;
+        </div>
+    </div>
 
-</div>
+    <div class="scenario-box">
+        <h3>💡 【情境题目】</h3>
+        <p>按文中策略，如果一名同学的数学成绩为78分，其中填空选择得34分，计算题得20分，应用题得24分，那么他只需要做"应用建模专项"作业。</p>
+    </div>
 
+    <div id="diagramModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><div class="zoom-controls"><button class="ctrl-btn" onclick="doZoomIn()" title="放大"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button><button class="ctrl-btn" onclick="doZoomOut()" title="缩小"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg></button><button class="ctrl-btn" onclick="doReset()" title="重置视角"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></button></div><button class="close-btn" onclick="closeModal()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div><div class="modal-scroll-area" id="panZoomContainer"></div></div></div>
+
+    <script>
+        let pz = null;
+        function animatedCommand(action) { if (!window.pz) return; const vp = document.querySelector('.svg-pan-zoom_viewport'); if (vp) { vp.style.transition = 'transform 0.3s cubic-bezier(0.16,1,0.3,1)'; action(); setTimeout(() => { vp.style.transition = 'none'; }, 300); } else { action(); } }
+        function doZoomIn() { animatedCommand(() => window.pz.zoomIn()); }
+        function doZoomOut() { animatedCommand(() => window.pz.zoomOut()); }
+        function doReset() { animatedCommand(() => { window.pz.resetZoom(); window.pz.center(); }); }
+        function openModal() { const modal = document.getElementById('diagramModal'); const container = document.getElementById('panZoomContainer'); const originalSvg = document.querySelector('.mermaid-container svg'); if (originalSvg) { container.innerHTML = ''; const c = originalSvg.cloneNode(true); c.style.maxWidth = 'none'; c.style.width = '100%'; c.style.height = '100%'; c.removeAttribute('width'); c.removeAttribute('height'); container.appendChild(c); modal.style.display = 'flex'; void modal.offsetWidth; modal.classList.add('show'); setTimeout(() => { if (window.pz) window.pz.destroy(); window.pz = svgPanZoom(c, { zoomEnabled: true, controlIconsEnabled: false, fit: true, center: true, minZoom: 0.5, maxZoom: 5, zoomScaleSensitivity: 0.3, beforePan: function(o,n) { var s = this.getSizes(); var gW = s.width*0.4, gH = s.height*0.4; return { x: Math.max(-((s.viewBox.width*s.realZoom)-gW), Math.min(s.width-gW, n.x)), y: Math.max(-((s.viewBox.height*s.realZoom)-gH), Math.min(s.height-gH, n.y)) }; } }); }, 100); } }
+        function closeModal() { const modal = document.getElementById('diagramModal'); modal.classList.remove('show'); setTimeout(() => { modal.style.display = 'none'; if (window.pz) { window.pz.destroy(); window.pz = null; } }, 400); }
+        document.getElementById('diagramModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+    </script>
 </body>
-
 </html>
